@@ -1,39 +1,63 @@
 {
   "name": "get-paid",
+  "description": "Simple Electron application to manage Auto Entrepreneur invoices ",
+  "author": {
+    "name": "Paul Cordonnier",
+    "email": "paul@paulcordonnier.com"
+  },
   "version": "0.0.0",
   "private": true,
   "dependencies": {
+    "nedb": "^1.8.0",
+    "electron-is-dev": "^1.2.0"
+  },
+  "devDependencies": {
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
-    "concurrently": "^5.3.0",
     "date-fns": "^2.17.0",
-    "electron": "^11.2.1",
-    "electron-builder": "^22.9.1",
-    "electron-is-dev": "^1.2.0",
-    "nedb": "^1.8.0",
-    "node-sass": "4.14.1",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
     "react-dom": "^17.0.1",
     "react-icons": "^4.1.0",
     "react-scripts": "4.0.1",
-    "uuid": "^8.3.2",
+    "node-sass": "4.14.1",
+    "electron": "^11.2.1",
+    "electron-builder": "^22.9.1",
     "wait-on": "^5.2.1",
-    "web-vitals": "^0.2.4"
-  },
-  "scripts": {
-    "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && electron .\"",
-    "build": "react-scripts build && node_modules/.bin/build"
-  },
-  "homepage": "./",
-  "main": "./electron/main.js",
-  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "web-vitals": "^0.2.4",
     "@babel/helper-builder-react-jsx": "^7.12.13",
     "eslint": "^7.18.0",
     "eslint-plugin-react": "^7.22.0",
     "eslint-config-prettier": "^7.2.0",
     "eslint-plugin-prettier": "^3.3.1",
     "prettier": "^2.2.1"
+  },
+  "scripts": {
+    "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && electron .\"",
+    "build": "react-scripts build && electron-builder -c.extraMetadata.main=build/electron.js"
+  },
+  "homepage": "./",
+  "main": "public/electron.js",
+  "build": {
+    "appId": "com.paulcordonnier.get-paid",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "mac": {
+      "category": "public.app-category.business"
+    },
+    "win": {
+      "icon": "./public/bill.png"
+    },
+    "linux": {
+      "icon": "./public/bill.png",
+      "category": "Office"
+    }
   },
   "eslintConfig": {
     "root": true,
