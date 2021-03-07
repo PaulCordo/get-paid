@@ -28,7 +28,7 @@ export function SessionProvider({ children }) {
         setDocuments(documents);
         setClients(clients);
       }),
-    []
+    [request]
   );
   const close = useCallback(() => {
     setUser(null);
@@ -41,7 +41,7 @@ export function SessionProvider({ children }) {
       request("client-upsert", client).then(() =>
         request("client-list").then((clients) => setClients(clients))
       ),
-    []
+    [request]
   );
 
   const deleteClient = useCallback(
@@ -49,19 +49,23 @@ export function SessionProvider({ children }) {
       request("client-remove", client).then(() =>
         request("client-list").then((clients) => setClients(clients))
       ),
-    []
+    [request]
   );
 
   const createDocument = useCallback(
     (document) =>
-      request("document-save", document).then(() => request("document-list")),
-    []
+      request("document-save", document).then(() =>
+        request("document-list").then((documents) => setDocuments(documents))
+      ),
+    [request]
   );
 
-  const deleteDraft = useCallback((document) =>
-    request("document-delete", document).then(() =>
-      request("document-list").then((documents) => setDocuments(documents))
-    )
+  const deleteDraft = useCallback(
+    (document) =>
+      request("document-delete", document).then(() =>
+        request("document-list").then((documents) => setDocuments(documents))
+      ),
+    [request]
   );
 
   const SessionContextValue = useMemo(
@@ -76,7 +80,17 @@ export function SessionProvider({ children }) {
       createDocument,
       deleteDraft,
     }),
-    [user, clients, documents, open, close, saveClient]
+    [
+      user,
+      clients,
+      documents,
+      open,
+      close,
+      saveClient,
+      deleteClient,
+      createDocument,
+      deleteDraft,
+    ]
   );
   return (
     <SessionContext.Provider value={SessionContextValue}>

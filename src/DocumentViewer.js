@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import Table from "react-bootstrap/Table";
@@ -50,7 +50,7 @@ export function DocumentViewer({
               </div>
               {type === QUOTE && (
                 <div>
-                  <label>Devis valable jusqu'au </label>
+                  <label>Devis valable jusqu&#39;au </label>
                   <span className="font-weight-bold ml-1">
                     {format(documentValidUntil, "PPP", { locale: fr })}
                   </span>
@@ -116,7 +116,7 @@ export function DocumentViewer({
               En cas de retard de paiement, indemnité forfaitaire légale pour
               frais de recouvrement : 40,00 €
               <br />
-              Pas d'escompte pour règlement anticipé
+              Pas d&#39;escompte pour règlement anticipé
               <span className="float-right">
                 Date limite de paiement :{" "}
                 {format(documentPayUntil, "PPP", {

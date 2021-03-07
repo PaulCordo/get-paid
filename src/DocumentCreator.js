@@ -1,4 +1,4 @@
-import { useContext, useState, useMemo, useEffect } from "react";
+import React, { useContext, useState, useMemo, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -64,7 +64,19 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
     return type === INVOICE
       ? { ...base, payUntil, quoteId }
       : { ...base, validUntil };
-  }, [draftId, date, title, details, client, total, user, type, validUntil]);
+  }, [
+    draftId,
+    date,
+    title,
+    details,
+    client,
+    total,
+    user,
+    type,
+    validUntil,
+    payUntil,
+    quoteId,
+  ]);
 
   useEffect(() => {
     if (sourceDoc) {
@@ -138,7 +150,7 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
           </Form.Group>
           {type === QUOTE && (
             <Form.Group>
-              <Form.Label>Valide jusqu'au </Form.Label>
+              <Form.Label>Valide jusqu&#39;au </Form.Label>
               <Form.Control
                 type="date"
                 value={validUntil}
@@ -152,7 +164,7 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
           )}
           {type === INVOICE && (
             <Form.Group>
-              <Form.Label>Payable jusqu'au </Form.Label>
+              <Form.Label>Payable jusqu&#39;au </Form.Label>
               <Form.Control
                 type="date"
                 value={payUntil}

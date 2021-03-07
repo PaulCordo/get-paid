@@ -10,6 +10,13 @@ export const NotificationContext = React.createContext({
 
 export function NotificationProvider({ children }) {
   const [errors, setErrors] = useState([]);
+  const [updateTick, setUpdateTick] = useState();
+  useEffect(() => {
+    if (errors.length) {
+      const intervalID = window.setInterval(() => setUpdateTick({}), 5000);
+      return () => window.clearInterval(intervalID);
+    }
+  }, [errors]);
 
   const pushError = useCallback(
     (error) =>
@@ -35,6 +42,7 @@ export function NotificationProvider({ children }) {
         onClose={(notification) =>
           setErrors((errors) => errors.filter((err) => err !== notification))
         }
+        updateTick={updateTick}
       />
 
       {children}
@@ -42,13 +50,6 @@ export function NotificationProvider({ children }) {
   );
 }
 function NotificationViewer({ notifications = [], onClose = () => {} }) {
-  const [_, forceRender] = useState();
-  useEffect(() => {
-    if (notifications.length) {
-      const intervalID = window.setInterval(() => forceRender({}), 5000);
-      return () => window.clearInterval(intervalID);
-    }
-  }, [notifications]);
   return (
     <div aria-live="polite" aria-atomic="true" className="fixed-bottom">
       <div

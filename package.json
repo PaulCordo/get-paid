@@ -27,6 +27,54 @@
   },
   "homepage": "./",
   "main": "./electron/main.js",
+  "devDependencies": {
+    "@babel/helper-builder-react-jsx": "^7.12.13",
+    "eslint": "^7.18.0",
+    "eslint-plugin-react": "^7.22.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "prettier": "^2.2.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true,
+      "es6": true,
+      "browser": true
+    },
+    "plugins": [
+      "react",
+      "react-hooks"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "plugin:react-hooks/recommended",
+      "plugin:prettier/recommended",
+      "prettier/react"
+    ],
+    "rules": {
+      "react/display-name": "off",
+      "prettier/prettier": "error",
+      "react/prop-types": 0
+    },
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2018,
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "settings": {
+      "react": {
+        "version": "17.0"
+      }
+    },
+    "globals": {
+      "fetch": false,
+      "console": false
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -38,10 +86,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@babel/helper-builder-react-jsx": "^7.12.13",
-    "eslint": "^7.18.0",
-    "eslint-plugin-react": "^7.22.0"
   }
 }
