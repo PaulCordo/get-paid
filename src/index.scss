@@ -1,0 +1,68 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~bootstrap/scss/bootstrap";
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
+.top {
+  top: 0;
+}
+.right {
+  right: 0;
+}
+.pointer {
+  cursor: pointer;
+}
+
+input[type="number"] {
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+}
+.tab-content {
+  height: 100%;
+}
+.nav-tabs {
+  position: absolute;
+  left: 150px;
+  top: 14px;
+  .nav-item {
+    min-width: 150px;
+    position: relative;
+  }
+  .nav-link {
+    background-color: $white;
+    border-color: $gray-300;
+    color: $dark;
+    &:not(.active) {
+      border-bottom-color: $gray-300;
+    }
+  }
+}
+
+@page {
+  size: A4; /* auto is the initial value */
+  margin: 0; /* this affects the margin in the printer settings */
+}
+@media print {
+  body {
+    width: 21cm;
+    height: 29cm;
+    min-width: 21cm;
+    min-height: 29cm;
+    margin: 0;
+    padding: 2.5cm 2cm;
+  }
+  footer.fixed-bottom {
+    margin: 0 2cm 1.5cm;
+    font-size: 0.85em;
+  }
+  .container {
+    width: auto;
+  }
+}
