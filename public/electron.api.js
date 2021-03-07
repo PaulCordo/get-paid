@@ -109,7 +109,7 @@ module.exports = (mainWindow) => {
         event.reply("document-save", err, document);
       });
     } else {
-      documentYear = +document.date.slice(0, 4);
+      const documentYear = +document.date.slice(0, 4);
       userDbs.documents
         .find({
           number: { $lt: (documentYear + 1) * 1000, $gte: documentYear * 1000 },
