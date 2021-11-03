@@ -46,7 +46,7 @@ export function DocumentRow({
       <td className="align-middle">{title}</td>
       <td className="align-middle">{total}€</td>
       <td className="align-middle">{date}</td>
-      <td className="text-right" style={{ width: 42 * 3 + 16 * 3.5 + 1 }}>
+      <td className="text-right" style={{ minWidth: 42 * 3 + 16 * 3.5 + 1 }}>
         {draft && (
           <>
             <Button
