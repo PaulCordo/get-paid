@@ -35,7 +35,7 @@ export function SmallClientManager({ client, onChange = () => {} }) {
       <AccountDisplay client={client} />
       <div className="mt-3">
         <Button
-          className="mr-3"
+          className="me-3"
           variant="primary"
           onClick={() => {
             onChange(null);
@@ -45,7 +45,7 @@ export function SmallClientManager({ client, onChange = () => {} }) {
           <FaPlus />
         </Button>
         <Button
-          className="mr-3"
+          className="me-3"
           variant="secondary"
           onClick={() => {
             onChange(null);
@@ -54,7 +54,7 @@ export function SmallClientManager({ client, onChange = () => {} }) {
           <FaList />
         </Button>
         <Button
-          className="mr-3"
+          className="me-3"
           variant="warning"
           onClick={() => {
             setClientEdit(true);
@@ -82,7 +82,7 @@ export function SmallClientManager({ client, onChange = () => {} }) {
       <AccountSelector onSelect={onChange} accounts={clients} />
       <Button
         variant="primary"
-        className="float-right mt-3"
+        className="float-end mt-3"
         onClick={() => {
           onChange(null);
           setClientEdit(true);

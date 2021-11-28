@@ -9,8 +9,13 @@ import {
   FaMoneyCheckAlt,
 } from "react-icons/fa";
 
-import { INVOICE, QUOTE } from "./documentTypes";
-import { success, secondary, primary } from "./variables.module.scss";
+import {
+  getDocumentColor,
+  getDocumentState,
+  documentStates,
+} from "./documentStates";
+const { INVOICE, QUOTE, DRAFT } = documentStates;
+
 export function DocumentRow({
   document: {
     number,
@@ -27,17 +32,14 @@ export function DocumentRow({
   onEdit = () => {},
   onDelete = () => {},
 }) {
+  const documentState = getDocumentState({ type, draft });
   return (
     <tr>
       <th
         scope="row"
         style={{
           borderLeftWidth: 7,
-          borderLeftColor: draft
-            ? secondary
-            : type === INVOICE
-            ? success
-            : primary,
+          borderLeftColor: getDocumentColor({ type, draft }),
         }}
       >
         #{number}
@@ -46,13 +48,13 @@ export function DocumentRow({
       <td className="align-middle">{title}</td>
       <td className="align-middle">{total}€</td>
       <td className="align-middle">{date}</td>
-      <td className="text-right" style={{ minWidth: 42 * 3 + 16 * 3.5 + 1 }}>
-        {draft && (
+      <td className="text-end" style={{ minWidth: 42 * 3 + 16 * 3.5 + 1 }}>
+        {documentState === DRAFT && (
           <>
             <Button
               onClick={onEdit}
               variant="secondary"
-              className="mr-3"
+              className="me-3"
               title="Editer"
             >
               <FaEdit />
@@ -62,12 +64,12 @@ export function DocumentRow({
             </Button>
           </>
         )}
-        {!draft && type === INVOICE && (
+        {documentState === INVOICE && (
           <>
             <Button
               onClick={onView}
               variant="secondary"
-              className="mr-3"
+              className="me-3"
               title="Voir"
             >
               <FaEye />
@@ -75,7 +77,7 @@ export function DocumentRow({
             <Button
               onClick={onDownload}
               variant="success"
-              className="mr-3"
+              className="me-3"
               title="Télécharger"
             >
               <FaFileDownload />
@@ -85,12 +87,12 @@ export function DocumentRow({
             </Button>
           </>
         )}
-        {!draft && type == QUOTE && (
+        {documentState == QUOTE && (
           <>
             <Button
               onClick={onView}
               variant="secondary"
-              className="mr-3"
+              className="me-3"
               title="Voir"
             >
               <FaEye />
@@ -98,7 +100,7 @@ export function DocumentRow({
             <Button
               onClick={onDownload}
               variant="primary"
-              className="mr-3"
+              className="me-3"
               title="Télécharger"
             >
               <FaFileDownload />

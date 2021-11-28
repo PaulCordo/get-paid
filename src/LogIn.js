@@ -44,7 +44,7 @@ export function LogIn() {
             />
             <Button
               variant="primary"
-              className="float-right mt-3"
+              className="float-end mt-3"
               onClick={() => {
                 setSelecting(false);
               }}

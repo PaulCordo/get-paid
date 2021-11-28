@@ -75,8 +75,8 @@ function ErrorToast({ message, creationDate, onClose }) {
   return (
     <Toast onClose={onClose}>
       <Toast.Header>
-        <strong className="mr-auto text-danger">
-          <FaHeartBroken className="mr-1" />
+        <strong className="me-auto text-danger">
+          <FaHeartBroken className="me-1" />
           Erreur
         </strong>
         <small>

@@ -29,7 +29,7 @@ export function DocumentViewer({
       <header>
         <h4 className="info">
           <label>{type} </label>
-          <span className="font-weight-bold ml-2">
+          <span className="font-weight-bold ms-2">
             {type === INVOICE && "#"}
             {number}
           </span>
@@ -40,18 +40,18 @@ export function DocumentViewer({
             <div className="info">
               <div>
                 <label>Le </label>
-                <span className="font-weight-bold ml-1">
+                <span className="font-weight-bold ms-1">
                   {format(documentDate, "PPP", { locale: fr })}
                 </span>
               </div>
               <div>
                 <label>Pour </label>
-                <span className="font-weight-bold ml-1">{title}</span>
+                <span className="font-weight-bold ms-1">{title}</span>
               </div>
               {type === QUOTE && (
                 <div>
                   <label>Devis valable jusqu&#39;au </label>
-                  <span className="font-weight-bold ml-1">
+                  <span className="font-weight-bold ms-1">
                     {format(documentValidUntil, "PPP", { locale: fr })}
                   </span>
                 </div>
@@ -70,13 +70,13 @@ export function DocumentViewer({
             <th scope="col" className="w-50 border-top-0">
               Dénomination
             </th>
-            <th scope="col" className="border-top-0">
+            <th scope="col" className="border-top-0 text-end">
               Prix unitaire
             </th>
-            <th scope="col" className="border-top-0">
+            <th scope="col" className="border-top-0 text-end">
               Quantité
             </th>
-            <th scope="col" className="border-top-0">
+            <th scope="col" className="border-top-0 text-end">
               Total
             </th>
           </tr>
@@ -85,22 +85,22 @@ export function DocumentViewer({
           {details.map(({ name, price, quantity }) => (
             <tr key={name + price + quantity}>
               <td>{name}</td>
-              <td>{price}€</td>
-              <td>{quantity}</td>
-              <td className="text-right">{price * quantity}€</td>
+              <td className="text-end">{price}€</td>
+              <td className="text-end">{quantity}</td>
+              <td className="text-end">{price * quantity}€</td>
             </tr>
           ))}
           <tr>
-            <th colSpan="3" scope="row" className="text-right">
+            <th colSpan="3" scope="row" className="text-end">
               Total HT
             </th>
-            <td>{total}€</td>
+            <td className="text-end">{total}€</td>
           </tr>
           <tr>
-            <th colSpan="3" scope="row" className="text-right">
+            <th colSpan="3" scope="row" className="text-end">
               Total TTC
             </th>
-            <td>{total}€</td>
+            <td className="text-end">{total}€</td>
           </tr>
         </tbody>
       </Table>
@@ -117,7 +117,7 @@ export function DocumentViewer({
               frais de recouvrement : 40,00 €
               <br />
               Pas d&#39;escompte pour règlement anticipé
-              <span className="float-right">
+              <span className="float-end">
                 Date limite de paiement :{" "}
                 {format(documentPayUntil, "PPP", {
                   locale: fr,

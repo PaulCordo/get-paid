@@ -11,7 +11,7 @@ export function ConfirmModal({ show, children, onConfirm, onCancel }) {
       </Modal.Header>
       <Modal.Body>
         {children}
-        <ButtonGroup className="text-right">
+        <ButtonGroup className="text-end">
           <Button variant="warning" onClick={onConfirm}>
             Oui
           </Button>
