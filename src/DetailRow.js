@@ -26,14 +26,14 @@ export function DetailRow({
     return (
       <tr>
         <td className="align-middle">{name}</td>
-        <td className="text-right pr-4 align-middle">{price}€</td>
-        <td className="text-right pr-4 align-middle">{quantity}</td>
+        <td className="text-end pe-4 align-middle">{price}€</td>
+        <td className="text-end pe-4 align-middle">{quantity}</td>
         <td className="align-middle">{price * quantity}€</td>
         <td className="px-0">
           <Button variant="warning" onClick={() => setEdit(true)}>
             <FaPencilAlt />
           </Button>
-          <Button variant="danger" onClick={onDelete} className="ml-2">
+          <Button variant="danger" onClick={onDelete} className="ms-2">
             <FaTrashAlt />
           </Button>
         </td>
@@ -42,7 +42,7 @@ export function DetailRow({
   }
   return (
     <tr>
-      <td className="pl-0">
+      <td className="ps-0">
         <Form.Control
           type="text"
           required
@@ -55,7 +55,7 @@ export function DetailRow({
       <td className="align-middle" style={{ minWidth: 125 }}>
         <InputGroup>
           <Form.Control
-            className="text-right"
+            className="text-end"
             type="number"
             min="0"
             required
@@ -72,7 +72,7 @@ export function DetailRow({
       </td>
       <td>
         <Form.Control
-          className="text-right"
+          className="text-end"
           type="number"
           min="0"
           required
@@ -95,7 +95,7 @@ export function DetailRow({
             </Button>
             <Button
               variant="warning"
-              className="ml-2"
+              className="ms-2"
               onClick={() => {
                 setEdit(false);
                 setEditedDetail({ ...emptyDetail, ...detail });

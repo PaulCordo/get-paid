@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
@@ -46,7 +47,7 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
         });
       }}
     >
-      <Form.Row>
+      <Row>
         <Form.Group as={Col} className="mb-1">
           <Form.Control
             required
@@ -56,8 +57,8 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
             placeholder="Nom"
           />
         </Form.Group>
-      </Form.Row>
-      <Form.Row>
+      </Row>
+      <Row>
         <Form.Group as={Col} md={4} className="mb-1">
           <Form.Control
             required
@@ -76,8 +77,8 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
             placeholder="Numéro structure"
           />
         </Form.Group>
-      </Form.Row>
-      <Form.Row>
+      </Row>
+      <Row>
         <Form.Group as={Col} className="mb-1">
           <Form.Control
             required
@@ -87,8 +88,8 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
             placeholder="Adresse ligne 1"
           />
         </Form.Group>
-      </Form.Row>
-      <Form.Row>
+      </Row>
+      <Row>
         <Form.Group as={Col} className="mb-1">
           <Form.Control
             type="text"
@@ -97,8 +98,8 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
             placeholder="Adresse ligne 2"
           />
         </Form.Group>
-      </Form.Row>
-      <Form.Row>
+      </Row>
+      <Row>
         <Form.Group as={Col} md={5} className="mb-1">
           <Form.Control
             required
@@ -117,8 +118,8 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
             placeholder="Ville"
           />
         </Form.Group>
-      </Form.Row>
-      <Form.Row>
+      </Row>
+      <Row>
         <Form.Group as={Col} className="mb-1">
           <Form.Control
             type="tel"
@@ -127,8 +128,8 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
             placeholder="Numéro de téléphone"
           />
         </Form.Group>
-      </Form.Row>
-      <Form.Row>
+      </Row>
+      <Row>
         <Form.Group as={Col} className="mb-1">
           <Form.Control
             type="tel"
@@ -137,8 +138,8 @@ export function AccountEditor({ account, onSave, onCancel, hideCancel }) {
             placeholder="Adresse email"
           />
         </Form.Group>
-      </Form.Row>
-      <ButtonGroup className="float-right">
+      </Row>
+      <ButtonGroup className="float-end">
         <Button type="submit" variant="primary">
           <FaCheck />
         </Button>

@@ -181,7 +181,7 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
               variant={type === INVOICE ? "success" : "primary"}
               size="lg"
               title={type === INVOICE ? "Créer la facture" : "Créer le devis"}
-              className="mr-3"
+              className="me-3"
               disabled={!isDocumentValid}
               onClick={() =>
                 createDocument({
@@ -196,7 +196,7 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
               variant="secondary"
               size="lg"
               title="Sauvegarder le brouillon"
-              className="mr-3"
+              className="me-3"
               onClick={() =>
                 createDocument({
                   ...document,
@@ -297,13 +297,13 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
               }
             />
             <tr>
-              <th colSpan="3" scope="row" className="text-right">
+              <th colSpan="3" scope="row" className="text-end">
                 Total HT
               </th>
               <td colSpan="2">{total}€</td>
             </tr>
             <tr>
-              <th colSpan="3" scope="row" className="text-right">
+              <th colSpan="3" scope="row" className="text-end">
                 Total TTC
               </th>
               <td colSpan="2">{total}€</td>
