@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
+import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import Table from "react-bootstrap/Table";
 import { FaCheck, FaSave, FaTimes } from "react-icons/fa";
@@ -15,6 +15,7 @@ import { SmallClientManager } from "./SmallClientManager";
 import { ConfirmModal } from "./Modals";
 import { DetailRow } from "./DetailRow";
 import { INVOICE, QUOTE } from "./documentTypes";
+import { variantByState } from "./documentStates";
 
 export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
   const { user, createDocument } = useContext(SessionContext);
@@ -43,9 +44,10 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
   const [quoteId, setQuoteId] = useState(undefined);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [totals, setTotals] = useState([0]);
-  const total = useMemo(() => totals.reduce((total, t) => total + t, 0), [
-    totals,
-  ]);
+  const total = useMemo(
+    () => totals.reduce((total, t) => total + t, 0),
+    [totals]
+  );
   const isDocumentValid = useMemo(
     () => title && date && client && details.length > 0,
     [title, date, client, details]
@@ -114,21 +116,25 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
       <Row className="document-head">
         <Col className="document-head-left">
           {!quoteId && (
-            <ButtonGroup toggle className="mb-3" size="lg">
+            <ToggleButtonGroup
+              className="mb-3"
+              size="lg"
+              name="document-type"
+              value={type}
+            >
               {[INVOICE, QUOTE].map((docType) => (
                 <ToggleButton
                   key={docType}
                   type="radio"
-                  variant={docType === INVOICE ? "success" : "primary"}
-                  name="radio"
+                  variant={variantByState[docType]}
+                  name="document-type"
                   value={docType}
-                  checked={type === docType}
                   onChange={() => setType(docType)}
                 >
                   {docType}
                 </ToggleButton>
               ))}
-            </ButtonGroup>
+            </ToggleButtonGroup>
           )}
           <Form.Group>
             <Form.Label>Pour </Form.Label>
@@ -176,7 +182,7 @@ export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
               />
             </Form.Group>
           )}
-          <div>
+          <div className="mt-3">
             <Button
               variant={type === INVOICE ? "success" : "primary"}
               size="lg"

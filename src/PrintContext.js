@@ -19,26 +19,28 @@ export function PrintProvider({ children }) {
   const [action, setAction] = useState(() => {});
   const downloadDocument = useCallback((document) => {
     setRenderedDocument(document);
-    setAction(() => () =>
-      request("document-download", document).then(() => {
-        setRenderedDocument(null);
-        setAction(() => {});
-      })
+    setAction(
+      () => () =>
+        request("document-download", document).then(() => {
+          setRenderedDocument(null);
+          setAction(() => {});
+        })
     );
   }, []);
-  useEffect(() => renderedDocument && action && action(), [
-    action,
-    renderedDocument,
-  ]);
+  useEffect(
+    () => renderedDocument && action && action(),
+    [action, renderedDocument]
+  );
 
   const { documents } = useContext(SessionContext);
   useEffect(() => {
     documents && documents.length && setRenderedDocument(documents[0]);
   }, [documents]);
 
-  const PrintContextValue = useMemo(() => ({ downloadDocument }), [
-    downloadDocument,
-  ]);
+  const PrintContextValue = useMemo(
+    () => ({ downloadDocument }),
+    [downloadDocument]
+  );
   return (
     <PrintContext.Provider value={PrintContextValue}>
       <div className="d-none d-print-block h-100 w-100">

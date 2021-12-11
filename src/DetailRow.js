@@ -42,7 +42,7 @@ export function DetailRow({
   }
   return (
     <tr>
-      <td className="ps-0">
+      <td className="ps-3">
         <Form.Control
           type="text"
           required
@@ -65,9 +65,7 @@ export function DetailRow({
               onTotalChange(value * quantity);
             }}
           />
-          <InputGroup.Append>
-            <InputGroup.Text>€</InputGroup.Text>
-          </InputGroup.Append>
+          <InputGroup.Text>€</InputGroup.Text>
         </InputGroup>
       </td>
       <td>
@@ -83,7 +81,7 @@ export function DetailRow({
           }}
         />
       </td>
-      <td className="align-middle">{price * quantity}</td>
+      <td className="align-middle">{price * quantity}€</td>
       <td className="px-0">
         {detail ? (
           <>

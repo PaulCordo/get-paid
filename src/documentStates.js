@@ -10,7 +10,7 @@ export const variantByState = {
   [INVOICE]: "success",
   [QUOTE]: "primary",
   [DRAFT]: "secondary",
-  [NEW]: "outline-secondary",
+  [NEW]: "secondary",
 };
 
 export const colorByState = {
