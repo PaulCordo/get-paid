@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { Home } from "./Home";
+import { App } from "./App";
 import { PrintProvider } from "./PrintContext";
 import { SessionProvider } from "./SessionContext";
 import { NotificationProvider } from "./NotificationContext";
@@ -11,7 +11,7 @@ ReactDOM.render(
   <NotificationProvider>
     <SessionProvider>
       <PrintProvider>
-        <Home />
+        <App />
       </PrintProvider>
     </SessionProvider>
   </NotificationProvider>,
