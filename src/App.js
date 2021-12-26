@@ -37,7 +37,7 @@ export function App() {
           onSelect={setActiveTab}
         >
           <Nav
-            className="position-fixed start-0 py-3 px-2 border-right-1"
+            className="position-fixed start-0 py-3 px-2 border-right-1 d-print-none"
             style={{ width: 160 }}
           >
             <Nav.Item
@@ -68,15 +68,20 @@ export function App() {
 
           <main
             className="d-print-none position-relative"
-            style={{ marginLeft: 164, marginRight: 164 }}
+            style={{ marginLeft: 164 }}
           >
             <Tab.Content>
-              <Tab.Pane eventKey="home" className="pt-3">
+              <Tab.Pane eventKey="home" className="pt-3 me-3">
                 <Home />
               </Tab.Pane>
               {tabs &&
                 tabs.map(({ key, component }) => (
-                  <Tab.Pane key={key} eventKey={key} className="h-100">
+                  <Tab.Pane
+                    key={key}
+                    eventKey={key}
+                    className="h-100"
+                    style={{ marginRight: 164 }}
+                  >
                     <>
                       <CloseButton
                         className="position-fixed end-0 my-3 me-3 fs-4"

@@ -18,84 +18,81 @@ export function ActionsCell({ value: document }) {
   const { view, duplicate, edit, deleteDraft, download } = useContext(
     DocumentActionsContext
   );
-
-  if (documentState === DRAFT) {
-    return (
-      <>
-        <Button
-          onClick={() => edit(document)}
-          variant="secondary"
-          className="me-3"
-          title="Editer"
-        >
-          <FaEdit />
-        </Button>
-        <Button
-          onClick={() => deleteDraft(document)}
-          variant="danger"
-          title="Supprimer"
-        >
-          <FaTrash />
-        </Button>
-      </>
-    );
-  }
-  if (documentState === INVOICE) {
-    return (
-      <>
-        <Button
-          onClick={() => view(document)}
-          variant="secondary"
-          className="me-3"
-          title="Voir"
-        >
-          <FaEye />
-        </Button>
-        <Button
-          onClick={() => download(document)}
-          variant="success"
-          className="me-3"
-          title="Télécharger"
-        >
-          <FaFileDownload />
-        </Button>
-        <Button
-          onClick={() => duplicate(document)}
-          variant="warning"
-          title="Dupliquer"
-        >
-          <FaCopy />
-        </Button>
-      </>
-    );
-  }
-  if (documentState == QUOTE) {
-    return (
-      <>
-        <Button
-          onClick={() => view(document)}
-          variant="secondary"
-          className="me-3"
-          title="Voir"
-        >
-          <FaEye />
-        </Button>
-        <Button
-          onClick={() => download(document)}
-          variant="primary"
-          className="me-3"
-          title="Télécharger"
-        >
-          <FaFileDownload />
-        </Button>
-        <Button
-          onClick={() => duplicate(document)}
-          variant="success"
-          title="Facturer"
-        >
-          <FaMoneyCheckAlt />
-        </Button>
-      </>
-    );
-  }
+  return (
+    <div style={{ minWidth: 42 * 3 + 16 * 2 + 1 }}>
+      {documentState === DRAFT && (
+        <>
+          <Button
+            onClick={() => edit(document)}
+            variant="secondary"
+            className="me-3"
+            title="Editer"
+          >
+            <FaEdit />
+          </Button>
+          <Button
+            onClick={() => deleteDraft(document)}
+            variant="danger"
+            title="Supprimer"
+          >
+            <FaTrash />
+          </Button>
+        </>
+      )}
+      {documentState === INVOICE && (
+        <>
+          <Button
+            onClick={() => view(document)}
+            variant="secondary"
+            className="me-3"
+            title="Voir"
+          >
+            <FaEye />
+          </Button>
+          <Button
+            onClick={() => download(document)}
+            variant="success"
+            className="me-3"
+            title="Télécharger"
+          >
+            <FaFileDownload />
+          </Button>
+          <Button
+            onClick={() => duplicate(document)}
+            variant="warning"
+            title="Dupliquer"
+          >
+            <FaCopy />
+          </Button>
+        </>
+      )}
+      {documentState == QUOTE && (
+        <>
+          <Button
+            onClick={() => view(document)}
+            variant="secondary"
+            className="me-3"
+            title="Voir"
+          >
+            <FaEye />
+          </Button>
+          <Button
+            onClick={() => download(document)}
+            variant="primary"
+            className="me-3"
+            title="Télécharger"
+          >
+            <FaFileDownload />
+          </Button>
+          <Button
+            onClick={() => duplicate(document)}
+            variant="success"
+            title="Facturer"
+          >
+            <FaMoneyCheckAlt />
+          </Button>
+        </>
+      )}
+    </div>
+  );
 }
