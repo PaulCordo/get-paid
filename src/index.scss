@@ -6,12 +6,29 @@ body,
   height: 100%;
   width: 100%;
 }
-.top {
-  top: 0;
+
+body {
+  scrollbar-color: $light $dark;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+  &::-webkit-scrollbar-corner {
+    background: $dark;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: $light;
+    border-radius: 6px;
+    border: 3px solid $dark;
+    background-clip: content-box;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: $dark;
+  }
 }
-.right {
-  right: 0;
-}
+
 .pointer {
   cursor: pointer;
 }
@@ -23,9 +40,6 @@ input[type="number"] {
     margin: 0;
   }
   -moz-appearance: textfield;
-}
-.tab-content {
-  height: 100%;
 }
 .nav-tabs {
   position: absolute;
@@ -45,22 +59,36 @@ input[type="number"] {
   }
 }
 
+// Common page settings for DocumentViewer
+
+.page {
+  position: relative;
+  width: 21cm;
+  height: 29.7cm;
+  background-color: white;
+  overflow: hidden;
+  border: 1px solid $dark;
+  &.page-endless {
+    height: auto;
+    min-height: 29.7cm;
+  }
+}
+
+@media print {
+  .page {
+    border: none;
+  }
+}
+
 @page {
   size: A4; /* auto is the initial value */
   margin: 0; /* this affects the margin in the printer settings */
 }
 @media print {
   body {
-    width: 21cm;
-    height: 29cm;
     min-width: 21cm;
     min-height: 29cm;
     margin: 0;
-    padding: 2.5cm 2cm;
-  }
-  footer.fixed-bottom {
-    margin: 0 2cm 1.5cm;
-    font-size: 0.85em;
   }
   .container {
     width: auto;

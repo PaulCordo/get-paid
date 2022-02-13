@@ -1,0 +1,14 @@
+.default-template {
+  table {
+    empty-cells: show;
+  }
+  table.totals {
+    width: 300px;
+  }
+  .fixed-col-width {
+    width: 150px;
+  }
+  footer {
+    font-size: 0.8rem;
+  }
+}

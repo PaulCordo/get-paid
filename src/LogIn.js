@@ -54,7 +54,7 @@ export function LogIn() {
           </Card.Body>
         ) : (
           <Card.Body>
-            <Card.Title className="text-center">
+            <Card.Title className="text-center mb-2">
               <FaUserAlt />
               <div>Créer un utilisateur</div>
             </Card.Title>
@@ -64,6 +64,8 @@ export function LogIn() {
                 setSelecting(true);
               }}
               hideCancel={!users.length}
+              mini
+              user
             />
           </Card.Body>
         )}

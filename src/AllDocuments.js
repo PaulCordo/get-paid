@@ -7,7 +7,7 @@ import { FaPlus } from "react-icons/fa";
 import { DocumentActionsContext } from "./DocumentActionsContext";
 import { DocumentTable } from "./DocumentTable";
 
-export function Home() {
+export function AllDocuments() {
   const { add } = useContext(DocumentActionsContext);
   return (
     <>

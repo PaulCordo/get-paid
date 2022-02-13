@@ -1,6 +1,7 @@
 table.document-table {
   .sort {
     position: relative;
+    padding-right: 26px;
     &::after,
     &::before {
       content: "";

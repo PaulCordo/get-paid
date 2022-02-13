@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useContext } from "react";
+import React, { useCallback, useState, useContext } from "react";
 
 import { request as requestService } from "./apiServices";
 import { NotificationContext } from "./NotificationContext";
@@ -7,7 +7,14 @@ export const SessionContext = React.createContext({
   user: null,
   clients: [],
   documents: [],
+  configuration: {},
   open: () => {},
+  close: () => {},
+  saveUser: () => {},
+  saveClient: () => {},
+  deleteClient: () => {},
+  createDocument: () => {},
+  deleteDraft: () => {},
 });
 
 export function SessionProvider({ children }) {
@@ -36,6 +43,10 @@ export function SessionProvider({ children }) {
     setClients([]);
   }, []);
 
+  const saveUser = useCallback(
+    (user) => request("user-upsert", user).then((user) => setUser(user)),
+    [request]
+  );
   const saveClient = useCallback(
     (client) =>
       request("client-upsert", client).then(() =>
@@ -68,32 +79,21 @@ export function SessionProvider({ children }) {
     [request]
   );
 
-  const SessionContextValue = useMemo(
-    () => ({
-      user,
-      clients,
-      documents,
-      open,
-      close,
-      saveClient,
-      deleteClient,
-      createDocument,
-      deleteDraft,
-    }),
-    [
-      user,
-      clients,
-      documents,
-      open,
-      close,
-      saveClient,
-      deleteClient,
-      createDocument,
-      deleteDraft,
-    ]
-  );
   return (
-    <SessionContext.Provider value={SessionContextValue}>
+    <SessionContext.Provider
+      value={{
+        user,
+        clients,
+        documents,
+        open,
+        close,
+        saveUser,
+        saveClient,
+        deleteClient,
+        createDocument,
+        deleteDraft,
+      }}
+    >
       {children}
     </SessionContext.Provider>
   );

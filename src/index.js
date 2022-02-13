@@ -5,15 +5,18 @@ import { App } from "./App";
 import { PrintProvider } from "./PrintContext";
 import { SessionProvider } from "./SessionContext";
 import { NotificationProvider } from "./NotificationContext";
+import { ErrorBoundary } from "./ErrorBoundary";
 import "./index.scss";
 
 ReactDOM.render(
   <NotificationProvider>
-    <SessionProvider>
-      <PrintProvider>
-        <App />
-      </PrintProvider>
-    </SessionProvider>
+    <ErrorBoundary>
+      <SessionProvider>
+        <PrintProvider>
+          <App />
+        </PrintProvider>
+      </SessionProvider>
+    </ErrorBoundary>
   </NotificationProvider>,
   document.getElementById("root")
 );

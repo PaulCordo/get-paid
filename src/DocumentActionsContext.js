@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback, useContext } from "react";
 import Container from "react-bootstrap/Container";
 
-import { DocumentCreator } from "./DocumentCreator";
+import { DocumentCreator } from "./DocumentCreator/DocumentCreator";
 import { DocumentViewer } from "./DocumentViewer";
 import { documentStates, getDocumentState } from "./documentStates";
 import { SessionContext } from "./SessionContext";
@@ -52,10 +52,11 @@ export function DocumentActionsProvider({
                 key,
                 state: getDocumentState(document),
                 component: (
-                  <Container className="pt-5">
+                  <Container>
                     <DocumentViewer
                       document={document}
                       onClose={getHandleCloseTab(key)}
+                      actions
                     />
                   </Container>
                 ),

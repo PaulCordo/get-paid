@@ -1,57 +1,69 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import Table from "react-bootstrap/Table";
+import MDEditor from "@uiw/react-md-editor";
 
-import { AccountDisplay } from "./AccountDisplay";
-import { SessionContext } from "./SessionContext";
-import { INVOICE, QUOTE } from "./documentTypes";
+import { AccountDisplay } from "../../AccountDisplay";
+import { INVOICE, QUOTE } from "../../documentTypes";
 
-export function DocumentViewer({
+import { SectionViewer } from "./SectionViewer";
+import "./default.scss";
+
+export function Invoice({
   document: {
     number,
+    user,
     type = INVOICE,
     date,
     payUntil,
     validUntil,
     title,
+    description,
     client,
-    details,
+    details, // deprecated
+    sections,
+    tax = 0,
     total,
   },
 }) {
-  const { user } = useContext(SessionContext);
   const documentDate = useMemo(() => new Date(date), [date]);
   const documentPayUntil = useMemo(() => new Date(payUntil), [payUntil]);
   const documentValidUntil = useMemo(() => new Date(validUntil), [validUntil]);
   return (
-    <div className="w-100 h-100">
+    <div className="default-template page py-5 px-5">
       <header>
         <h4 className="info">
           <label>{type} </label>
-          <span className="font-weight-bold ms-2">
+          <span className="fw-bold ms-2">
             {type === INVOICE && "#"}
             {number}
           </span>
         </h4>
-        <div className="w-100 d-flex align-items-start justify-content-between">
+        <div className="w-100 d-flex align-items-start justify-content-between mt-3">
           <div>
             {user && <AccountDisplay client={user} />}
-            <div className="info">
+            <div className="info mt-4">
               <div>
                 <label>Le </label>
-                <span className="font-weight-bold ms-1">
+                <span className="fw-bold ms-1">
                   {format(documentDate, "PPP", { locale: fr })}
                 </span>
               </div>
               <div>
                 <label>Pour </label>
-                <span className="font-weight-bold ms-1">{title}</span>
+                <span className="fw-bold ms-1">{title}</span>
               </div>
+              {description && (
+                <div>
+                  <label>Description </label>
+                  <MDEditor.Markdown source={description} />
+                </div>
+              )}
               {type === QUOTE && (
                 <div>
                   <label>Devis valable jusqu&#39;au </label>
-                  <span className="font-weight-bold ms-1">
+                  <span className="fw-bold ms-1">
                     {format(documentValidUntil, "PPP", { locale: fr })}
                   </span>
                 </div>
@@ -64,52 +76,40 @@ export function DocumentViewer({
           </div>
         </div>
       </header>
-      <Table striped className="mt-5">
-        <thead>
-          <tr>
-            <th scope="col" className="w-50 border-top-0">
-              Dénomination
-            </th>
-            <th scope="col" className="border-top-0 text-end">
-              Prix unitaire
-            </th>
-            <th scope="col" className="border-top-0 text-end">
-              Quantité
-            </th>
-            <th scope="col" className="border-top-0 text-end">
-              Total
-            </th>
-          </tr>
-        </thead>
+
+      {sections &&
+        sections.map((section, index) => (
+          <SectionViewer key={index} section={section} />
+        ))}
+      {
+        // deprectated
+        details && <SectionViewer section={{ rows: details }} />
+      }
+
+      <Table borderless className="float-end totals">
         <tbody>
-          {details.map(({ name, price, quantity }) => (
-            <tr key={name + price + quantity}>
-              <td>{name}</td>
-              <td className="text-end">{price}€</td>
-              <td className="text-end">{quantity}</td>
-              <td className="text-end">{price * quantity}€</td>
-            </tr>
-          ))}
           <tr>
-            <th colSpan="3" scope="row" className="text-end">
-              Total HT
+            <th scope="row" className="text-end fixed-col-width">
+              Total H.T
             </th>
-            <td className="text-end">{total}€</td>
+            <td className="text-end fixed-col-width">{total}€</td>
           </tr>
           <tr>
-            <th colSpan="3" scope="row" className="text-end">
-              Total TTC
+            <th scope="row" className="text-end fixed-col-width">
+              Total T.T.C
             </th>
-            <td className="text-end">{total}€</td>
+            <td className="text-end fixed-col-width">
+              {total + (total * tax) / 100}€
+            </td>
           </tr>
         </tbody>
       </Table>
-      <footer className="fixed-bottom d-none d-print-block">
-        <p className="font-italic">
+      <footer className="position-absolute bottom-0">
+        <p className="fst-italic">
           Dispensé d’immatriculation au registre du commerce et des sociétés
           (RCS) et au répertoire des métiers (RM)
           <br />
-          TVA non applicable, art. 293B du CGI
+          {!tax && "TVA non applicable, art. 293B du CGI"}
           {type === INVOICE && (
             <>
               <br />
