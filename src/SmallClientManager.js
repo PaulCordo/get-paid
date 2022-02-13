@@ -28,6 +28,7 @@ export function SmallClientManager({ client, onChange = () => {} }) {
         }}
         onCancel={() => setClientEdit(false)}
         hideCancel={clients && clients.length === 0 && !client}
+        mini
       />
     );
   return client ? (

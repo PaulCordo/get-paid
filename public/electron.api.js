@@ -16,6 +16,14 @@ module.exports = (mainWindow) => {
       event.reply("user-create", err, user);
     });
   });
+  ipcMain.on("user-upsert", (event, user) => {
+    usersDb.update({ _id: user._id }, user, { upsert: true }, (err) => {
+      if (err) {
+        console.error("user-upsert", err);
+      }
+      event.reply("user-upsert", err);
+    });
+  });
 
   ipcMain.on("user-list", (event) => {
     usersDb.find({}, (err, users = []) => {

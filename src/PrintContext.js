@@ -7,7 +7,7 @@ import React, {
 } from "react";
 
 import { request } from "./apiServices";
-import { DocumentViewer } from "./DocumentViewer";
+import { useDocumentView } from "./templates";
 import { SessionContext } from "./SessionContext";
 
 export const PrintContext = React.createContext({
@@ -16,6 +16,7 @@ export const PrintContext = React.createContext({
 
 export function PrintProvider({ children }) {
   const [renderedDocument, setRenderedDocument] = useState(null);
+  const DocumentView = useDocumentView(renderedDocument);
   const [action, setAction] = useState(() => {});
   const downloadDocument = useCallback((document) => {
     setRenderedDocument(document);
@@ -44,7 +45,7 @@ export function PrintProvider({ children }) {
   return (
     <PrintContext.Provider value={PrintContextValue}>
       <div className="d-none d-print-block h-100 w-100">
-        {renderedDocument && <DocumentViewer document={renderedDocument} />}
+        <DocumentView document={renderedDocument} />
       </div>
       {children}
     </PrintContext.Provider>
