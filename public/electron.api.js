@@ -266,7 +266,7 @@ module.exports = (mainWindow) => {
       .printToPDF({ pageSize: "A4" })
       .then((data) => {
         const name = dialog.showSaveDialogSync(mainWindow, {
-          defaultPath: `${document.type}_${document.number}.pdf`,
+          defaultPath: `${document.type}_${document.publicId}.pdf`,
           title: "Enregistrer le document",
         });
         if (!name || name.length == 0) {
