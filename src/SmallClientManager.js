@@ -4,7 +4,7 @@ import { FaTrashAlt, FaPlus, FaEdit, FaList } from "react-icons/fa";
 
 import { SessionContext } from "./SessionContext";
 import { AccountSelector } from "./AccountSelector";
-import { AccountEditor } from "./AccountEditor";
+import { SmallAccountEditor } from "./AccountEditor";
 import { AccountDisplay } from "./AccountDisplay";
 import { ConfirmModal } from "./Modals";
 
@@ -18,7 +18,7 @@ export function SmallClientManager({ client, onChange = () => {} }) {
 
   if (clientEdit)
     return (
-      <AccountEditor
+      <SmallAccountEditor
         account={client}
         onSave={(client) => {
           saveClient(client).then(() => {
@@ -28,7 +28,6 @@ export function SmallClientManager({ client, onChange = () => {} }) {
         }}
         onCancel={() => setClientEdit(false)}
         hideCancel={clients && clients.length === 0 && !client}
-        mini
       />
     );
   return client ? (

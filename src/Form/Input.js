@@ -4,22 +4,20 @@ import Form from "react-bootstrap/Form";
 export const Input = ({
   register,
   name,
+  type = "text",
   label,
-  placeHolder,
+  placeholder,
   required,
   disabled,
-  type = "text",
+  readOnly,
   ...props
 }) => (
   <Form.Group {...props}>
     {label && <Form.Label htmlFor={name}>{label}</Form.Label>}
     <Form.Control
-      type={type}
       {...register(name, { required })}
       id={label && name}
-      placeholder={placeHolder}
-      disabled={disabled}
-      readOnly={disabled}
+      {...{ type, placeholder, disabled, readOnly }}
     />
   </Form.Group>
 );
