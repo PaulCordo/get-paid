@@ -12,7 +12,7 @@ export function Header({ setActiveTab = () => {}, activeTab }) {
   return (
     <Navbar
       collapseOnSelect
-      expand="lg"
+      expand="md"
       as="header"
       bg="dark"
       variant="dark"

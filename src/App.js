@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Tab from "react-bootstrap/Tab";
 
 import { SessionContext } from "./SessionContext";
@@ -10,9 +10,11 @@ import { usePrevious } from "./usePrevious";
 
 export function App() {
   const { user } = useContext(SessionContext);
-  const prevUserId = usePrevious(user?.id_);
+  const prevUserId = usePrevious(user?._id);
   const [activeTab, setActiveTab] = useState("documents");
-  user && user.id_ !== prevUserId && setActiveTab("documents");
+  useEffect(() => {
+    user && user._id !== prevUserId && setActiveTab("documents");
+  }, [prevUserId, user]);
   return user ? (
     <Tab.Container
       activeKey={activeTab}

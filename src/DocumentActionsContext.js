@@ -78,7 +78,7 @@ export function DocumentActionsProvider({
             state: documentStates.NEW,
             component: (
               <DocumentCreator
-                document={document}
+                source={document}
                 onClose={getHandleCloseTab(key)}
               />
             ),
@@ -101,7 +101,7 @@ export function DocumentActionsProvider({
             state: documentStates.DRAFT,
             component: (
               <DocumentCreator
-                document={document}
+                source={document}
                 onClose={getHandleCloseTab(key)}
               />
             ),
