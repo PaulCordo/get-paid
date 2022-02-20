@@ -6,7 +6,7 @@ import { FaUserPlus, FaUserAlt } from "react-icons/fa";
 
 import { SessionContext } from "./SessionContext";
 import { AccountSelector } from "./AccountSelector";
-import { AccountEditor } from "./AccountEditor";
+import { SmallAccountEditor } from "./AccountEditor";
 import { request } from "./apiServices";
 
 export function LogIn() {
@@ -58,13 +58,12 @@ export function LogIn() {
               <FaUserAlt />
               <div>Créer un utilisateur</div>
             </Card.Title>
-            <AccountEditor
+            <SmallAccountEditor
               onSave={handleUserCreation}
               onCancel={() => {
                 setSelecting(true);
               }}
               hideCancel={!users.length}
-              mini
               user
             />
           </Card.Body>
