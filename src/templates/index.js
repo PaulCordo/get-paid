@@ -17,7 +17,7 @@ const documentViewKeysByDocumentType = {
 const getDocumentView = (template, type) =>
   template[documentViewKeysByDocumentType[type]];
 const getTemplate = (templateName) =>
-  templates.find(({ name }) => (templateName ?? defaultTemplate.name) === name);
+  templates.find(({ name }) => templateName === name) ?? defaultTemplate;
 
 export function useDocumentView(document) {
   const { user } = useContext(SessionContext);

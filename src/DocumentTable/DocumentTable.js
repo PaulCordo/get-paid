@@ -28,7 +28,7 @@ export function DocumentTable() {
     () => [
       {
         Header: "Identifiant",
-        accessor: "number",
+        accessor: "publicId",
         disableSortBy: true,
         className: "text-center",
         Filter: StateFilter,
@@ -93,7 +93,7 @@ export function DocumentTable() {
           {documentTable?.headerGroups
             ?.flatMap(({ headers }) => headers)
             ?.filter(({ Filter }) => Filter)
-            ?.find((header) => header.id === "number" && header.Filter)
+            ?.find((header) => header.id === "publicId" && header.Filter)
             ?.render("Filter")}
         </Col>
         <Col>

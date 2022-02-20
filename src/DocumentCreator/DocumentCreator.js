@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -10,310 +10,308 @@ import ToggleButton from "react-bootstrap/ToggleButton";
 import { FaCheck, FaSave, FaTimes } from "react-icons/fa";
 import { format, add } from "date-fns";
 import MDEditor from "@uiw/react-md-editor";
+import { Controller, useForm } from "react-hook-form";
 
+import { Input } from "../Form";
 import { SessionContext } from "../SessionContext";
 import { SmallClientManager } from "../SmallClientManager";
 import { ConfirmModal } from "../Modals";
 import { INVOICE, QUOTE } from "../documentTypes";
 import { variantByState } from "../documentStates";
-import { DetailSection } from "./DetailSection";
+import { currency } from "../numberFormat";
+import { Sections } from "./Sections";
 
-export function DocumentCreator({ onClose = () => {}, document: sourceDoc }) {
+const emptyDocument = {
+  title: "",
+  description: "",
+  date: format(new Date(), "yyyy-MM-dd"),
+  client: null,
+  sections: [
+    { title: "", rows: [{ name: "", price: 0, quantity: 0 }], total: 0 },
+  ],
+  total: 0,
+  type: INVOICE,
+  draft: true,
+  validUntil: format(add(new Date(), { months: 1 }), "yyyy-MM-dd"),
+  payUntil: format(add(new Date(), { months: 1 }), "yyyy-MM-dd"),
+};
+
+function getDefaultValuesFromSourceDocument(source, user) {
+  const defaultValues = { ...emptyDocument, user };
+  if (source) {
+    defaultValues.title = source.title;
+    defaultValues.description = source.description;
+    defaultValues.client = source.client;
+
+    const fromDraft = source.draft;
+    const isInvoiceFromQuote = source.type === QUOTE && !fromDraft;
+    if (!isInvoiceFromQuote) {
+      if (source.type) {
+        defaultValues.type = source.type;
+      }
+      if (source.date) {
+        defaultValues.date = source.date;
+      }
+    }
+    if (source.sections) {
+      defaultValues.sections = source.sections.map((section) => ({
+        ...section,
+      }));
+    }
+    if (source._id) {
+      if (fromDraft) {
+        defaultValues._id = source._id;
+      } else if (isInvoiceFromQuote) {
+        defaultValues.quoteId = source._id;
+      }
+    }
+  }
+  return defaultValues;
+}
+
+export function DocumentCreator({ onClose = () => {}, source = {} }) {
   const { user, createDocument } = useContext(SessionContext);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
-  const [validUntilPristine, setValidUntilPristine] = useState(true);
-  const [validUntil, setValidUntil] = useState(
-    format(add(new Date(), { months: 1 }), "yyyy-MM-dd")
-  );
-  const [payUntilPristine, setPayUntilPristine] = useState(true);
-  const [payUntil, setPayUntil] = useState(
-    format(add(new Date(), { months: 1 }), "yyyy-MM-dd")
-  );
+
+  const {
+    register,
+    unregister,
+    control,
+    handleSubmit,
+    getValues,
+    watch,
+    setValue,
+    formState: { dirtyFields, isValid },
+  } = useForm({
+    defaultValues: getDefaultValuesFromSourceDocument(source, user),
+    mode: "onChange",
+  });
+
+  // we have to set pay and valid until with setValue and not defaultValue to dirty them
+  useEffect(() => {
+    if (source.draft) {
+      source.validUntil &&
+        source.type === QUOTE &&
+        setValue("validUntil", source.validUntil);
+      source.payUntil &&
+        source.type === INVOICE &&
+        setValue("payUntil", source.payUntil);
+    }
+  }, [source, setValue]);
+
+  // update pay and valid until when date is changed and they're still untouched
+  const date = watch("date");
   useEffect(() => {
     if (!isNaN(Date.parse(date))) {
-      payUntilPristine &&
-        setPayUntil(format(add(new Date(date), { months: 1 }), "yyyy-MM-dd"));
-      validUntilPristine &&
-        setValidUntil(format(add(new Date(date), { months: 1 }), "yyyy-MM-dd"));
-    }
-  }, [date, payUntilPristine, validUntilPristine]);
-  const [client, setClient] = useState(null);
-  const [sections, setSections] = useState([{ title: "", rows: [], total: 0 }]);
-  const [type, setType] = useState(INVOICE);
-  const [draftId, setDraftId] = useState(undefined);
-  const [quoteId, setQuoteId] = useState(undefined);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [totals, setTotals] = useState([0]);
-  const total = totals.reduce((total, t) => total + t, 0);
-
-  const isDocumentValid = useMemo(
-    () => title && date && client && sections.length > 0,
-    [title, date, client, sections]
-  );
-  const document = useMemo(() => {
-    const base = {
-      _id: draftId,
-      date,
-      title,
-      description,
-      sections,
-      client,
-      total,
-      user,
-      type,
-    };
-    return type === INVOICE
-      ? { ...base, payUntil, quoteId }
-      : { ...base, validUntil };
-  }, [
-    draftId,
-    date,
-    title,
-    description,
-    sections,
-    client,
-    total,
-    user,
-    type,
-    validUntil,
-    payUntil,
-    quoteId,
-  ]);
-
-  useEffect(() => {
-    if (sourceDoc) {
-      const {
-        title,
-        description,
-        date,
-        client,
-        sections,
-        _id,
-        type,
-        draft,
-        validUntil,
-        payUntil,
-      } = sourceDoc;
-      const isInvoiceFromQuote = type === QUOTE && !draft;
-      title && setTitle(title);
-      description && setDescription(description);
-      date && !isInvoiceFromQuote && setDate(date);
-      client && setClient(client);
-      type && setType(isInvoiceFromQuote ? INVOICE : type);
-      if (sections) {
-        setSections(sections.map((section) => ({ ...section })));
-        setTotals(
-          sections.map((section) =>
-            section.reduce(
-              (total, { quantity, price }) => total + quantity * price
-            )
-          )
+      !dirtyFields.payUntil &&
+        setValue(
+          "payUntil",
+          format(add(new Date(date), { months: 1 }), "yyyy-MM-dd")
         );
-      }
-      _id && (isInvoiceFromQuote ? setQuoteId(_id) : setDraftId(_id));
-      if (draft) {
-        validUntil && type === QUOTE && setValidUntil(validUntil);
-        validUntil && type === QUOTE && setValidUntilPristine(false);
-        payUntil && type === INVOICE && setPayUntil(payUntil);
-        payUntil && type === INVOICE && setPayUntilPristine(false);
-      }
+      !dirtyFields.validUntil &&
+        setValue(
+          "validUntil",
+          format(add(new Date(date), { months: 1 }), "yyyy-MM-dd")
+        );
     }
-  }, [sourceDoc]);
+  }, [date, setValue, dirtyFields.validUntil, dirtyFields.payUntil]);
+
+  const type = watch("type");
+  useEffect(() => {
+    switch (type) {
+      case INVOICE:
+        unregister("validUntil");
+        break;
+      case QUOTE:
+        unregister("payUntil");
+        unregister("quoteId");
+        break;
+      default:
+        break;
+    }
+  }, [type, unregister]);
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+
+  const total = watch("total");
+  const tax = watch("user.tax");
+  const quoteId = watch("quoteId");
+  const _id = watch("_id");
+
+  const onSubmit = (document) => createDocument(document).then(onClose);
+
   return (
     <Container className="document-create py-3 h-100">
-      {!quoteId && (
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        {_id && <Form.Control type="hidden" {...register("_id")} />}
+        <Form.Control type="hidden" {...register("user", { required: true })} />
+        {type === INVOICE && source.quoteId && (
+          <Form.Control type="hidden" {...register("quoteId")} />
+        )}
         <Row>
-          <Col>
+          <Col lg="2">
             <Form.Group className="mb-3">
               <Form.Label>Type</Form.Label>
-              <ToggleButtonGroup
-                className="d-block"
-                size="md"
-                name="document-type"
-                type="radio"
-                value={type}
-                onChange={setType}
-              >
-                {[QUOTE, INVOICE].map((docType) => (
-                  <ToggleButton
-                    key={docType}
-                    id={`select-type-${docType}`}
-                    variant={
-                      (type !== docType ? "outline-" : "") +
-                      variantByState[docType]
-                    }
+              <Controller
+                name="type"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <ToggleButtonGroup
+                    className="d-block"
+                    size="md"
                     name="document-type"
-                    value={docType}
+                    type="radio"
+                    value={value}
+                    onChange={onChange}
                   >
-                    {docType}
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
+                    {(quoteId ? [INVOICE] : [QUOTE, INVOICE]).map((docType) => (
+                      <ToggleButton
+                        key={docType}
+                        id={`select-type-${docType}`}
+                        variant={
+                          (type !== docType ? "outline-" : "") +
+                          variantByState[docType]
+                        }
+                        name="document-type"
+                        value={docType}
+                      >
+                        {docType}
+                      </ToggleButton>
+                    ))}
+                  </ToggleButtonGroup>
+                )}
+              />
+            </Form.Group>
+          </Col>
+          <Col lg="4" xl="3">
+            <Input
+              register={register}
+              name="date"
+              type="date"
+              label="Le"
+              placeholder="Date"
+              className="mb-3"
+              required
+            />
+          </Col>
+          <Col lg="4" xl="3">
+            {type === QUOTE && (
+              <Input
+                register={register}
+                name="validUntil"
+                type="date"
+                label="Valide jusqu&#39;au "
+                placeholder="Date"
+                className="mb-3"
+              />
+            )}
+            {type === INVOICE && (
+              <Input
+                register={register}
+                name="payUntil"
+                type="date"
+                label="Payable jusqu&#39;au "
+                placeholder="Date"
+                className="mb-3"
+              />
+            )}
+          </Col>
+        </Row>
+        <Row>
+          <Col lg="12" xxl="8">
+            <Input
+              register={register}
+              name="title"
+              label="Pour "
+              placeholder="Prestation fournie"
+              className="mb-3"
+            />
+            <Form.Group className="mb-3">
+              <Form.Label>Description </Form.Label>
+
+              <Controller
+                name="description"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <MDEditor value={value} onChange={onChange} />
+                )}
+              />
+            </Form.Group>
+          </Col>
+
+          <Col lg="8" md="12" xl="6" xxl="4">
+            <Form.Group className="mb-3">
+              <Form.Label>À </Form.Label>
+              <Controller
+                name="client"
+                control={control}
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <SmallClientManager onChange={onChange} client={value} />
+                )}
+              />
             </Form.Group>
           </Col>
         </Row>
-      )}
-      <Row>
-        <Col lg="4" xl="3">
-          <Form.Group className="mb-3">
-            <Form.Label>Le </Form.Label>
-            <Form.Control
-              type="date"
-              value={date}
-              onChange={({ target: { value } }) => setDate(value)}
-              placeholder="Date"
-            />
-          </Form.Group>
-          {type === QUOTE && (
-            <Form.Group className="mb-3">
-              <Form.Label>Valide jusqu&#39;au </Form.Label>
-              <Form.Control
-                type="date"
-                value={validUntil}
-                onChange={({ target: { value } }) => {
-                  setValidUntilPristine(false);
-                  setValidUntil(value);
-                }}
-                placeholder="Date"
-              />
-            </Form.Group>
-          )}
-          {type === INVOICE && (
-            <Form.Group className="mb-3">
-              <Form.Label>Payable jusqu&#39;au </Form.Label>
-              <Form.Control
-                type="date"
-                value={payUntil}
-                onChange={({ target: { value } }) => {
-                  setPayUntilPristine(false);
-                  setPayUntil(value);
-                }}
-                placeholder="Date"
-              />
-            </Form.Group>
-          )}
-        </Col>
-        <Col lg="8" md="12" xl="6" xxl="4">
-          <Form.Group className="mb-3">
-            <Form.Label>À </Form.Label>
-            <SmallClientManager onChange={setClient} client={client} />
-          </Form.Group>
-        </Col>
-        <Col lg="12" xxl="5">
-          <Form.Group className="mb-3">
-            <Form.Label>Pour </Form.Label>
-            <Form.Control
-              type="text"
-              value={title}
-              onChange={({ target: { value } }) => setTitle(value)}
-              placeholder="Prestation fournie"
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Description </Form.Label>
-            <MDEditor value={description} onChange={setDescription} />
-          </Form.Group>
-        </Col>
-      </Row>
-      <div className="document-detail">
-        {sections.map((section, sectionIndex) => (
-          <DetailSection
-            key={sectionIndex}
-            section={section}
-            canDelete={sections.length > 1}
-            onChange={(newSection) =>
-              setSections((sections) =>
-                sections.map((section, index) =>
-                  sectionIndex === index ? newSection : section
-                )
-              )
-            }
-            onTotalChange={(total) =>
-              setTotals((totals) =>
-                totals.map((t, index) => (index === sectionIndex ? total : t))
-              )
-            }
-            onDelete={() =>
-              setSections((sections) =>
-                sections.filter((section, index) => sectionIndex !== index)
-              )
-            }
-            onAddNewSection={() => {
-              setSections((sections) =>
-                sections.concat([{ title: "", rows: [] }])
-              );
-              setTotals((totals) => totals.concat([0]));
-            }}
-          />
-        ))}
-      </div>
-      <Card className="mt-3 w-auto">
-        <Card.Body className="total text-end">
-          <div>
-            <b>Total HT </b>
-            {total}€
-          </div>
-          <div>
-            <b>Total TTC </b>
-            {total}€
-          </div>
-        </Card.Body>
-        <Card.Footer>
-          <Row className="justify-content-md-end">
-            <Col md="auto">
-              <Button
-                variant={type === INVOICE ? "success" : "primary"}
-                size="lg"
-                title={type === INVOICE ? "Créer la facture" : "Créer le devis"}
-                className="me-3"
-                disabled={!isDocumentValid}
-                onClick={() =>
-                  createDocument({
-                    ...document,
-                    draft: false,
-                  }).then(() => onClose())
-                }
-              >
-                <FaCheck />
-              </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                title="Sauvegarder le brouillon"
-                className="me-3"
-                onClick={() =>
-                  createDocument({
-                    ...document,
-                    draft: true,
-                  }).then(() => onClose())
-                }
-              >
-                <FaSave />
-              </Button>
-              <Button
-                variant="warning"
-                size="lg"
-                title="Annuler"
-                onClick={() => setShowCancelModal(true)}
-              >
-                <FaTimes />
-              </Button>
-              <ConfirmModal
-                show={showCancelModal}
-                onConfirm={onClose}
-                onCancel={() => setShowCancelModal(false)}
-              >
-                <p>
-                  Êtes-vous certains de vouloir annuler
-                  {type === INVOICE ? " cette facture" : " ce devis"} ?
-                </p>
-              </ConfirmModal>
-            </Col>
-          </Row>
-        </Card.Footer>
-      </Card>
+        <Sections {...{ control, register, setValue, getValues }} />
+        <Card className="mt-3 w-auto">
+          <Card.Body className="total text-end">
+            <div>
+              <b>Total HT </b>
+              {currency.format(total)}
+            </div>
+            <div>
+              <b>Total TTC </b>
+              {currency.format(total + total * tax)}
+            </div>
+          </Card.Body>
+          <Card.Footer>
+            <Row className="justify-content-md-end">
+              <Col md="auto">
+                <Button
+                  variant={variantByState[type]}
+                  size="lg"
+                  title={
+                    type === INVOICE ? "Créer la facture" : "Créer le devis"
+                  }
+                  className="me-3"
+                  disabled={!isValid}
+                  onClick={() => onSubmit({ ...getValues(), draft: false })}
+                >
+                  <FaCheck />
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  title="Sauvegarder le brouillon"
+                  className="me-3"
+                  onClick={() => onSubmit({ ...getValues(), draft: true })}
+                >
+                  <FaSave />
+                </Button>
+                <Button
+                  variant="warning"
+                  size="lg"
+                  title="Annuler"
+                  onClick={() => setShowCancelModal(true)}
+                >
+                  <FaTimes />
+                </Button>
+                <ConfirmModal
+                  show={showCancelModal}
+                  onConfirm={onClose}
+                  onCancel={() => setShowCancelModal(false)}
+                >
+                  <p>
+                    Êtes-vous certains de vouloir annuler
+                    {type === INVOICE ? " cette facture" : " ce devis"} ?
+                  </p>
+                </ConfirmModal>
+              </Col>
+            </Row>
+          </Card.Footer>
+        </Card>
+      </Form>
     </Container>
   );
 }

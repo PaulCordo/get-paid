@@ -12,7 +12,7 @@ import "./default.scss";
 
 export function Invoice({
   document: {
-    number,
+    publicId,
     user,
     type = INVOICE,
     date,
@@ -37,7 +37,7 @@ export function Invoice({
           <label>{type} </label>
           <span className="fw-bold ms-2">
             {type === INVOICE && "#"}
-            {number}
+            {publicId}
           </span>
         </h4>
         <div className="w-100 d-flex align-items-start justify-content-between mt-3">

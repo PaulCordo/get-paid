@@ -4,8 +4,9 @@ import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { FaCheck, FaSave, FaTimes } from "react-icons/fa";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
+import { Input, Select } from "./Form";
 import { templates, defaultTemplate } from "./templates";
 
 const defaultClient = {
@@ -46,13 +47,9 @@ export function AccountEditor({
   return (
     <Form onSubmit={handleSubmit(onSave)}>
       <Form.Control
-        required
-        type="text"
-        {...register("id_", { required: true })}
+        type="hidden"
+        {...register("_id", { required: true })}
         id="id"
-        disabled={isEditingUser}
-        readOnly={isEditingUser}
-        className="visually-hidden"
       />
       {mini ? (
         <MiniAccountForm
@@ -108,9 +105,7 @@ const AccountForm = ({
   <>
     <section className="mb-4">
       <Row>
-        <Col>
-          <h2>Identification</h2>
-        </Col>
+        <Col as="h2">Identification</Col>
         <Col sm="auto">
           <AccountFormButtons
             size="lg"
@@ -121,162 +116,149 @@ const AccountForm = ({
         </Col>
       </Row>
       <Row>
-        <Form.Group as={Col} sm={12} md={5} className="mb-3">
-          <Form.Label htmlFor="name">Nom de la société</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            {...register("name", { required: true })}
-            id="name"
-            placeholder="Nom"
-            disabled={isEditingUser}
-            readOnly={isEditingUser}
-          />
-        </Form.Group>
-        <Form.Group
+        <Input
+          as={Col}
+          sm={12}
+          md={5}
+          className="mb-3"
+          name="name"
+          label="Nom de la société"
+          required
+          placeholder="Nom"
+          disabled={isEditingUser}
+          register={register}
+        />
+        <Select
           as={Col}
           sm={4}
           md={{ span: 2, offset: 1 }}
           className="mb-3"
-        >
-          <Form.Label htmlFor="idType">Type</Form.Label>
-          <Controller
-            name="idType"
-            control={control}
-            render={({ field }) => (
-              <Form.Select
-                {...field}
-                id="idType"
-                disabled={isEditingUser}
-                readOnly={isEditingUser}
-              >
-                {idTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </Form.Select>
-            )}
-          />
-        </Form.Group>
-        <Form.Group as={Col} sm={8} md={4} className="mb-3">
-          <Form.Label htmlFor="idNumber">Immatriculation</Form.Label>
-          <Form.Control
-            required
-            type="number"
-            {...register("idNumber", { required: true })}
-            id="idNumber"
-            placeholder="Numéro structure"
-            disabled={isEditingUser}
-            readOnly={isEditingUser}
-          />
-        </Form.Group>
+          name="idType"
+          label="Type"
+          disabled={isEditingUser}
+          options={idTypes.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+          control={control}
+        />
+        <Input
+          as={Col}
+          sm={8}
+          md={4}
+          className="mb-3"
+          name="idNumber"
+          type="number"
+          label="Immatriculation"
+          required
+          placeholder="Numéro structure"
+          disabled={isEditingUser}
+          register={register}
+        />
       </Row>
       <Row>
-        <Form.Group as={Col} md={6} className="mb-3">
-          <Form.Label htmlFor="tel">Téléphone</Form.Label>
-          <Form.Control
-            type="tel"
-            id="tel"
-            {...register("tel")}
-            placeholder="+33 6 66 66 66 66"
-          />
-        </Form.Group>
-        <Form.Group as={Col} md={6} className="mb-3">
-          <Form.Label htmlFor="email">Courriel</Form.Label>
-          <Form.Control
-            type="email"
-            id="email"
-            {...register("email")}
-            placeholder="gatsby@lemagnifique.com"
-          />
-        </Form.Group>
+        <Input
+          as={Col}
+          md={6}
+          className="mb-3"
+          name="tel"
+          type="tel"
+          label="Téléphone"
+          placeholder="+33 6 66 66 66 66"
+          register={register}
+        />
+        <Input
+          as={Col}
+          md={6}
+          className="mb-3"
+          name="email"
+          type="email"
+          label="Courriel"
+          placeholder="gatsby@lemagnifique.com"
+          register={register}
+        />
       </Row>
     </section>
     <section className="mb-4">
       <h2>Adresse</h2>
       <Row>
-        <Form.Group as={Col} md={8} className="mb-3">
-          <Form.Label htmlFor="addressLine1">Adresse ligne 1</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            id="addressLine1"
-            {...register("addressLine1", { required: true })}
-            placeholder="Rue de Notre Dame"
-          />
-        </Form.Group>
+        <Input
+          as={Col}
+          md={8}
+          className="mb-3"
+          name="addressLine1"
+          required
+          label="Adresse ligne 1"
+          placeholder="Rue de Notre Dame"
+          register={register}
+        />
       </Row>
       <Row>
-        <Form.Group as={Col} md={8} className="mb-3">
-          <Form.Label htmlFor="addressLine2">Adresse ligne 2</Form.Label>
-          <Form.Control
-            type="text"
-            id="addressLine2"
-            {...register("addressLine2")}
-            placeholder="Optionnel"
-          />
-        </Form.Group>
+        <Input
+          as={Col}
+          md={8}
+          className="mb-3"
+          name="addressLine2"
+          label="Adresse ligne 2"
+          placeholder="Optionnel"
+          register={register}
+        />
       </Row>
       <Row>
-        <Form.Group as={Col} sm={5} md={3} className="mb-3">
-          <Form.Label htmlFor="zipCode">Code postal</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            id="zipCode"
-            {...register("zipCode", { required: true })}
-            placeholder="75001"
-          />
-        </Form.Group>
-        <Form.Group
+        <Input
+          as={Col}
+          sm={5}
+          md={3}
+          className="mb-3"
+          name="zipCode"
+          required
+          label="Code postal"
+          placeholder="75001"
+          register={register}
+        />
+        <Input
           as={Col}
           md={{ offset: 1, span: 4 }}
           sm={{ offset: 1, span: 6 }}
           className="mb-3"
-        >
-          <Form.Label htmlFor="city">Ville</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            id="city"
-            {...register("city", { required: true })}
-            placeholder="Paris"
-          />
-        </Form.Group>
+          name="city"
+          required
+          label="Ville"
+          placeholder="Paris"
+          register={register}
+        />
       </Row>
     </section>
     {user && (
       <section className="mb-4">
         <h2>Paramètres</h2>
         <Row>
-          <Form.Group as={Col} md={3} className="mb-3">
-            <Form.Label htmlFor="tax">% TVA applicable</Form.Label>
-            <Form.Control
-              type="number"
-              id="tax"
-              {...register("tax")}
-              placeholder="ex : 20"
-            />
-          </Form.Group>
+          <Input
+            as={Col}
+            md={3}
+            className="mb-3"
+            name="tax"
+            type="number"
+            label="% TVA applicable"
+            placeholder="ex : 20"
+            register={register}
+          />
         </Row>
         <Row>
-          <Form.Group as={Col} md={6} className="mb-3">
-            <Form.Label htmlFor="template">Thème des documents</Form.Label>
-            <Controller
-              name="template"
-              control={control}
-              render={({ field }) => (
-                <Form.Select {...field} id="template">
-                  {templates.map(({ name }) => (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  ))}
-                </Form.Select>
-              )}
-            />
-          </Form.Group>
+          <Select
+            as={Col}
+            md={6}
+            className="mb-3"
+            name="template"
+            label="Thème des documents"
+            options={templates.map(({ name }) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+            control={control}
+          />
         </Row>
       </section>
     )}
@@ -293,132 +275,133 @@ const MiniAccountForm = ({
 }) => (
   <>
     <Row>
-      <Form.Group as={Col} className="mb-1">
-        <Form.Control
-          required
-          type="text"
-          {...register("name", { required: true })}
-          placeholder="Nom"
-          disabled={isEditingUser}
-          plaintext={isEditingUser}
-          readOnly={isEditingUser}
-        />
-      </Form.Group>
+      <Input
+        as={Col}
+        className="mb-1"
+        name="name"
+        required
+        placeholder="Nom"
+        disabled={isEditingUser}
+        register={register}
+      />
     </Row>
     <Row>
-      <Form.Group as={Col} md={4} className="mb-1">
-        <Form.Control
-          required
-          type="text"
-          {...register("idType", { required: true })}
-          placeholder="Ex: SIRET, RNA"
-          disabled={isEditingUser}
-          plaintext={isEditingUser}
-          readOnly={isEditingUser}
-        />
-      </Form.Group>
-      <Form.Group as={Col} md={8} className="mb-1">
-        <Form.Control
-          required
-          type="number"
-          {...register("idNumber", { required: true })}
-          placeholder="Numéro structure"
-          disabled={isEditingUser}
-          plaintext={isEditingUser}
-          readOnly={isEditingUser}
-        />
-      </Form.Group>
+      <Select
+        as={Col}
+        md={4}
+        className="mb-1"
+        name="idType"
+        disabled={isEditingUser}
+        options={idTypes.map((type) => (
+          <option key={type} value={type}>
+            {type}
+          </option>
+        ))}
+        control={control}
+      />
+      <Input
+        as={Col}
+        md={8}
+        className="mb-1"
+        name="idNumber"
+        type="number"
+        required
+        placeholder="Numéro structure"
+        disabled={isEditingUser}
+        register={register}
+      />
     </Row>
     <Row>
-      <Form.Group as={Col} className="mb-1">
-        <Form.Control
-          required
-          type="text"
-          {...register("addressLine1", { required: true })}
-          placeholder="Adresse ligne 1"
-        />
-      </Form.Group>
+      <Input
+        as={Col}
+        className="mb-1"
+        name="addressLine1"
+        required
+        placeholder="Adresse ligne 1"
+        register={register}
+      />
     </Row>
     <Row>
-      <Form.Group as={Col} className="mb-1">
-        <Form.Control
-          type="text"
-          {...register("addressLine2")}
-          placeholder="Adresse ligne 2"
-        />
-      </Form.Group>
+      <Input
+        as={Col}
+        className="mb-1"
+        name="addressLine2"
+        placeholder="Adresse ligne 2"
+        register={register}
+      />
     </Row>
     <Row>
-      <Form.Group as={Col} md={5} className="mb-1">
-        <Form.Control
-          required
-          type="text"
-          {...register("zipCode", { required: true })}
-          placeholder="Code postal"
-        />
-      </Form.Group>
-      <Form.Group as={Col} md={{ offset: 1, span: 6 }} className="mb-1">
-        <Form.Control
-          required
-          type="text"
-          {...register("city", { required: true })}
-          placeholder="Ville"
-        />
-      </Form.Group>
+      <Input
+        as={Col}
+        md={5}
+        className="mb-1"
+        name="zipCode"
+        required
+        placeholder="Code postal"
+        register={register}
+      />
+      <Input
+        as={Col}
+        md={{ offset: 1, span: 6 }}
+        className="mb-1"
+        name="city"
+        required
+        placeholder="Ville"
+        register={register}
+      />
     </Row>
     <Row>
-      <Form.Group as={Col} className="mb-1">
-        <Form.Control
-          type="tel"
-          {...register("tel")}
-          placeholder="Numéro de téléphone"
-        />
-      </Form.Group>
+      <Input
+        as={Col}
+        className="mb-1"
+        name="tel"
+        type="tel"
+        placeholder="Numéro de téléphone"
+        register={register}
+      />
     </Row>
     <Row>
-      <Form.Group as={Col} className="mb-1">
-        <Form.Control
-          type="email"
-          {...register("email")}
-          placeholder="Adresse email"
-        />
-      </Form.Group>
+      <Input
+        as={Col}
+        className="mb-1"
+        name="email"
+        type="email"
+        placeholder="Adresse email"
+        register={register}
+      />
     </Row>
     {user && (
-      <>
-        <Form.Group as={Col} className="mb-1 mt-3">
-          <Form.Label htmlFor="tax">% TVA applicable</Form.Label>
-          <Form.Control
-            type="number"
-            id="tax"
-            {...register("tax")}
-            placeholder="ex : 20"
-          />
-        </Form.Group>
-        <Form.Group as={Col} className="mb-1">
-          <Form.Label htmlFor="template">Thème des documents</Form.Label>
-          <Controller
-            name="template"
-            control={control}
-            render={({ field }) => (
-              <Form.Select {...field} id="template">
-                {templates.map(({ name }) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </Form.Select>
-            )}
-          />
-        </Form.Group>
-        <AccountFormButtons
-          size="sm"
-          className="float-end"
-          onCancel={onCancel}
-          isEditing={isEditing}
-          hideCancel={hideCancel}
+      <Row>
+        <Input
+          as={Col}
+          className="mb-1 mt-3"
+          name="tax"
+          type="number"
+          label="% TVA applicable"
+          placeholder="ex : 20"
+          register={register}
         />
-      </>
+        <Select
+          as={Col}
+          md={6}
+          className="mb-1"
+          name="template"
+          label="Thème des documents"
+          options={templates.map(({ name }) => (
+            <option key={name} value={name}>
+              {name}
+            </option>
+          ))}
+          control={control}
+        />
+      </Row>
     )}
+    <AccountFormButtons
+      size="sm"
+      className="float-end"
+      onCancel={onCancel}
+      isEditing={isEditing}
+      hideCancel={hideCancel}
+    />
   </>
 );

@@ -11,10 +11,13 @@ module.exports = (mainWindow) => {
   });
 
   ipcMain.on("user-create", (event, user) => {
-    usersDb.insert(user, (err, user) => {
-      if (err) console.error("user-create", err);
-      event.reply("user-create", err, user);
-    });
+    usersDb.insert(
+      { ...user, dbVersions: "v0.0.1", numberFormat: "{YYYY}{NNN}" },
+      (err, user) => {
+        if (err) console.error("user-create", err);
+        event.reply("user-create", err, user);
+      }
+    );
   });
   ipcMain.on("user-upsert", (event, user) => {
     usersDb.update({ _id: user._id }, user, { upsert: true }, (err) => {
@@ -32,14 +35,14 @@ module.exports = (mainWindow) => {
     });
   });
 
-  let userDbs;
+  let sessionContext;
   ipcMain.on("open-session", (event, _id) => {
     usersDb.findOne({ _id }, (err, user) => {
       if (err || !_id) {
         console.error("open-session find user: ", err);
         event.reply("open-session", err);
       } else {
-        userDbs = {
+        sessionContext = {
           documents: new Datastore({
             filename: path.join(dbPath, _id + ".documents.db"),
             autoload: true,
@@ -48,27 +51,99 @@ module.exports = (mainWindow) => {
             filename: path.join(dbPath, _id + ".clients.db"),
             autoload: true,
           }),
+          yearConfigs: openYearConfigsDb(_id),
+          user,
         };
-
-        userDbs.documents.find({}, (err, documents) => {
-          if (err) {
-            console.error("open-session open documents: ", err);
-            event.reply("open-session", err);
-          } else {
-            userDbs.clients.find({}, (err, clients) => {
+        // indexes
+        sessionContext.documents.ensureIndex(
+          { fieldName: "date" },
+          (err) =>
+            err &&
+            console.error("open-session ensure documents year index: ", err)
+        );
+        sessionContext.documents.ensureIndex(
+          { fieldName: "type" },
+          (err) =>
+            err &&
+            console.error("open-session ensure documents type index: ", err)
+        );
+        // migration from previous versions
+        new Promise((resolve, reject) => {
+          if (!user.dbVersions) {
+            // remove old index on document number as unique constraint is on both type, year and number
+            sessionContext.documents.removeIndex(
+              "number",
+              (err) =>
+                err &&
+                console.error("open-session remove documents index: ", err)
+            );
+            user.dbVersions = "v0.0.1";
+            user.numberFormat = "{YYYY}{NNN}";
+            sessionContext.documents.find({}, (err, documents) => {
               if (err) {
-                console.error("open-session open clients: ", err);
+                console.error(
+                  "open-session update db version open documents: ",
+                  err
+                );
               }
-              event.reply("open-session", err, { user, documents, clients });
+              Promise.all(
+                documents
+                  .filter(({ number }) => number)
+                  .map(
+                    (document) =>
+                      new Promise((resolve, reject) =>
+                        sessionContext.documents.update(
+                          { _id: document._id },
+                          {
+                            ...document,
+                            number: parseInt(
+                              String(document.number).slice(-3),
+                              10
+                            ),
+                            publicId: String(document.number),
+                          },
+                          (err) => (err ? reject(err) : resolve())
+                        )
+                      )
+                  )
+              ).then(() =>
+                usersDb.update({ _id: user._id }, user, (err) => {
+                  if (err) {
+                    console.error(
+                      `update db version to ${user.dbVersions} `,
+                      err
+                    );
+                    reject(err);
+                  } else {
+                    resolve();
+                  }
+                })
+              );
             });
+          } else {
+            resolve();
           }
-        });
+        }).then(() =>
+          sessionContext.documents.find({}, (err, documents) => {
+            if (err) {
+              console.error("open-session open documents: ", err);
+              event.reply("open-session", err);
+            } else {
+              sessionContext.clients.find({}, (err, clients) => {
+                if (err) {
+                  console.error("open-session open clients: ", err);
+                }
+                event.reply("open-session", err, { user, documents, clients });
+              });
+            }
+          })
+        );
       }
     });
   });
 
   ipcMain.on("client-list", (event) => {
-    userDbs.clients.find({}, (err, clients = []) => {
+    sessionContext.clients.find({}, (err, clients = []) => {
       if (err) {
         console.error("client-list-error", err);
       }
@@ -77,7 +152,7 @@ module.exports = (mainWindow) => {
   });
 
   ipcMain.on("client-upsert", (event, client) => {
-    userDbs.clients.update(
+    sessionContext.clients.update(
       { _id: client._id },
       client,
       { upsert: true },
@@ -91,7 +166,7 @@ module.exports = (mainWindow) => {
   });
 
   ipcMain.on("client-remove", (event, client) => {
-    userDbs.clients.remove({ _id: client._id }, {}, (err) => {
+    sessionContext.clients.remove({ _id: client._id }, {}, (err) => {
       if (err) {
         console.error("client-remove", err);
       }
@@ -100,7 +175,7 @@ module.exports = (mainWindow) => {
   });
 
   ipcMain.on("document-list", (event) => {
-    userDbs.documents.find({}, (err, documents = []) => {
+    sessionContext.documents.find({}, (err, documents = []) => {
       if (err) {
         console.error("document-list-error", err);
       }
@@ -109,61 +184,67 @@ module.exports = (mainWindow) => {
   });
 
   function insertDocument(event, document) {
-    if (document.draft) {
-      userDbs.documents.insert(document, (err) => {
-        if (err) {
-          console.error("document-save", err);
-        }
-        event.reply("document-save", err, document);
-      });
-    } else {
-      const documentYear = +document.date.slice(0, 4);
-      userDbs.documents
-        .find({
-          number: { $lt: (documentYear + 1) * 1000, $gte: documentYear * 1000 },
-          type: document.type,
-        })
-        .sort({ number: -1 })
-        .limit(1)
-        .exec((err, [{ number } = {}]) => {
-          document.number =
-            !number || err ? documentYear * 1000 + 1 : number + 1;
-          userDbs.documents.insert(document, (err) => {
-            if (err) {
-              console.error("document-save", err);
-            }
-            event.reply("document-save", err, document);
-          });
-        });
-    }
+    sessionContext.documents.insert(document, (err) => {
+      if (err) {
+        console.error("document-save", err);
+      }
+      event.reply("document-save", err, document);
+    });
   }
 
   ipcMain.on("document-save", (event, document) => {
-    if (document._id) {
-      // try to update an existing draft
-      userDbs.documents.update(
-        { _id: document._id, draft: true },
-        document,
-        (err, numAffected) => {
-          if (err) {
-            console.error("document-save", err);
-            event.reply("document-save", err);
+    new Promise((resolve) => {
+      if (!document.draft) {
+        const documentYear = document.date.slice(0, 4);
+        sessionContext.documents
+          .find({
+            date: {
+              $lt: (Number(documentYear) + 1).toString().padStart(4, "0"),
+              $gte: documentYear,
+            },
+            type: document.type,
+          })
+          .sort({ number: -1 })
+          .limit(1)
+          .exec((err, [{ number } = {}]) => {
+            document.number = !number || err ? 1 : number + 1;
+            document.publicId = getDocumentPublicId(
+              sessionContext.user.numberFormat,
+              documentYear,
+              document.number
+            );
+            resolve(document);
+          });
+      } else {
+        resolve(document);
+      }
+    }).then((document) => {
+      if (document._id) {
+        // try to update an existing draft
+        sessionContext.documents.update(
+          { _id: document._id, draft: true },
+          document,
+          (err, numAffected) => {
+            if (err) {
+              console.error("document-save", err);
+              event.reply("document-save", err);
+            }
+            if (numAffected) {
+              event.reply("document-save", err, document);
+            } else {
+              insertDocument(event, document);
+            }
           }
-          if (numAffected) {
-            event.reply("document-save", err, document);
-          } else {
-            insertDocument(event, document);
-          }
-        }
-      );
-    } else {
-      insertDocument(event, document);
-    }
+        );
+      } else {
+        insertDocument(event, document);
+      }
+    });
   });
 
   ipcMain.on("document-delete", (event, document) => {
     document._id && document.draft
-      ? userDbs.documents.remove(
+      ? sessionContext.documents.remove(
           { _id: document._id, draft: true },
           {},
           (err, numRemoved) => {
@@ -205,3 +286,35 @@ module.exports = (mainWindow) => {
       });
   });
 };
+
+function openYearConfigsDb(userId) {
+  const yearConfigsDb = new Datastore({
+    filename: path.join(dbPath, userId + ".yearConfig.db"),
+    autoload: true,
+  });
+  yearConfigsDb.ensureIndex(
+    { fieldName: "year", unique: true },
+    (err) =>
+      err && console.error("openYearConfig ensure yearConfig index: ", err)
+  );
+  return yearConfigsDb;
+}
+
+function getDocumentPublicId(formatString, year, number) {
+  number = String(number);
+  const numberFormatIdentifier = /\{N+\}/g;
+  year = String(parseInt(year, 10));
+  const yearFormatIdentifier = /\{Y+\}/g;
+  return formatString
+    .replaceAll(numberFormatIdentifier, (match) =>
+      number.padStart(match.length - 2, "0")
+    )
+    .replaceAll(yearFormatIdentifier, (match) => {
+      const charCount = match.length - 2;
+      if (charCount === 2) {
+        // special case, return only the last two digits
+        return year.slice(-2);
+      }
+      return year.padStart(charCount, "0");
+    });
+}
