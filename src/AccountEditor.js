@@ -114,7 +114,7 @@ export function AccountEditor({
             md={4}
             className="mb-3"
             name="idNumber"
-            type="number"
+            type="text"
             label="Immatriculation"
             required
             placeholder="Numéro structure"
@@ -284,7 +284,7 @@ export function SmallAccountEditor({
           md={8}
           className="mb-1"
           name="idNumber"
-          type="number"
+          type="text"
           required
           placeholder="Numéro structure"
           readOnly={isEditingUser}
@@ -377,7 +377,7 @@ export function SmallAccountEditor({
         </Row>
       )}
       <Row>
-        <Col sm="auto" className="text-end">
+        <Col sm="auto" className="ms-auto text-end">
           <Button
             onClick={handleSubmit(onSave)}
             variant="primary"
