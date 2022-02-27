@@ -9,13 +9,13 @@ import {
 } from "../documentStates";
 const { INVOICE, QUOTE, DRAFT } = documentStates;
 
+//TODO: filter out quotes that already created an invoice
 export function stateFilter(rows, id, value) {
-  return rows.filter(
-    ({ original: document }) => getDocumentState(document) === value
+  const defaultView = value === "default";
+  return rows.filter(({ original: document }) =>
+    defaultView ? true : getDocumentState(document) === value
   );
 }
-
-stateFilter.autoRemove = (val) => !val || val === "tous";
 
 export function StateFilter({ column: { setFilter, filterValue } }) {
   return (
@@ -29,7 +29,7 @@ export function StateFilter({ column: { setFilter, filterValue } }) {
         variant={
           (filterValue && filterValue !== "tous" ? "outline-" : "") + "dark"
         }
-        value="tous"
+        value="default"
         id="document-state-filter-tous"
       >
         Tous

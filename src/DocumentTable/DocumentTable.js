@@ -75,6 +75,12 @@ export function DocumentTable() {
             desc: true,
           },
         ],
+        filters: [
+          {
+            id: "publicId",
+            value: "default",
+          },
+        ],
       },
     },
     useFilters,
