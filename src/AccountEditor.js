@@ -225,11 +225,65 @@ export function AccountEditor({
               control={control}
             />
           </Row>
+          <Row>
+            <Input
+              as={Col}
+              md={5}
+              className="mb-3"
+              name="quoteFormat"
+              type="text"
+              label="Numérotation devis"
+              tooltip={<UserFormatTooltipText documentName="devis" />}
+              placeholder="D{YYYY}-{NNN}"
+              register={register}
+            />
+            <Input
+              as={Col}
+              md={5}
+              className="mb-3"
+              name="invoiceFormat"
+              type="text"
+              label="Numérotation factures"
+              tooltip={<UserFormatTooltipText documentName="factures" />}
+              placeholder="{YYYY}{NNN}"
+              register={register}
+            />
+          </Row>
         </section>
       )}
     </Form>
   );
 }
+
+const UserFormatTooltipText = ({ documentName }) => (
+  <div className="text-start p-2">
+    <p>
+      Modifiez ici comment les numéros de vos {documentName} seront formattés.
+      <br />
+      Ceux ci devront au moins contenir un code relatif à l&lsquo;année en cours
+      ainsi qu&lsquo;un autre ajoutant la numérotation. Ces codes sont toujours
+      entourés d&lsquo;accolades {"{}"} :
+    </p>
+    <dl>
+      <dt>{"{YYYY}, {YYY} ou {Y}"}</dt>
+      <dd>
+        Ajoute l&lsquo;année en cours à 4 chiffres, ex :{" "}
+        {new Date().getFullYear()}
+      </dd>
+      <dt>{"{YY}"}</dt>
+      <dd>
+        Ajoute les deux derniers chiffres de l&lsquo;année en cours, ex :{" "}
+        {String(new Date().getFullYear()).slice(-2)}
+      </dd>
+      <dt>{"{NNNN}, {NNN}, {NN} ou {N}"}</dt>
+      <dd>
+        Ajoute le numéro du document en cours. Le nombre de N détermine le
+        nombre de chiffres à afficher. ex : {"{NNNN}"} donnera 0001 et {"{N}"}{" "}
+        donnera 1 (mais affichera plus de chiffre si nécessaire)
+      </dd>
+    </dl>
+  </div>
+);
 
 export function SmallAccountEditor({
   account = {},
@@ -351,30 +405,55 @@ export function SmallAccountEditor({
         />
       </Row>
       {user && (
-        <Row className="mt-2">
-          <Input
-            as={Col}
-            className="mb-1"
-            name="tax"
-            type="number"
-            label="% TVA applicable"
-            placeholder="ex : 20"
-            register={register}
-          />
-          <Select
-            as={Col}
-            md={6}
-            className="mb-1"
-            name="template"
-            label="Thème des documents"
-            options={templates.map(({ name }) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-            control={control}
-          />
-        </Row>
+        <>
+          <Row className="mt-2">
+            <Input
+              as={Col}
+              className="mb-1"
+              name="tax"
+              type="number"
+              label="% TVA applicable"
+              placeholder="ex : 20"
+              register={register}
+            />
+            <Select
+              as={Col}
+              md={6}
+              className="mb-1"
+              name="template"
+              label="Thème des documents"
+              options={templates.map(({ name }) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+              control={control}
+            />
+          </Row>
+
+          <Row>
+            <Input
+              as={Col}
+              md={5}
+              className="mb-3"
+              name="quoteFormat"
+              type="text"
+              label="Numérotation devis"
+              placeholder="D{YYYY}-{NNN}"
+              register={register}
+            />
+            <Input
+              as={Col}
+              md={5}
+              className="mb-3"
+              name="invoiceFormat"
+              type="text"
+              label="Numérotation factures"
+              placeholder="{YYYY}{NNN}"
+              register={register}
+            />
+          </Row>
+        </>
       )}
       <Row>
         <Col sm="auto" className="ms-auto text-end">

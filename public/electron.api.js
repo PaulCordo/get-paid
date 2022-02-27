@@ -2,6 +2,7 @@ const { app, ipcMain, dialog } = require("electron");
 const path = require("path");
 const Datastore = require("nedb");
 const fs = require("fs");
+const { INVOICE } = require("../src/documentTypes");
 const dbPath = path.join(app.getPath("appData"), "get-paid", "data");
 
 module.exports = (mainWindow) => {
@@ -24,7 +25,7 @@ module.exports = (mainWindow) => {
       if (err) {
         console.error("user-upsert", err);
       }
-      event.reply("user-upsert", err);
+      event.reply("user-upsert", err, user);
     });
   });
 
@@ -78,7 +79,8 @@ module.exports = (mainWindow) => {
                 console.error("open-session remove documents index: ", err)
             );
             user.dbVersions = "v0.0.1";
-            user.numberFormat = "{YYYY}{NNN}";
+            user.quoteFormat = "D{YYYY}-{NNN}";
+            user.invoiceFormat = "{YYYY}{NNN}";
             sessionContext.documents.find({}, (err, documents) => {
               if (err) {
                 console.error(
@@ -208,8 +210,12 @@ module.exports = (mainWindow) => {
           .limit(1)
           .exec((err, [{ number } = {}]) => {
             document.number = !number || err ? 1 : number + 1;
+            const format =
+              document.type === INVOICE
+                ? sessionContext.user.invoiceFormat
+                : sessionContext.user.quoteFormat;
             document.publicId = getDocumentPublicId(
-              sessionContext.user.numberFormat,
+              format,
               documentYear,
               document.number
             );
