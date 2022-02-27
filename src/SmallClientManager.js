@@ -36,16 +36,6 @@ export function SmallClientManager({ client, onChange = () => {} }) {
       <div className="mt-3">
         <Button
           className="me-3"
-          variant="primary"
-          onClick={() => {
-            onChange(null);
-            setClientEdit(true);
-          }}
-        >
-          <FaPlus />
-        </Button>
-        <Button
-          className="me-3"
           variant="secondary"
           onClick={() => {
             onChange(null);
@@ -61,6 +51,16 @@ export function SmallClientManager({ client, onChange = () => {} }) {
           }}
         >
           <FaEdit />
+        </Button>
+        <Button
+          className="me-3"
+          variant="primary"
+          onClick={() => {
+            onChange(null);
+            setClientEdit(true);
+          }}
+        >
+          <FaPlus />
         </Button>
         <Button variant="danger" onClick={() => setShowClientDeleteModal(true)}>
           <FaTrashAlt />
