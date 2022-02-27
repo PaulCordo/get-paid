@@ -29,7 +29,6 @@ export function DocumentTable() {
       {
         Header: "Identifiant",
         accessor: "publicId",
-        disableSortBy: true,
         className: "text-center",
         Filter: StateFilter,
         filter: stateFilter,
