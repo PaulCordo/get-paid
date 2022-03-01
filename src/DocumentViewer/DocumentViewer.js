@@ -22,7 +22,7 @@ export function DocumentViewer({ document, actions = false }) {
       ref={documentViewerRef}
     >
       {actions && (
-        <div className="py-3 mb-3 w-100">
+        <div className="py-3 mb-3 align-self-start">
           <DocumentActionButtons
             document={document}
             canView={false}
