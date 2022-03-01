@@ -17,6 +17,7 @@ import { SessionContext } from "../SessionContext";
 import { ClientCell } from "./ClientCell";
 import { ActionsCell } from "./ActionsCell";
 import { DateCell } from "./DateCell";
+import { TotalCell } from "./TotalCell";
 import { dateOrderer } from "./dateOrderer";
 import { GlobalFilter } from "./GlobalFilter";
 import { StateFilter, stateFilter } from "./StateFilter";
@@ -43,9 +44,10 @@ export function DocumentTable() {
         accessor: "title",
       },
       {
-        Header: "Total",
+        Header: "Total TTC",
         id: "total",
-        accessor: ({ total }) => total + "€",
+        accessor: "total",
+        Cell: TotalCell,
       },
       {
         Header: "Date",
