@@ -48,7 +48,7 @@ export function DocumentActionsProvider({
         !tabs.some((tab) => tab.key === key)
           ? tabs.concat([
               {
-                title: document?.number ?? document?.date,
+                title: document?.publicId,
                 key,
                 state: getDocumentState(document),
                 component: (

@@ -27,7 +27,7 @@ const emptyDocument = {
   date: format(new Date(), "yyyy-MM-dd"),
   client: null,
   sections: [
-    { title: "", rows: [{ name: "", price: 0, quantity: 0 }], total: 0 },
+    { name: "", rows: [{ name: "", price: 0, quantity: 0 }], total: 0 },
   ],
   total: 0,
   type: INVOICE,
@@ -261,8 +261,12 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
               {currency.format(total)}
             </div>
             <div>
+              <b>TVA {tax}% </b>
+              {currency.format((total * tax) / 100)}
+            </div>
+            <div>
               <b>Total TTC </b>
-              {currency.format(total + total * tax)}
+              {currency.format(total + (total * tax) / 100)}
             </div>
           </Card.Body>
           <Card.Footer>

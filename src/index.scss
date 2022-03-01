@@ -4,8 +4,9 @@ $tooltip-max-width: 450px;
 html,
 body,
 #root {
-  height: 100%;
+  height: auto;
   width: 100%;
+  -webkit-print-color-adjust: exact;
 }
 
 body {
@@ -88,7 +89,7 @@ input[type="number"] {
 @media print {
   body {
     min-width: 21cm;
-    min-height: 29cm;
+    min-height: 29.7cm;
     margin: 0;
   }
   .container {
