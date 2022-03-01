@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import Table from "react-bootstrap/Table";
-import MDEditor from "@uiw/react-md-editor";
+import ReactMarkdown from "react-markdown";
 
 import { AccountDisplay } from "../../AccountDisplay";
 import { INVOICE, QUOTE } from "../../documentTypes";
@@ -57,7 +57,7 @@ export function Invoice({
               {description && (
                 <div>
                   <label>Description </label>
-                  <MDEditor.Markdown source={description} />
+                  <ReactMarkdown>{description}</ReactMarkdown>
                 </div>
               )}
               {type === QUOTE && (
