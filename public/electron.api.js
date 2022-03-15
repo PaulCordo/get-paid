@@ -5,6 +5,14 @@ const fs = require("fs");
 const { INVOICE } = require("../src/documentTypes");
 const dbPath = path.join(app.getPath("appData"), "get-paid", "data");
 
+function addUserDefaults(user) {
+  user.dbVersions = "v0.0.2";
+  user.quoteFormat = user.quoteFormat ?? "D{YYYY}-{NNN}";
+  user.invoiceFormat = user.invoiceFormat ?? "{YYYY}{NNN}";
+  user.tax = isNaN(user.tax) ? 0 : user.tax;
+  return user;
+}
+
 module.exports = (mainWindow) => {
   const usersDb = new Datastore(path.join(dbPath, "users.db"));
   usersDb.loadDatabase((err) => {
@@ -12,21 +20,23 @@ module.exports = (mainWindow) => {
   });
 
   ipcMain.on("user-create", (event, user) => {
-    usersDb.insert(
-      { ...user, dbVersions: "v0.0.1", numberFormat: "{YYYY}{NNN}" },
-      (err, user) => {
-        if (err) console.error("user-create", err);
-        event.reply("user-create", err, user);
-      }
-    );
+    usersDb.insert(addUserDefaults(user), (err, user) => {
+      if (err) console.error("user-create", err);
+      event.reply("user-create", err, user);
+    });
   });
   ipcMain.on("user-upsert", (event, user) => {
-    usersDb.update({ _id: user._id }, user, { upsert: true }, (err) => {
-      if (err) {
-        console.error("user-upsert", err);
+    usersDb.update(
+      { _id: user._id },
+      addUserDefaults(user),
+      { upsert: true },
+      (err) => {
+        if (err) {
+          console.error("user-upsert", err);
+        }
+        event.reply("user-upsert", err, user);
       }
-      event.reply("user-upsert", err, user);
-    });
+    );
   });
 
   ipcMain.on("user-list", (event) => {
@@ -70,7 +80,7 @@ module.exports = (mainWindow) => {
         );
         // migration from previous versions
         new Promise((resolve, reject) => {
-          if (!user.dbVersions) {
+          if (user.dbVersions <= "v0.0.1") {
             // remove old index on document number as unique constraint is on both type, year and number
             sessionContext.documents.removeIndex(
               "number",
@@ -78,50 +88,56 @@ module.exports = (mainWindow) => {
                 err &&
                 console.error("open-session remove documents index: ", err)
             );
-            user.dbVersions = "v0.0.1";
-            user.quoteFormat = "D{YYYY}-{NNN}";
-            user.invoiceFormat = "{YYYY}{NNN}";
-            sessionContext.documents.find({}, (err, documents) => {
-              if (err) {
-                console.error(
-                  "open-session update db version open documents: ",
-                  err
-                );
-              }
-              Promise.all(
-                documents
-                  .filter(({ number }) => number)
-                  .map(
-                    (document) =>
-                      new Promise((resolve, reject) =>
-                        sessionContext.documents.update(
-                          { _id: document._id },
-                          {
-                            ...document,
-                            number: parseInt(
-                              String(document.number).slice(-3),
-                              10
-                            ),
-                            publicId: String(document.number),
-                          },
-                          (err) => (err ? reject(err) : resolve())
+            addUserDefaults(user);
+            user.numberFormat = undefined;
+            // we have to save our new user after migrating
+            const saveUser = () => {
+              usersDb.update({ _id: user._id }, user, (err) => {
+                if (err) {
+                  console.error(
+                    `update db version to ${user.dbVersions} `,
+                    err
+                  );
+                  reject(err);
+                } else {
+                  resolve();
+                }
+              });
+            };
+            if (!user.dbVersions) {
+              // We have to add a publicId field to documents and use the number field only as doucment numbering (count)
+              sessionContext.documents.find({}, (err, documents) => {
+                if (err) {
+                  console.error(
+                    "open-session update db version open documents: ",
+                    err
+                  );
+                }
+                Promise.all(
+                  documents
+                    .filter(({ number }) => number)
+                    .map(
+                      (document) =>
+                        new Promise((resolve, reject) =>
+                          sessionContext.documents.update(
+                            { _id: document._id },
+                            {
+                              ...document,
+                              number: parseInt(
+                                String(document.number).slice(-3),
+                                10
+                              ),
+                              publicId: String(document.number),
+                            },
+                            (err) => (err ? reject(err) : resolve())
+                          )
                         )
-                      )
-                  )
-              ).then(() =>
-                usersDb.update({ _id: user._id }, user, (err) => {
-                  if (err) {
-                    console.error(
-                      `update db version to ${user.dbVersions} `,
-                      err
-                    );
-                    reject(err);
-                  } else {
-                    resolve();
-                  }
-                })
-              );
-            });
+                    )
+                ).then(saveUser);
+              });
+            } else {
+              saveUser();
+            }
           } else {
             resolve();
           }

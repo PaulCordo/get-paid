@@ -30,6 +30,7 @@ export function Invoice({
   const documentDate = useMemo(() => new Date(date), [date]);
   const documentPayUntil = useMemo(() => new Date(payUntil), [payUntil]);
   const documentValidUntil = useMemo(() => new Date(validUntil), [validUntil]);
+  const tax = isNaN(Number(user.tax)) ? 0 : Number(user.tax);
   return (
     <div className="default-template page py-5 px-5">
       <header>
@@ -101,7 +102,7 @@ export function Invoice({
               Total T.T.C
             </th>
             <td className="text-end fixed-col-width">
-              {currency.format(total + (total * user.tax) / 100)}
+              {currency.format(total + (total * tax) / 100)}
             </td>
           </tr>
         </tbody>
@@ -111,7 +112,7 @@ export function Invoice({
           Dispensé d&lsquo;immatriculation au registre du commerce et des
           sociétés (RCS) et au répertoire des métiers (RM)
           <br />
-          {!user.tax && "TVA non applicable, art. 293B du CGI"}
+          {!tax && "TVA non applicable, art. 293B du CGI"}
           {type === INVOICE && (
             <>
               <br />
