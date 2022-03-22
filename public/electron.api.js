@@ -2,7 +2,7 @@ const { app, ipcMain, dialog } = require("electron");
 const path = require("path");
 const Datastore = require("nedb");
 const fs = require("fs");
-const { INVOICE } = require("../src/documentTypes");
+const { INVOICE } = require("./documentTypes");
 const dbPath = path.join(app.getPath("appData"), "get-paid", "data");
 const migrations = require("./db.migrations");
 

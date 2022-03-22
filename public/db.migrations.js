@@ -1,4 +1,4 @@
-const { INVOICE } = require("../src/documentTypes");
+const { INVOICE } = require("./documentTypes");
 
 function noVersion(sessionContext, user, saveUser) {
   // We have to add a publicId field to documents and use the number field only as doucment numbering (count)
