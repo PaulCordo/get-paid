@@ -1,0 +1,12 @@
+@import "~bootstrap/scss/_functions";
+@import "~bootstrap/scss/_variables";
+@import "~bootstrap/scss/_mixins";
+
+:export {
+  primary: $primary;
+  secondary: $secondary;
+  dark: $dark;
+  light: $light;
+  success: $success;
+  danger: $danger;
+}

@@ -50,3 +50,11 @@ export function StateFilter({ column: { setFilter, filterValue } }) {
     </ToggleButtonGroup>
   );
 }
+
+export function DocumentTableStateFilter({ documentTable }) {
+  return documentTable?.headerGroups
+    ?.flatMap(({ headers }) => headers)
+    ?.filter(({ Filter }) => Filter)
+    ?.find((header) => header.id === "publicId" && header.Filter)
+    ?.render("Filter");
+}

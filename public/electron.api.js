@@ -271,7 +271,7 @@ module.exports = (mainWindow) => {
           {},
           (err, numRemoved) => {
             if (err) {
-              console.error("document-save", err);
+              console.error("document-delete", err);
             }
             event.reply("document-delete", err, numRemoved);
           }
@@ -279,6 +279,25 @@ module.exports = (mainWindow) => {
       : event.reply(
           "document-delete",
           new Error("You can only remove a draft with an _id"),
+          0
+        );
+  });
+
+  ipcMain.on("document-set-paid", (event, document) => {
+    document._id
+      ? sessionContext.documents.update(
+          { _id: document._id },
+          document,
+          (err, numRemoved) => {
+            if (err) {
+              console.error("document-set-paid", err);
+            }
+            event.reply("document-set-paid", err, numRemoved);
+          }
+        )
+      : event.reply(
+          "document-set-paid",
+          new Error("You can only update a document with an _id"),
           0
         );
   });

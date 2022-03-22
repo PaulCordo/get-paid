@@ -15,6 +15,7 @@ export const SessionContext = React.createContext({
   deleteClient: () => {},
   createDocument: () => {},
   deleteDraft: () => {},
+  setPaid: () => {},
 });
 
 export function SessionProvider({ children }) {
@@ -79,6 +80,14 @@ export function SessionProvider({ children }) {
     [request]
   );
 
+  const setPaid = useCallback(
+    (document, paid) =>
+      request("document-set-paid", { ...document, paid }).then(() =>
+        request("document-list").then((documents) => setDocuments(documents))
+      ),
+    [request]
+  );
+
   return (
     <SessionContext.Provider
       value={{
@@ -92,6 +101,7 @@ export function SessionProvider({ children }) {
         deleteClient,
         createDocument,
         deleteDraft,
+        setPaid,
       }}
     >
       {children}

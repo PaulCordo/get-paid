@@ -12,6 +12,7 @@ export const DocumentActionsContext = React.createContext({
   view: () => {},
   edit: () => {},
   duplicate: () => {},
+  setPaid: () => {},
 });
 
 export function DocumentActionsProvider({
@@ -20,7 +21,7 @@ export function DocumentActionsProvider({
   setTabs,
   getHandleCloseTab,
 }) {
-  const { deleteDraft } = useContext(SessionContext);
+  const { deleteDraft, setPaid } = useContext(SessionContext);
   const { downloadDocument } = useContext(PrintContext);
 
   const [newDocumentIndex, setNewDocumentIndex] = useState(1);
@@ -121,8 +122,9 @@ export function DocumentActionsProvider({
       edit,
       deleteDraft,
       download: downloadDocument,
+      setPaid,
     }),
-    [add, view, duplicate, edit, deleteDraft, downloadDocument]
+    [add, view, duplicate, edit, deleteDraft, downloadDocument, setPaid]
   );
   return (
     <DocumentActionsContext.Provider value={documentActionContextValue}>
