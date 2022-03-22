@@ -20,7 +20,12 @@ import { DateCell } from "./DateCell";
 import { TotalCell } from "./TotalCell";
 import { dateOrderer } from "./dateOrderer";
 import { GlobalFilter } from "./GlobalFilter";
-import { StateFilter, stateFilter } from "./StateFilter";
+import {
+  StateFilter,
+  stateFilter,
+  DocumentTableStateFilter,
+} from "./StateFilter";
+import { PaidFilter, paidFilter, DocumentTablePaidFilter } from "./PaidFilter";
 import "./DocumentTable.scss";
 
 export function DocumentTable() {
@@ -48,6 +53,8 @@ export function DocumentTable() {
         id: "total",
         accessor: "total",
         Cell: TotalCell,
+        Filter: PaidFilter,
+        filter: paidFilter,
       },
       {
         Header: "Date",
@@ -95,13 +102,12 @@ export function DocumentTable() {
     documentTable;
   return documents && documents.length > 0 ? (
     <>
-      <Row className="mb-4">
+      <Row className="mb-4 align-items-end">
         <Col>
-          {documentTable?.headerGroups
-            ?.flatMap(({ headers }) => headers)
-            ?.filter(({ Filter }) => Filter)
-            ?.find((header) => header.id === "publicId" && header.Filter)
-            ?.render("Filter")}
+          <DocumentTableStateFilter documentTable={documentTable} />
+        </Col>
+        <Col sm="auto">
+          <DocumentTablePaidFilter documentTable={documentTable} />
         </Col>
         <Col>
           <GlobalFilter
@@ -147,7 +153,11 @@ export function DocumentTable() {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()} key={row?.original?._id}>
+              <tr
+                {...row.getRowProps()}
+                key={row?.original?._id}
+                className={classnames({ paid: row?.original?.paid })}
+              >
                 {row.cells.map((cell, index) => (
                   <td
                     {...cell.getCellProps()}

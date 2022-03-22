@@ -7,6 +7,8 @@ import {
   FaEdit,
   FaTrash,
   FaMoneyCheckAlt,
+  FaEuroSign,
+  FaSlash,
 } from "react-icons/fa";
 
 import { DocumentActionsContext } from "./DocumentActionsContext";
@@ -19,7 +21,7 @@ export function DocumentActionButtons({
   canView = true,
 }) {
   const documentState = getDocumentState(document);
-  const { view, duplicate, edit, deleteDraft, download } = useContext(
+  const { view, duplicate, edit, deleteDraft, download, setPaid } = useContext(
     DocumentActionsContext
   );
   switch (documentState) {
@@ -61,7 +63,7 @@ export function DocumentActionButtons({
           )}
           <Button
             onClick={() => download(document)}
-            variant="success"
+            variant="secondary"
             className="me-3"
             title="Télécharger"
             size={size}
@@ -71,11 +73,32 @@ export function DocumentActionButtons({
           <Button
             onClick={() => duplicate(document)}
             variant="warning"
+            className="me-3"
             title="Dupliquer"
             size={size}
           >
             <FaCopy />
           </Button>
+          {document.paid ? (
+            <Button
+              onClick={() => setPaid(document, false)}
+              variant="danger"
+              title="Marquer impayée"
+              size={size}
+            >
+              <FaEuroSign />
+              <FaSlash style={{ marginLeft: "-1em" }} />
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setPaid(document, true)}
+              variant="success"
+              title="Marquer payée"
+              size={size}
+            >
+              <FaEuroSign />
+            </Button>
+          )}
         </>
       );
     case QUOTE:
@@ -94,7 +117,7 @@ export function DocumentActionButtons({
           )}
           <Button
             onClick={() => download(document)}
-            variant="primary"
+            variant="secondary"
             className="me-3"
             title="Télécharger"
             size={size}

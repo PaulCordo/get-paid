@@ -1,3 +1,5 @@
+@import "../_variables";
+
 table.document-table {
   .sort {
     position: relative;
@@ -15,7 +17,7 @@ table.document-table {
       right: 10px;
     }
     &::after {
-      border-bottom: 6px solid var(--bs-gray);
+      border-bottom: 6px solid var(--bs-gray-500);
       bottom: calc(50% + 3px);
     }
     &::after:hover {
@@ -25,7 +27,7 @@ table.document-table {
       border-bottom: 6px solid var(--bs-dark);
     }
     &::before {
-      border-top: 6px solid var(--bs-gray);
+      border-top: 6px solid var(--bs-gray-500);
       top: calc(50% + 3px);
     }
     &::before:hover {
@@ -47,5 +49,9 @@ table.document-table {
   td:first-child {
     border-left: 12px solid var(--bs-gray);
     border-right-color: inherit;
+  }
+
+  tr.paid td {
+    background-color: $green-100;
   }
 }
