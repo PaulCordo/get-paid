@@ -4,9 +4,10 @@ const Datastore = require("nedb");
 const fs = require("fs");
 const { INVOICE } = require("../src/documentTypes");
 const dbPath = path.join(app.getPath("appData"), "get-paid", "data");
+const migrations = require("./db.migrations");
 
 function addUserDefaults(user) {
-  user.dbVersions = "v0.0.2";
+  user.dbVersions = "v0.0.3";
   user.quoteFormat = user.quoteFormat ?? "D{YYYY}-{NNN}";
   user.invoiceFormat = user.invoiceFormat ?? "{YYYY}{NNN}";
   user.tax = isNaN(user.tax) ? 0 : user.tax;
@@ -48,7 +49,7 @@ module.exports = (mainWindow) => {
 
   let sessionContext;
   ipcMain.on("open-session", (event, _id) => {
-    usersDb.findOne({ _id }, (err, user) => {
+    usersDb.findOne({ _id }, async (err, user) => {
       if (err || !_id) {
         console.error("open-session find user: ", err);
         event.reply("open-session", err);
@@ -78,84 +79,66 @@ module.exports = (mainWindow) => {
             err &&
             console.error("open-session ensure documents type index: ", err)
         );
+
         // migration from previous versions
-        new Promise((resolve, reject) => {
-          if (user.dbVersions <= "v0.0.1") {
-            // remove old index on document number as unique constraint is on both type, year and number
-            sessionContext.documents.removeIndex(
-              "number",
-              (err) =>
-                err &&
-                console.error("open-session remove documents index: ", err)
+        const saveUser = (updatedUser) =>
+          new Promise((resolve, reject) =>
+            usersDb.update({ _id: user._id }, updatedUser, (err) => {
+              if (err) {
+                console.error(
+                  `update db version to ${updatedUser.dbVersions} `,
+                  err
+                );
+                reject(err);
+              } else {
+                resolve();
+              }
+            })
+          );
+
+        if (user.dbVersions > "v0.0.3") {
+          console.error(
+            `FATAL: User ${user.name} id ${user._id} has a dbVersions of ${user.dbVersions}, max allowed by this program is v0.0.3`
+          );
+          app.quit();
+        }
+        // we might have to save our new user after migrating
+        switch (user.dbVersions) {
+          case undefined:
+            await migrations.noVersion(sessionContext, user, saveUser);
+          // falls through
+          case "v0.0.1":
+            await migrations.version0_0_1(sessionContext, user, saveUser);
+          // falls through
+          case "v0.0.2":
+            await migrations.version0_0_2(sessionContext, user, saveUser);
+          // falls through
+          case "v0.0.3":
+            break;
+          default:
+            console.error(
+              `user dbVersions has an invalid value of ${user.dbVersions}`
             );
-            addUserDefaults(user);
-            user.numberFormat = undefined;
-            // we have to save our new user after migrating
-            const saveUser = () => {
-              usersDb.update({ _id: user._id }, user, (err) => {
-                if (err) {
-                  console.error(
-                    `update db version to ${user.dbVersions} `,
-                    err
-                  );
-                  reject(err);
-                } else {
-                  resolve();
-                }
-              });
-            };
-            if (!user.dbVersions) {
-              // We have to add a publicId field to documents and use the number field only as doucment numbering (count)
-              sessionContext.documents.find({}, (err, documents) => {
-                if (err) {
-                  console.error(
-                    "open-session update db version open documents: ",
-                    err
-                  );
-                }
-                Promise.all(
-                  documents
-                    .filter(({ number }) => number)
-                    .map(
-                      (document) =>
-                        new Promise((resolve, reject) =>
-                          sessionContext.documents.update(
-                            { _id: document._id },
-                            {
-                              ...document,
-                              number: parseInt(
-                                String(document.number).slice(-3),
-                                10
-                              ),
-                              publicId: String(document.number),
-                            },
-                            (err) => (err ? reject(err) : resolve())
-                          )
-                        )
-                    )
-                ).then(saveUser);
-              });
-            } else {
-              saveUser();
-            }
+            app.quit();
+        }
+
+        sessionContext.documents.find({}, (err, documents) => {
+          if (err) {
+            console.error("open-session open documents: ", err);
+            event.reply("open-session", err);
           } else {
-            resolve();
-          }
-        }).then(() =>
-          sessionContext.documents.find({}, (err, documents) => {
-            if (err) {
-              console.error("open-session open documents: ", err);
-              event.reply("open-session", err);
-            } else {
-              sessionContext.clients.find({}, (err, clients) => {
-                if (err) {
-                  console.error("open-session open clients: ", err);
-                }
-                event.reply("open-session", err, { user, documents, clients });
+            sessionContext.clients.find({}, (err, clients) => {
+              if (err) {
+                console.error("open-session open clients: ", err);
+              }
+              event.reply("open-session", err, {
+                user,
+                documents,
+                clients,
               });
-            }
-          })
-        );
+            });
+          }
+        });
       }
     });
   });
@@ -202,11 +185,28 @@ module.exports = (mainWindow) => {
   });
 
   function insertDocument(event, document) {
-    sessionContext.documents.insert(document, (err) => {
+    sessionContext.documents.insert(document, (err, { _id }) => {
       if (err) {
         console.error("document-save", err);
+        event.reply("document-save", err, document);
+      } else if (document.quoteId && document.type === INVOICE) {
+        sessionContext.documents.update(
+          { _id: document.quoteId },
+          { $set: { invoiceId: _id } },
+          {},
+          (updateErr) => {
+            if (updateErr) {
+              console.error(
+                "document-save update quote with invoice id",
+                updateErr
+              );
+            }
+            event.reply("document-save", updateErr, document);
+          }
+        );
+      } else {
+        event.reply("document-save", err, document);
       }
-      event.reply("document-save", err, document);
     });
   }
 

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext, useMemo, useRef, useState } from "react";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -9,6 +9,7 @@ import isBefore from "date-fns/isBefore";
 import { SessionContext } from "./SessionContext";
 import { INVOICE, QUOTE } from "./documentTypes";
 import { currency } from "./numberFormat";
+import { useEffectOnMount } from "./useEffectOnMount";
 
 export function AnnualRevenueProgressBar({ year }) {
   const { documents } = useContext(SessionContext);
@@ -63,13 +64,31 @@ export function AnnualRevenueProgressBar({ year }) {
     paidInvoicesCount +
     unpaidInvoicesCount +
     overdueInvoicesCount;
+
+  const tooltipContentRef = useRef();
+  const progressBarRef = useRef();
+  const [showTooltip, setShowTooltip] = useState(false);
+  useEffectOnMount(() => {
+    const handleClick = (event) => {
+      !progressBarRef.current?.contains(event.target) &&
+        !tooltipContentRef.current?.contains(event.target) &&
+        setShowTooltip(false);
+    };
+    window.addEventListener("click", handleClick);
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
+  });
+
   return (
     <OverlayTrigger
       placement="bottom-start"
       trigger="click"
+      show={showTooltip}
+      onToggle={setShowTooltip}
       overlay={
         <Tooltip id="tooltip-annual-revenues">
-          <div className="text-start p-2">
+          <div className="text-start p-2" ref={tooltipContentRef}>
             <h5>Année {year}</h5>
             {Boolean(quotesCount) && (
               <>
@@ -105,7 +124,7 @@ export function AnnualRevenueProgressBar({ year }) {
         </Tooltip>
       }
     >
-      <ProgressBar min={0} max={grandTotal} role="button">
+      <ProgressBar min={0} max={grandTotal} role="button" ref={progressBarRef}>
         <ProgressBar variant="primary" now={quotes} key={1} />
         <ProgressBar variant="warning" now={unpaidInvoices} key={3} />
         <ProgressBar variant="success" now={paidInvoices} key={2} />
