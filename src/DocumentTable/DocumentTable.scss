@@ -54,4 +54,7 @@ table.document-table {
   tr.paid td {
     background-color: $green-100;
   }
+  tr.overdue td {
+    background-color: $yellow-100;
+  }
 }

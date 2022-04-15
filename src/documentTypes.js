@@ -1,4 +1,8 @@
 const INVOICE = "Facture",
   QUOTE = "Devis";
 
-module.exports = { INVOICE, QUOTE };
+function isDocumentINVOICE(document) {
+  return document?.type === INVOICE;
+}
+
+module.exports = { INVOICE, QUOTE, isDocumentINVOICE };

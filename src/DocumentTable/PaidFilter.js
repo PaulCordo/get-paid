@@ -4,20 +4,25 @@ import Tooltip from "react-bootstrap/Tooltip";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import { FaEuroSign, FaSlash } from "react-icons/fa";
+import isBefore from "date-fns/isBefore";
 
 import { stateFilter } from "./StateFilter";
 import { documentStates } from "../documentStates";
 import { usePrevious } from "../usePrevious";
+import { isDocumentOverdue, isDocumentPaid } from "../documentPaid";
+import { isDocumentINVOICE } from "../documentTypes";
 const { INVOICE } = documentStates;
 
 export function paidFilter(rows, id, value) {
   if (value === "paid") {
     return rows.filter(
-      ({ original: document }) => document.type !== INVOICE || document.paid
+      ({ original: document }) =>
+        !isDocumentINVOICE(document) || isDocumentPaid(document)
     );
-  } else if (value === "unpaid") {
+  } else if (value === "overdue") {
     return rows.filter(
-      ({ original: document }) => document.type !== INVOICE || !document.paid
+      ({ original: document }) =>
+        !isDocumentINVOICE(document) || isDocumentOverdue(document)
     );
   } else {
     return rows;
@@ -74,25 +79,25 @@ export function PaidFilter({ column: { setFilter, filterValue }, columns }) {
       <OverlayTrigger
         placement="top"
         overlay={
-          <Tooltip id="tooltip-paid-filter-unpaid">
-            {filterValue === "unpaid" ? (
+          <Tooltip id="tooltip-paid-filter-overdue">
+            {filterValue === "overdue" ? (
               "Afficher toutes les factures"
             ) : (
               <>
-                N&lsquo;afficher dans les factures seulement celles marquées{" "}
-                <b>impayées</b>
+                N&lsquo;afficher dans les factures seulement celles{" "}
+                <b>impayées</b> dont la date de paiement est dépassée
               </>
             )}
           </Tooltip>
         }
       >
         <ToggleButton
-          id="paid-filter-unpaid"
-          name="paid-filter-unpaid"
+          id="paid-filter-overdue"
+          name="paid-filter-overdue"
           type="checkbox"
-          variant="outline-danger"
-          checked={filterValue === "unpaid"}
-          value="unpaid"
+          variant="outline-warning"
+          checked={filterValue === "overdue"}
+          value="overdue"
           onChange={({ currentTarget: { value } }) =>
             setFilter(filterValue === value ? null : value)
           }

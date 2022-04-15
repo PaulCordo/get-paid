@@ -16,7 +16,7 @@ import { Input } from "../Form";
 import { SessionContext } from "../SessionContext";
 import { SmallClientManager } from "../SmallClientManager";
 import { ConfirmModal } from "../Modals";
-import { INVOICE, QUOTE } from "../documentTypes";
+import { INVOICE, isDocumentINVOICE, QUOTE } from "../documentTypes";
 import { variantByState } from "../documentStates";
 import { currency } from "../numberFormat";
 import { Sections } from "./Sections";
@@ -93,7 +93,7 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
         source.type === QUOTE &&
         setValue("validUntil", source.validUntil);
       source.payUntil &&
-        source.type === INVOICE &&
+        isDocumentINVOICE(source) &&
         setValue("payUntil", source.payUntil);
     }
   }, [source, setValue]);
@@ -205,7 +205,7 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
                 className="mb-3"
               />
             )}
-            {type === INVOICE && (
+            {isDocumentINVOICE(document) && (
               <Input
                 register={register}
                 name="payUntil"
@@ -276,7 +276,9 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
                   variant={variantByState[type]}
                   size="lg"
                   title={
-                    type === INVOICE ? "Créer la facture" : "Créer le devis"
+                    isDocumentINVOICE(document)
+                      ? "Créer la facture"
+                      : "Créer le devis"
                   }
                   className="me-3"
                   disabled={!isValid}
@@ -308,7 +310,10 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
                 >
                   <p>
                     Êtes-vous certains de vouloir annuler
-                    {type === INVOICE ? " cette facture" : " ce devis"} ?
+                    {isDocumentINVOICE(document)
+                      ? " cette facture"
+                      : " ce devis"}{" "}
+                    ?
                   </p>
                 </ConfirmModal>
               </Col>
