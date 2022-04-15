@@ -4,21 +4,19 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import Badge from "react-bootstrap/Badge";
 import getYear from "date-fns/getYear";
-import isBefore from "date-fns/isBefore";
 
 import { SessionContext } from "./SessionContext";
-import { INVOICE, QUOTE } from "./documentTypes";
+import { isDocumentINVOICE } from "./documentTypes";
 import { currency } from "./numberFormat";
 import { useEffectOnMount } from "./useEffectOnMount";
+import { isDocumentOverdue, isDocumentPaid } from "./documentPaid";
 
 export function AnnualRevenueProgressBar({ year }) {
   const { documents } = useContext(SessionContext);
   const {
-    quotes,
     paidInvoices,
     unpaidInvoices,
     overdueInvoices,
-    quotesCount,
     paidInvoicesCount,
     unpaidInvoicesCount,
     overdueInvoicesCount,
@@ -29,14 +27,11 @@ export function AnnualRevenueProgressBar({ year }) {
       )
       .reduce(
         (sums, document) => {
-          if (document.type === QUOTE && !document.invoiceId) {
-            sums.quotes += document.total;
-            sums.quotesCount++;
-          } else if (document.type === INVOICE) {
-            if (document.paid) {
+          if (isDocumentINVOICE(document)) {
+            if (isDocumentPaid(document)) {
               sums.paidInvoices += document.total;
               sums.paidInvoicesCount++;
-            } else if (isBefore(new Date(document.payUntil), new Date())) {
+            } else if (isDocumentOverdue(document)) {
               sums.overdueInvoices += document.total;
               sums.overdueInvoicesCount++;
             } else {
@@ -47,23 +42,18 @@ export function AnnualRevenueProgressBar({ year }) {
           return sums;
         },
         {
-          quotes: 0,
           paidInvoices: 0,
           unpaidInvoices: 0,
           overdueInvoices: 0,
-          quotesCount: 0,
           paidInvoicesCount: 0,
           unpaidInvoicesCount: 0,
           overdueInvoicesCount: 0,
         }
       );
   }, [documents, year]);
-  const grandTotal = quotes + paidInvoices + unpaidInvoices + overdueInvoices;
+  const grandTotal = paidInvoices + unpaidInvoices + overdueInvoices;
   const grandTotalCount =
-    quotesCount +
-    paidInvoicesCount +
-    unpaidInvoicesCount +
-    overdueInvoicesCount;
+    paidInvoicesCount + unpaidInvoicesCount + overdueInvoicesCount;
 
   const tooltipContentRef = useRef();
   const progressBarRef = useRef();
@@ -90,16 +80,9 @@ export function AnnualRevenueProgressBar({ year }) {
         <Tooltip id="tooltip-annual-revenues">
           <div className="text-start p-2" ref={tooltipContentRef}>
             <h5>Année {year}</h5>
-            {Boolean(quotesCount) && (
-              <>
-                <Badge bg="primary">{quotesCount}</Badge> Devis en cours :{" "}
-                {currency.format(quotes)}
-                <br />
-              </>
-            )}
             {Boolean(unpaidInvoices) && (
               <>
-                <Badge bg="warning">{unpaidInvoicesCount}</Badge> Factures en
+                <Badge bg="secondary">{unpaidInvoicesCount}</Badge> Factures en
                 cours de paiment : {currency.format(unpaidInvoices)}
                 <br />
               </>
@@ -113,7 +96,7 @@ export function AnnualRevenueProgressBar({ year }) {
             )}
             {Boolean(overdueInvoices) && (
               <>
-                <Badge bg="danger">{overdueInvoicesCount}</Badge> Factures
+                <Badge bg="warning">{overdueInvoicesCount}</Badge> Factures
                 impayées : {currency.format(overdueInvoices)}
                 <br />
               </>
@@ -125,10 +108,8 @@ export function AnnualRevenueProgressBar({ year }) {
       }
     >
       <ProgressBar min={0} max={grandTotal} role="button" ref={progressBarRef}>
-        <ProgressBar variant="primary" now={quotes} key={1} />
-        <ProgressBar variant="warning" now={unpaidInvoices} key={3} />
-        <ProgressBar variant="success" now={paidInvoices} key={2} />
-        <ProgressBar variant="danger" now={overdueInvoices} key={4} />
+        <ProgressBar variant="success" now={paidInvoices} key={1} />
+        <ProgressBar variant="warning" now={overdueInvoices} key={2} />
       </ProgressBar>
     </OverlayTrigger>
   );

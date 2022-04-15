@@ -26,6 +26,7 @@ import {
   DocumentTableStateFilter,
 } from "./StateFilter";
 import { PaidFilter, paidFilter, DocumentTablePaidFilter } from "./PaidFilter";
+import { isDocumentOverdue, isDocumentPaid } from "../documentPaid";
 import "./DocumentTable.scss";
 
 export function DocumentTable() {
@@ -156,7 +157,10 @@ export function DocumentTable() {
               <tr
                 {...row.getRowProps()}
                 key={row?.original?._id}
-                className={classnames({ paid: row?.original?.paid })}
+                className={classnames({
+                  paid: isDocumentPaid(row?.original),
+                  overdue: isDocumentOverdue(row?.original),
+                })}
               >
                 {row.cells.map((cell, index) => (
                   <td

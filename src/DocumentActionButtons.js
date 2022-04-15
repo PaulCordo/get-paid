@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 
 import { DocumentActionsContext } from "./DocumentActionsContext";
+import { isDocumentOverdue, isDocumentPaid } from "./documentPaid";
 import { getDocumentState, documentStates } from "./documentStates";
 const { INVOICE, QUOTE, DRAFT } = documentStates;
 
@@ -79,10 +80,14 @@ export function DocumentActionButtons({
           >
             <FaCopy />
           </Button>
-          {document.paid ? (
+          {isDocumentPaid(document) ? (
             <Button
               onClick={() => setPaid(document, false)}
-              variant="danger"
+              variant={
+                isDocumentOverdue(document)
+                  ? "outline-warning"
+                  : "outline-secondary"
+              }
               title="Marquer impayée"
               size={size}
             >
@@ -92,7 +97,7 @@ export function DocumentActionButtons({
           ) : (
             <Button
               onClick={() => setPaid(document, true)}
-              variant="success"
+              variant="outline-success"
               title="Marquer payée"
               size={size}
             >

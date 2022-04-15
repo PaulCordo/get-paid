@@ -5,7 +5,7 @@ import Table from "react-bootstrap/Table";
 import ReactMarkdown from "react-markdown";
 
 import { AccountDisplay } from "../../AccountDisplay";
-import { INVOICE, QUOTE } from "../../documentTypes";
+import { INVOICE, isDocumentINVOICE, QUOTE } from "../../documentTypes";
 import { currency } from "../../numberFormat";
 
 import { SectionViewer } from "./SectionViewer";
@@ -37,7 +37,7 @@ export function Invoice({
         <h4 className="info">
           <label>{type} </label>
           <span className="fw-bold ms-2">
-            {type === INVOICE && "#"}
+            {isDocumentINVOICE(document) && "#"}
             {publicId}
           </span>
         </h4>
@@ -113,7 +113,7 @@ export function Invoice({
           sociétés (RCS) et au répertoire des métiers (RM)
           <br />
           {!tax && "TVA non applicable, art. 293B du CGI"}
-          {type === INVOICE && (
+          {isDocumentINVOICE(document) && (
             <>
               <br />
               En cas de retard de paiement, indemnité forfaitaire légale pour
