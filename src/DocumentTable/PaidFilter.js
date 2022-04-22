@@ -4,7 +4,6 @@ import Tooltip from "react-bootstrap/Tooltip";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import { FaEuroSign, FaSlash } from "react-icons/fa";
-import isBefore from "date-fns/isBefore";
 
 import { stateFilter } from "./StateFilter";
 import { documentStates } from "../documentStates";

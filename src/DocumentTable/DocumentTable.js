@@ -26,6 +26,11 @@ import {
   DocumentTableStateFilter,
 } from "./StateFilter";
 import { PaidFilter, paidFilter, DocumentTablePaidFilter } from "./PaidFilter";
+import {
+  archiveFilter,
+  ArchiveFilter,
+  DocumentTableArchiveFilter,
+} from "./ArchiveFilter";
 import { isDocumentOverdue, isDocumentPaid } from "../documentPaid";
 import "./DocumentTable.scss";
 
@@ -48,6 +53,8 @@ export function DocumentTable() {
       {
         Header: "Pour",
         accessor: "title",
+        Filter: ArchiveFilter,
+        filter: archiveFilter,
       },
       {
         Header: "Total TTC",
@@ -90,6 +97,7 @@ export function DocumentTable() {
             id: "publicId",
             value: "default",
           },
+          { id: "title", value: false },
         ],
       },
     },
@@ -109,6 +117,9 @@ export function DocumentTable() {
         </Col>
         <Col sm="auto">
           <DocumentTablePaidFilter documentTable={documentTable} />
+        </Col>
+        <Col sm="auto">
+          <DocumentTableArchiveFilter documentTable={documentTable} />
         </Col>
         <Col>
           <GlobalFilter
