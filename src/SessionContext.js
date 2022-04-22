@@ -16,6 +16,7 @@ export const SessionContext = React.createContext({
   createDocument: () => {},
   deleteDraft: () => {},
   setPaid: () => {},
+  archive: () => {},
 });
 
 export function SessionProvider({ children }) {
@@ -88,6 +89,14 @@ export function SessionProvider({ children }) {
     [request]
   );
 
+  const archive = useCallback(
+    (document, archived) =>
+      request("document-archive", { ...document, archived }).then(() =>
+        request("document-list").then((documents) => setDocuments(documents))
+      ),
+    [request]
+  );
+
   return (
     <SessionContext.Provider
       value={{
@@ -102,6 +111,7 @@ export function SessionProvider({ children }) {
         createDocument,
         deleteDraft,
         setPaid,
+        archive,
       }}
     >
       {children}

@@ -9,6 +9,7 @@ import {
   FaMoneyCheckAlt,
   FaEuroSign,
   FaSlash,
+  FaArchive,
 } from "react-icons/fa";
 
 import { DocumentActionsContext } from "./DocumentActionsContext";
@@ -22,9 +23,8 @@ export function DocumentActionButtons({
   canView = true,
 }) {
   const documentState = getDocumentState(document);
-  const { view, duplicate, edit, deleteDraft, download, setPaid } = useContext(
-    DocumentActionsContext
-  );
+  const { view, duplicate, edit, deleteDraft, download, setPaid, archive } =
+    useContext(DocumentActionsContext);
   switch (documentState) {
     case DRAFT:
       return (
@@ -73,7 +73,7 @@ export function DocumentActionButtons({
           </Button>
           <Button
             onClick={() => duplicate(document)}
-            variant="warning"
+            variant="success"
             className="me-3"
             title="Dupliquer"
             size={size}
@@ -133,9 +133,20 @@ export function DocumentActionButtons({
             onClick={() => duplicate(document)}
             variant="success"
             title="Facturer"
+            className="me-3"
             size={size}
           >
             <FaMoneyCheckAlt />
+          </Button>
+
+          <Button
+            onClick={() => archive(document, !document.archived)}
+            variant="warning"
+            title={document.archived ? "Désarchiver" : "Archiver"}
+            size={size}
+          >
+            <FaArchive />
+            {document.archived && <FaSlash style={{ marginLeft: "-1em" }} />}
           </Button>
         </>
       );

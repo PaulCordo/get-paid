@@ -287,16 +287,35 @@ module.exports = (mainWindow) => {
     document._id
       ? sessionContext.documents.update(
           { _id: document._id },
-          document,
-          (err, numRemoved) => {
+          { $set: { paid: document.paid } },
+          (err, numReplaced) => {
             if (err) {
               console.error("document-set-paid", err);
             }
-            event.reply("document-set-paid", err, numRemoved);
+            event.reply("document-set-paid", err, numReplaced);
           }
         )
       : event.reply(
           "document-set-paid",
+          new Error("You can only update a document with an _id"),
+          0
+        );
+  });
+
+  ipcMain.on("document-archive", (event, document) => {
+    document._id
+      ? sessionContext.documents.update(
+          { _id: document._id },
+          { $set: { archived: document.archived } },
+          (err, numReplaced) => {
+            if (err) {
+              console.error("document-archive", err);
+            }
+            event.reply("document-archive", err, numReplaced);
+          }
+        )
+      : event.reply(
+          "document-archive",
           new Error("You can only update a document with an _id"),
           0
         );
