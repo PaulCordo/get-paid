@@ -12,8 +12,11 @@ export function DocumentViewer({ document, actions = false }) {
     // we use A4 pages that are 21cm large, that's 8.27inch and 793.7px at 96 DPI
     const viewerWidth =
       documentViewerRef.current?.getBoundingClientRect()?.width;
-    const A4Width = 793.7;
-    setScale(viewerWidth > A4Width ? 1 : viewerWidth / A4Width);
+    if (viewerWidth) {
+      // avoid a resize triggered on print
+      const A4Width = 793.7;
+      setScale(viewerWidth > A4Width ? 1 : viewerWidth / A4Width);
+    }
   });
 
   return (
