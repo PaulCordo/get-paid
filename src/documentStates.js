@@ -1,16 +1,19 @@
+import { isDocumentOverdue } from "./documentPaid";
 import { INVOICE, QUOTE } from "./documentTypes";
-import { success, secondary, primary } from "./variables.module.scss";
+import { success, secondary, primary, warning } from "./variables.module.scss";
 
 const DRAFT = "Brouillon";
 const NEW = "Nouveau";
+const OVERDUE = "Impayée";
 
-export const documentStates = { INVOICE, QUOTE, DRAFT, NEW };
+export const documentStates = { INVOICE, QUOTE, DRAFT, NEW, OVERDUE };
 
 export const variantByState = {
   [INVOICE]: "success",
   [QUOTE]: "primary",
   [DRAFT]: "secondary",
   [NEW]: "secondary",
+  [OVERDUE]: "warning",
 };
 
 export const colorByState = {
@@ -18,13 +21,16 @@ export const colorByState = {
   [QUOTE]: primary,
   [DRAFT]: secondary,
   [NEW]: secondary,
+  [OVERDUE]: warning,
 };
 
-export function getDocumentState({ draft, type } = {}) {
-  if (draft) {
+export function getDocumentState(document) {
+  if (document?.draft) {
     return DRAFT;
+  } else if (isDocumentOverdue(document)) {
+    return OVERDUE;
   }
-  return type;
+  return document?.type;
 }
 
 export function getDocumentColor(document) {
