@@ -3,9 +3,9 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
 export function ClientCell({
-  value: client,
+  value: clientName,
   row: {
-    original: { number, type },
+    original: { number, type, client },
   },
 }) {
   return (
@@ -32,7 +32,7 @@ export function ClientCell({
         </Tooltip>
       }
     >
-      <>{client?.name}</>
+      <>{clientName}</>
     </OverlayTrigger>
   );
 }

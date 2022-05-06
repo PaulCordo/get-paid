@@ -47,7 +47,7 @@ export function DocumentTable() {
       },
       {
         Header: "Client",
-        accessor: "client",
+        accessor: "client.name",
         Cell: ClientCell,
       },
       {
