@@ -15,7 +15,7 @@ import {
 import { DocumentActionsContext } from "./DocumentActionsContext";
 import { isDocumentOverdue, isDocumentPaid } from "./documentPaid";
 import { getDocumentState, documentStates } from "./documentStates";
-const { INVOICE, QUOTE, DRAFT } = documentStates;
+const { INVOICE, QUOTE, DRAFT, OVERDUE } = documentStates;
 
 export function DocumentActionButtons({
   document,
@@ -49,6 +49,8 @@ export function DocumentActionButtons({
         </>
       );
     case INVOICE:
+    // fall through
+    case OVERDUE:
       return (
         <>
           {canView && (
@@ -73,7 +75,7 @@ export function DocumentActionButtons({
           </Button>
           <Button
             onClick={() => duplicate(document)}
-            variant="success"
+            variant="secondary"
             className="me-3"
             title="Dupliquer"
             size={size}

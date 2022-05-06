@@ -31,7 +31,6 @@ import {
   ArchiveFilter,
   DocumentTableArchiveFilter,
 } from "./ArchiveFilter";
-import { isDocumentOverdue, isDocumentPaid } from "../documentPaid";
 import "./DocumentTable.scss";
 
 export function DocumentTable() {
@@ -165,14 +164,7 @@ export function DocumentTable() {
           {rows.map((row) => {
             prepareRow(row);
             return (
-              <tr
-                {...row.getRowProps()}
-                key={row?.original?._id}
-                className={classnames({
-                  paid: isDocumentPaid(row?.original),
-                  overdue: isDocumentOverdue(row?.original),
-                })}
-              >
+              <tr {...row.getRowProps()} key={row?.original?._id}>
                 {row.cells.map((cell, index) => (
                   <td
                     {...cell.getCellProps()}

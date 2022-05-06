@@ -50,11 +50,4 @@ table.document-table {
     border-left: 12px solid var(--bs-gray);
     border-right-color: inherit;
   }
-
-  tr.paid td {
-    background-color: $green-100;
-  }
-  tr.overdue td {
-    background-color: $yellow-100;
-  }
 }
