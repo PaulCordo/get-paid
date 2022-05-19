@@ -1,3 +1,8 @@
 {
-  "prettier.prettierPath": "./node_modules/prettier"
+  "prettier.prettierPath": "./node_modules/prettier",
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.js": "javascriptreact"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
