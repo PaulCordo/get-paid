@@ -9,13 +9,9 @@ import { AccountSelector } from "./AccountSelector";
 import { SmallAccountEditor } from "./AccountEditor";
 import { request } from "./apiServices";
 
-export function LogIn() {
+export function LogIn({ users = [] }) {
   const { open } = useContext(SessionContext);
   const [selecting, setSelecting] = useState(true);
-  const [users, setUsers] = useState([]);
-  useEffect(() => {
-    request("user-list").then(setUsers);
-  }, []);
   useEffect(() => {
     setSelecting(Boolean(users.length));
   }, [users]);
