@@ -7,8 +7,19 @@ import { LogIn } from "./LogIn";
 import { DocumentsTab } from "./DocumentsTab";
 import { Configuration } from "./Configuration";
 import { usePrevious } from "./usePrevious";
+import { request } from "./apiServices";
 
 export function App() {
+  const { open } = useContext(SessionContext);
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    request("user-list").then(setUsers);
+  }, []);
+  // auto open session if there's only one user
+  useEffect(() => {
+    users?.length === 1 && open(users.find(() => true)._id);
+  }, [open, users]);
+
   const { user } = useContext(SessionContext);
   const prevUserId = usePrevious(user?._id);
   const [activeTab, setActiveTab] = useState("documents");
@@ -33,6 +44,6 @@ export function App() {
       </Tab.Content>
     </Tab.Container>
   ) : (
-    <LogIn />
+    <LogIn users={users} />
   );
 }
