@@ -9,20 +9,13 @@ import { stateFilter } from "./StateFilter";
 import { documentStates } from "../documentStates";
 import { usePrevious } from "../usePrevious";
 import { isDocumentOverdue, isDocumentPaid } from "../documentPaid";
-import { isDocumentINVOICE } from "../documentTypes";
 const { INVOICE } = documentStates;
 
 export function paidFilter(rows, id, value) {
   if (value === "paid") {
-    return rows.filter(
-      ({ original: document }) =>
-        !isDocumentINVOICE(document) || isDocumentPaid(document)
-    );
+    return rows.filter(({ original: document }) => isDocumentPaid(document));
   } else if (value === "overdue") {
-    return rows.filter(
-      ({ original: document }) =>
-        !isDocumentINVOICE(document) || isDocumentOverdue(document)
-    );
+    return rows.filter(({ original: document }) => isDocumentOverdue(document));
   } else {
     return rows;
   }
