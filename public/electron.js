@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, screen } = require("electron");
 const api = require("./electron.api");
 
 const path = require("path");
@@ -9,8 +9,8 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 let mainWindow;
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: screen.getPrimaryDisplay().size.width,
+    height: screen.getPrimaryDisplay().size.height,
     webPreferences: {
       nodeIntegration: true,
     },
