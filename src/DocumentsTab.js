@@ -3,6 +3,7 @@ import Nav from "react-bootstrap/Nav";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
+import { FaHome } from "react-icons/fa";
 
 import { AllDocuments } from "./AllDocuments";
 import { variantByState } from "./documentStates";
@@ -41,7 +42,7 @@ export function DocumentsTab() {
             variant={(activeTab !== "all" ? "outline-" : "") + "dark"}
             className="w-100 mb-2"
           >
-            Tous
+            <FaHome />
           </Nav.Item>
           {tabs &&
             tabs.map(({ key, title, state }) => (
