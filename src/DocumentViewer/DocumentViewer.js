@@ -1,10 +1,15 @@
 import React, { useRef, useState } from "react";
+import CloseButton from "react-bootstrap/CloseButton";
 
 import { useDocumentView } from "../templates";
 import { DocumentActionButtons } from "../DocumentActionButtons";
 import { useResize } from "../useResize";
 
-export function DocumentViewer({ document, actions = false }) {
+export function DocumentViewer({
+  document,
+  actions = false,
+  onClose = () => {},
+}) {
   const DocumentView = useDocumentView(document);
   const documentViewerRef = useRef();
   const [scale, setScale] = useState(1);
@@ -33,6 +38,11 @@ export function DocumentViewer({ document, actions = false }) {
           />
         </div>
       )}
+
+      <CloseButton
+        className="position-fixed end-0 my-3 me-3 fs-4"
+        onClick={onClose}
+      />
       <div style={{ transformOrigin: "top", transform: `scale(${scale})` }}>
         <DocumentView document={document} />
       </div>
