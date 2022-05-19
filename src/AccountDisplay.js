@@ -11,7 +11,7 @@ export function AccountDisplay({
     city,
     tel,
     email,
-  },
+  } = {},
 }) {
   return (
     <div>
