@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react";
 import Nav from "react-bootstrap/Nav";
 import Tab from "react-bootstrap/Tab";
 import Button from "react-bootstrap/Button";
-import CloseButton from "react-bootstrap/CloseButton";
 import { FaHome } from "react-icons/fa";
 
 import { AllDocuments } from "./AllDocuments";
@@ -76,13 +75,7 @@ export function DocumentsTab() {
                   className="h-100"
                   style={{ marginRight: 164 }}
                 >
-                  <>
-                    <CloseButton
-                      className="position-fixed end-0 my-3 me-3 fs-4"
-                      onClick={getHandleCloseTab(key)}
-                    />
-                    {component}
-                  </>
+                  {component}
                 </Tab.Pane>
               ))}
           </Tab.Content>
