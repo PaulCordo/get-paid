@@ -1,6 +1,5 @@
 import React from "react";
 import Modal from "react-bootstrap/Modal";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Button from "react-bootstrap/Button";
 
 export function ConfirmModal({ show, children, onConfirm, onCancel }) {
@@ -11,14 +10,14 @@ export function ConfirmModal({ show, children, onConfirm, onCancel }) {
       </Modal.Header>
       <Modal.Body>
         {children}
-        <ButtonGroup className="text-end">
-          <Button variant="warning" onClick={onConfirm}>
+        <div className="text-end">
+          <Button variant="warning" className="me-3" onClick={onConfirm}>
             Oui
           </Button>
           <Button variant="outline-secondary" onClick={onCancel}>
             Non
           </Button>
-        </ButtonGroup>
+        </div>
       </Modal.Body>
     </Modal>
   );

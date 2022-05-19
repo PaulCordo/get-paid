@@ -3,8 +3,10 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
+import CloseButton from "react-bootstrap/CloseButton";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 import { FaCheck, FaSave, FaTimes } from "react-icons/fa";
@@ -130,6 +132,7 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
     }
   }, [type, unregister]);
 
+  const [showCloseModal, setShowCloseModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   const total = watch("total");
@@ -138,9 +141,38 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
   const _id = watch("_id");
 
   const onSubmit = (document) => createDocument(document).then(onClose);
+  const saveDraft = () => onSubmit({ ...getValues(), draft: true });
 
   return (
     <Container className="document-create py-3 h-100">
+      <CloseButton
+        className="position-fixed end-0 my-3 me-3 fs-4"
+        onClick={() => setShowCloseModal(true)}
+      />
+
+      <Modal
+        show={showCloseModal}
+        onEscapeKeyDown={() => setShowCloseModal(false)}
+        onHide={() => setShowCloseModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <h3>Confirmation</h3>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            Souhaitez-vous enregistrer le document en cours comme brouillon ?
+          </p>
+          <div className="text-end">
+            <Button variant="secondary" className="me-3" onClick={saveDraft}>
+              Oui
+            </Button>
+            <Button variant="warning" onClick={onClose}>
+              Non
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
       <Form onSubmit={handleSubmit(onSubmit)}>
         {_id && <Form.Control type="hidden" {...register("_id")} />}
         <Form.Control type="hidden" {...register("user", { required: true })} />
@@ -291,7 +323,7 @@ export function DocumentCreator({ onClose = () => {}, source = {} }) {
                   size="lg"
                   title="Sauvegarder le brouillon"
                   className="me-3"
-                  onClick={() => onSubmit({ ...getValues(), draft: true })}
+                  onClick={saveDraft}
                 >
                   <FaSave />
                 </Button>
