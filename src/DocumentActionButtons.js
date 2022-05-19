@@ -13,9 +13,10 @@ import {
 } from "react-icons/fa";
 
 import { DocumentActionsContext } from "./DocumentActionsContext";
-import { isDocumentOverdue, isDocumentPaid } from "./documentPaid";
+import { isDocumentPaid } from "./documentPaid";
 import { getDocumentState, documentStates } from "./documentStates";
 const { INVOICE, QUOTE, DRAFT, OVERDUE } = documentStates;
+import "./DocumentActionButtons.scss";
 
 export function DocumentActionButtons({
   document,
@@ -85,16 +86,12 @@ export function DocumentActionButtons({
           {isDocumentPaid(document) ? (
             <Button
               onClick={() => setPaid(document, false)}
-              variant={
-                isDocumentOverdue(document)
-                  ? "outline-warning"
-                  : "outline-secondary"
-              }
+              variant="success"
               title="Marquer impayée"
               size={size}
+              className="paid-button"
             >
               <FaEuroSign />
-              <FaSlash style={{ marginLeft: "-1em" }} />
             </Button>
           ) : (
             <Button
