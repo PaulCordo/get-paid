@@ -25,6 +25,8 @@ const defaultUser = {
   ...defaultClient,
   tax: 0,
   template: defaultTemplate.name,
+  quoteFormat: "D{YYYY}-{NNN}",
+  invoiceFormat: "{YYYY}{NNN}",
 };
 
 const idTypes = ["SIREN", "SIRET", "RNA"];
@@ -434,8 +436,9 @@ export function SmallAccountEditor({
           <Row>
             <Input
               as={Col}
-              md={5}
+              md={6}
               className="mb-3"
+              tooltip={<UserFormatTooltipText documentName="devis" />}
               name="quoteFormat"
               type="text"
               label="Numérotation devis"
@@ -444,8 +447,9 @@ export function SmallAccountEditor({
             />
             <Input
               as={Col}
-              md={5}
+              md={6}
               className="mb-3"
+              tooltip={<UserFormatTooltipText documentName="facture" />}
               name="invoiceFormat"
               type="text"
               label="Numérotation factures"
