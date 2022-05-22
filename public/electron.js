@@ -9,8 +9,8 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true;
 let mainWindow;
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: screen.getPrimaryDisplay().size.width,
-    height: screen.getPrimaryDisplay().size.height,
+    width: screen.getPrimaryDisplay().size.width * 0.9,
+    height: screen.getPrimaryDisplay().size.height * 0.9,
     webPreferences: {
       nodeIntegration: true,
     },

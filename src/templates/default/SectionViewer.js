@@ -7,7 +7,7 @@ export function SectionViewer({ section: { title, rows } }) {
     0
   );
   return (
-    <section className="my-5">
+    <section className="my-3">
       {title && <h3>{title}</h3>}
       <Table striped>
         <thead>
