@@ -1,3 +1,9 @@
+import {
+  FaFileSignature,
+  FaSave,
+  FaFileInvoiceDollar,
+  FaFile,
+} from "react-icons/fa";
 import { isDocumentOverdue } from "./documentPaid";
 import { INVOICE, QUOTE } from "./documentTypes";
 import { success, secondary, primary, warning } from "./variables.module.scss";
@@ -20,8 +26,16 @@ export const colorByState = {
   [INVOICE]: success,
   [QUOTE]: primary,
   [DRAFT]: secondary,
-  [NEW]: secondary,
+  [NEW]: FaFile,
   [OVERDUE]: warning,
+};
+
+export const iconByState = {
+  [INVOICE]: FaFileInvoiceDollar,
+  [QUOTE]: FaFileSignature,
+  [DRAFT]: FaSave,
+  [NEW]: secondary,
+  [OVERDUE]: FaFileInvoiceDollar,
 };
 
 export function getDocumentState(document) {
