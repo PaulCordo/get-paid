@@ -16,6 +16,7 @@ function addUserDefaults(user) {
 }
 
 module.exports = (mainWindow) => {
+  console.info(`DB is located in ${dbPath}`);
   const usersDb = new Datastore(path.join(dbPath, "users.db"));
   usersDb.loadDatabase((err) => {
     if (err) console.error("User database opening error: ", err);
@@ -243,28 +244,54 @@ module.exports = (mainWindow) => {
       } else {
         resolve(document);
       }
-    }).then((document) => {
-      if (document._id) {
-        // try to update an existing draft
-        sessionContext.documents.update(
-          { _id: document._id, draft: true },
-          document,
-          (err, numAffected) => {
-            if (err) {
-              console.error("document-save", err);
-              event.reply("document-save", err);
-            }
-            if (numAffected) {
-              event.reply("document-save", err, document);
+    })
+      .then(
+        (document) =>
+          new Promise((resolve) => {
+            if (document.quoteId) {
+              // archive billed quote
+              sessionContext.documents.update(
+                { _id: document.quoteId },
+                { $set: { archived: true } },
+                (err, numAffected) => {
+                  if (err) {
+                    console.error("document-save", err);
+                    event.reply("document-save", err);
+                  }
+                  if (numAffected) {
+                    event.reply("document-save", err, document);
+                  } else {
+                    insertDocument(event, document);
+                  }
+                }
+              );
             } else {
-              insertDocument(event, document);
+              resolve(document);
             }
-          }
-        );
-      } else {
-        insertDocument(event, document);
-      }
-    });
+          })
+      )
+      .then((document) => {
+        if (document._id) {
+          // try to update an existing draft
+          sessionContext.documents.update(
+            { _id: document._id, draft: true },
+            document,
+            (err, numAffected) => {
+              if (err) {
+                console.error("document-save", err);
+                event.reply("document-save", err);
+              }
+              if (numAffected) {
+                event.reply("document-save", err, document);
+              } else {
+                insertDocument(event, document);
+              }
+            }
+          );
+        } else {
+          insertDocument(event, document);
+        }
+      });
   });
 
   ipcMain.on("document-delete", (event, document) => {

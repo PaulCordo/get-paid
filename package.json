@@ -1,6 +1,6 @@
 {
   "name": "get-paid",
-  "description": "Simple Electron application to manage Auto Entrepreneur invoices ",
+  "description": "Simple Electron application to manage invoices ",
   "author": {
     "name": "Paul Cordonnier",
     "email": "paul@paulcordonnier.com"
