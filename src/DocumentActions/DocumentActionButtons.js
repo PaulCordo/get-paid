@@ -6,7 +6,7 @@ import {
   FaCopy,
   FaEdit,
   FaTrash,
-  FaMoneyCheckAlt,
+  FaFileInvoiceDollar,
   FaEuroSign,
   FaSlash,
   FaArchive,
@@ -135,7 +135,7 @@ export function DocumentActionButtons({
             className="me-3"
             size={size}
           >
-            <FaMoneyCheckAlt />
+            <FaFileInvoiceDollar />
           </Button>
 
           <Button

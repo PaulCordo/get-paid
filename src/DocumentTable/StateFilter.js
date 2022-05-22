@@ -1,53 +1,48 @@
 import React from "react";
-import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 
 import {
   documentStates,
   variantByState,
   getDocumentState,
+  iconByState,
 } from "../documentStates";
 const { INVOICE, QUOTE, DRAFT } = documentStates;
 
-//TODO: filter out quotes that already created an invoice
 export function stateFilter(rows, id, value) {
-  const defaultView = value === "default";
-  return rows.filter(({ original: document }) =>
-    defaultView ? true : getDocumentState(document) === value
+  return rows.filter(
+    ({ original: document }) => getDocumentState(document) === value
   );
 }
 
+stateFilter.autoRemove = (value) => !value;
+
 export function StateFilter({ column: { setFilter, filterValue } }) {
   return (
-    <ToggleButtonGroup
-      name="document-state-filter"
-      value={filterValue}
-      onChange={setFilter}
-    >
-      <ToggleButton
-        type="radio"
-        variant={
-          (filterValue && filterValue !== "tous" ? "outline-" : "") + "dark"
-        }
-        value="default"
-        id="document-state-filter-tous"
-      >
-        Tous
-      </ToggleButton>
-      {[INVOICE, QUOTE, DRAFT].map((state) => (
-        <ToggleButton
-          key={state}
-          id={"document-state-filter-" + state}
-          type="radio"
-          variant={
-            (filterValue !== state ? "outline-" : "") + variantByState[state]
-          }
-          value={state}
-        >
-          {state}
-        </ToggleButton>
-      ))}
-    </ToggleButtonGroup>
+    <ButtonGroup name="document-state-filter">
+      {[INVOICE, QUOTE, DRAFT].map((state) => {
+        const Icon = iconByState[state];
+        return (
+          <ToggleButton
+            key={state}
+            id={"document-state-filter-" + state}
+            type="checkbox"
+            checked={filterValue === state}
+            variant={
+              (filterValue !== state ? "outline-" : "") + variantByState[state]
+            }
+            value={state}
+            title={state}
+            onChange={({ currentTarget: { value } }) =>
+              setFilter(filterValue === value ? null : value)
+            }
+          >
+            <Icon />
+          </ToggleButton>
+        );
+      })}
+    </ButtonGroup>
   );
 }
 
