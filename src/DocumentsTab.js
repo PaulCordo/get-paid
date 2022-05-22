@@ -6,7 +6,7 @@ import { FaHome } from "react-icons/fa";
 
 import { AllDocuments } from "./AllDocuments";
 import { variantByState } from "./documentStates";
-import { DocumentActionsProvider } from "./DocumentActionsContext";
+import { DocumentActionsProvider } from "./DocumentActions";
 
 export function DocumentsTab() {
   const [tabs, setTabs] = useState([]);

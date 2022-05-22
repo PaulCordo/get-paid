@@ -5,6 +5,7 @@ const fs = require("fs");
 const { INVOICE } = require("./documentTypes");
 const dbPath = path.join(app.getPath("appData"), "get-paid", "data");
 const migrations = require("./db.migrations");
+const { currentDbVersion } = migrations;
 
 function addUserDefaults(user) {
   user.dbVersions = "v0.0.3";
@@ -95,10 +96,9 @@ module.exports = (mainWindow) => {
               }
             })
           );
-
-        if (user.dbVersions > "v0.0.3") {
+        if (user.dbVersions > currentDbVersion) {
           console.error(
-            `FATAL: User ${user.name} id ${user._id} has a dbVersions of ${user.dbVersions}, max allowed by this program is v0.0.3`
+            `FATAL: User ${user.name} id ${user._id} has a dbVersions of ${user.dbVersions}, max allowed by this program is ${currentDbVersion}`
           );
           app.quit();
         }
@@ -114,6 +114,9 @@ module.exports = (mainWindow) => {
             await migrations.version0_0_2(sessionContext, user, saveUser);
           // falls through
           case "v0.0.3":
+            await migrations.version0_0_3(sessionContext, user, saveUser);
+          // falls through
+          case currentDbVersion:
             break;
           default:
             console.error(

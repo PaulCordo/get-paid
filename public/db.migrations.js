@@ -1,5 +1,7 @@
 const { INVOICE } = require("./documentTypes");
 
+const currentDbVersion = "v0.0.4";
+
 function noVersion(sessionContext, user, saveUser) {
   // We have to add a publicId field to documents and use the number field only as doucment numbering (count)
   return new Promise((resolve, reject) =>
@@ -124,8 +126,47 @@ function version0_0_2(sessionContext, user, saveUser) {
   });
 }
 
+function version0_0_3(sessionContext, user, saveUser) {
+  return new Promise((resolve, reject) => {
+    user.dbVersions = "v0.0.4";
+    // merge payUntil into validUntil field
+    sessionContext.documents.find({}, (err, documents) => {
+      if (err) {
+        console.error("open-session update db version open documents: ", err);
+        reject(err);
+      } else {
+        const invoices = documents
+          .filter(({ type }) => type === INVOICE)
+          .map(({ payUntil, ...document }) => ({
+            validUntil: payUntil,
+            ...document,
+          }))
+          .filter((document) => document);
+        Promise.all(
+          invoices.map(
+            (document) =>
+              new Promise((resolve, reject) =>
+                sessionContext.documents.update(
+                  { _id: document._id },
+                  document,
+                  (err) => (err ? reject(err) : resolve())
+                )
+              )
+          )
+        )
+          .catch(reject)
+          .then(() => saveUser(user).catch(reject).then(resolve));
+      }
+    });
+
+    saveUser(user).catch(reject).then(resolve);
+  });
+}
+
 module.exports = {
+  currentDbVersion,
   noVersion,
   version0_0_1,
   version0_0_2,
+  version0_0_3,
 };

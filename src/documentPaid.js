@@ -10,6 +10,6 @@ export function isDocumentOverdue(document) {
   return (
     isDocumentINVOICE(document) &&
     !isDocumentPaid(document) &&
-    isBefore(new Date(document.payUntil), new Date())
+    isBefore(new Date(document.validUntil), new Date())
   );
 }
