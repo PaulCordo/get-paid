@@ -27,7 +27,7 @@ export function PaidFilter({ column: { setFilter, filterValue }, columns }) {
   const stateFilterValue = columns.find(
     ({ filter }) => filter === stateFilter
   )?.filterValue;
-  const hasInvoices = ["default", INVOICE].includes(stateFilterValue);
+  const hasInvoices = [INVOICE, undefined].includes(stateFilterValue);
   const prevHasInvoices = usePrevious(hasInvoices);
   useEffect(() => {
     if (!hasInvoices && prevHasInvoices !== hasInvoices) {
@@ -45,7 +45,7 @@ export function PaidFilter({ column: { setFilter, filterValue }, columns }) {
               "Afficher toutes les factures"
             ) : (
               <>
-                N&lsquo;afficher dans les factures seulement celles marquées{" "}
+                N&lsquo;afficher dans les factures que seulement celles marquées{" "}
                 <b>payées</b>
               </>
             )}

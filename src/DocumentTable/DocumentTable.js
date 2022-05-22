@@ -91,13 +91,7 @@ export function DocumentTable() {
             desc: true,
           },
         ],
-        filters: [
-          {
-            id: "publicId",
-            value: "default",
-          },
-          { id: "title", value: false },
-        ],
+        filters: [{ id: "title", value: false }],
       },
     },
     useFilters,
