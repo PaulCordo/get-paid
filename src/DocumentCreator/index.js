@@ -1,1 +1,1 @@
-export { DocumentCreator } from "./DocumentCreator";
+export { DocumentCreatorTab } from "./DocumentCreatorTab";

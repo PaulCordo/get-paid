@@ -13,8 +13,8 @@ import {
 } from "react-icons/fa";
 
 import { DocumentActionsContext } from "./DocumentActionsContext";
-import { isDocumentPaid } from "./documentPaid";
-import { getDocumentState, documentStates } from "./documentStates";
+import { isDocumentPaid } from "../documentPaid";
+import { getDocumentState, documentStates } from "../documentStates";
 const { INVOICE, QUOTE, DRAFT, OVERDUE } = documentStates;
 import "./DocumentActionButtons.scss";
 

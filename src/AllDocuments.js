@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col";
 import { FaPlus } from "react-icons/fa";
 import getYear from "date-fns/getYear";
 
-import { DocumentActionsContext } from "./DocumentActionsContext";
+import { DocumentActionsContext } from "./DocumentActions";
 import { DocumentTable } from "./DocumentTable";
 import { AnnualRevenueProgressBar } from "./AnnualRevenueProgressBar";
 
