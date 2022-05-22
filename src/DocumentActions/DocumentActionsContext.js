@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useCallback, useContext } from "react";
 import Container from "react-bootstrap/Container";
 
-import { DocumentCreator } from "./DocumentCreator/DocumentCreator";
-import { DocumentViewer } from "./DocumentViewer";
-import { documentStates, getDocumentState } from "./documentStates";
-import { SessionContext } from "./SessionContext";
-import { PrintContext } from "./PrintContext";
+import { DocumentCreatorTab } from "../DocumentCreator";
+import { DocumentViewerTab } from "../DocumentViewer";
+import { documentStates, getDocumentState } from "../documentStates";
+import { SessionContext } from "../SessionContext";
+import { PrintContext } from "../PrintContext";
 
 export const DocumentActionsContext = React.createContext({
   add: () => {},
@@ -35,7 +35,7 @@ export function DocumentActionsProvider({
           title: "Nouvelle " + newDocumentIndex,
           key,
           state: documentStates.NEW,
-          component: <DocumentCreator onClose={getHandleCloseTab(key)} />,
+          component: <DocumentCreatorTab onClose={getHandleCloseTab(key)} />,
         },
       ])
     );
@@ -45,7 +45,6 @@ export function DocumentActionsProvider({
   const view = useCallback(
     (document) => {
       const key = document._id;
-      setActiveTab(key);
       setTabs((tabs) =>
         !tabs.some((tab) => tab.key === key)
           ? tabs.concat([
@@ -55,7 +54,7 @@ export function DocumentActionsProvider({
                 state: getDocumentState(document),
                 component: (
                   <Container>
-                    <DocumentViewer
+                    <DocumentViewerTab
                       document={document}
                       onClose={getHandleCloseTab(key)}
                       actions
@@ -66,6 +65,7 @@ export function DocumentActionsProvider({
             ])
           : tabs
       );
+      setActiveTab(key);
     },
     [getHandleCloseTab, setActiveTab, setTabs]
   );
@@ -79,7 +79,7 @@ export function DocumentActionsProvider({
             key,
             state: documentStates.NEW,
             component: (
-              <DocumentCreator
+              <DocumentCreatorTab
                 source={document}
                 onClose={getHandleCloseTab(key)}
               />
@@ -102,7 +102,7 @@ export function DocumentActionsProvider({
             key,
             state: documentStates.DRAFT,
             component: (
-              <DocumentCreator
+              <DocumentCreatorTab
                 source={document}
                 onClose={getHandleCloseTab(key)}
               />

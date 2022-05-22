@@ -1,6 +1,6 @@
 import React from "react";
 
-import { DocumentActionButtons } from "../DocumentActionButtons";
+import { DocumentActionButtons } from "../DocumentActions";
 
 const actionCount = 4;
 export function ActionsCell({ value: document }) {

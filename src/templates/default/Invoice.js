@@ -17,7 +17,6 @@ export function Invoice({
     user,
     type = INVOICE,
     date,
-    payUntil,
     validUntil,
     title,
     description,
@@ -28,7 +27,7 @@ export function Invoice({
   },
 }) {
   const documentDate = useMemo(() => new Date(date), [date]);
-  const documentPayUntil = useMemo(() => new Date(payUntil), [payUntil]);
+  const documentvalidUntil = useMemo(() => new Date(validUntil), [validUntil]);
   const documentValidUntil = useMemo(() => new Date(validUntil), [validUntil]);
   const tax = isNaN(Number(user.tax)) ? 0 : Number(user.tax);
   return (
@@ -122,7 +121,7 @@ export function Invoice({
               Pas d&#39;escompte pour règlement anticipé
               <span className="float-end">
                 Date limite de paiement :{" "}
-                {format(documentPayUntil, "PPP", {
+                {format(documentvalidUntil, "PPP", {
                   locale: fr,
                 })}
               </span>
