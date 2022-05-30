@@ -211,7 +211,7 @@ function version0_0_4(sessionContext, user, saveUser) {
               quoteId: undefined,
               fromQuote: {
                 _id: document.quoteId,
-                publicId: quote.publicId,
+                publicId: quote?.publicId,
               },
             };
           })
@@ -229,7 +229,7 @@ function version0_0_4(sessionContext, user, saveUser) {
                 invoiceId: undefined,
                 toInvoice: {
                   _id: document.invoiceId,
-                  publicId: invoice.publicId,
+                  publicId: invoice?.publicId,
                 },
               };
             })
