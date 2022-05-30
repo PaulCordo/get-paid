@@ -1,6 +1,4 @@
-const { INVOICE } = require("./documentTypes");
-
-const currentDbVersion = "v0.0.4";
+const { INVOICE, QUOTE } = require("./documentTypes");
 
 function noVersion(sessionContext, user, saveUser) {
   // We have to add a publicId field to documents and use the number field only as doucment numbering (count)
@@ -121,8 +119,6 @@ function version0_0_2(sessionContext, user, saveUser) {
           .then(() => saveUser(user).catch(reject).then(resolve));
       }
     });
-
-    saveUser(user).catch(reject).then(resolve);
   });
 }
 
@@ -158,10 +154,104 @@ function version0_0_3(sessionContext, user, saveUser) {
           .then(() => saveUser(user).catch(reject).then(resolve));
       }
     });
-
-    saveUser(user).catch(reject).then(resolve);
   });
 }
+
+function version0_0_4(sessionContext, user, saveUser) {
+  return new Promise((resolve, reject) => {
+    user.dbVersions = "v0.0.5";
+    // add publicId to quotes and invoices that have a invoiceId or quoteId
+
+    Promise.all([
+      new Promise((resolve, reject) => {
+        sessionContext.documents.find(
+          { quoteId: { $exists: true }, type: INVOICE },
+          (err, invoicesFromQuote) => {
+            if (err) {
+              console.error(
+                "open-session update db version open documents: ",
+                err
+              );
+              reject(err);
+            } else {
+              resolve(invoicesFromQuote);
+            }
+          }
+        );
+      }),
+      new Promise((resolve, reject) => {
+        sessionContext.documents.find(
+          { invoiceId: { $exists: true }, type: QUOTE },
+          (err, quotesFromInvoices) => {
+            if (err) {
+              console.error(
+                "open-session update db version open documents: ",
+                err
+              );
+              reject(err);
+            } else {
+              resolve(quotesFromInvoices);
+            }
+          }
+        );
+      }),
+    ]).then(([invoicesFromQuote, quotesFromInvoices]) => {
+      Promise.all(
+        invoicesFromQuote
+          .map((document) => {
+            const quote = quotesFromInvoices.find(
+              ({ _id }) => _id === document.quoteId
+            );
+            !quote &&
+              console.warn(
+                `Couldn't find quote ${document.quoteId} linked with invoice ${document.publicId} (${document._id})`
+              );
+            return {
+              ...document,
+              quoteId: undefined,
+              fromQuote: {
+                _id: document.quoteId,
+                publicId: quote.publicId,
+              },
+            };
+          })
+          .concat(
+            quotesFromInvoices.map((document) => {
+              const invoice = invoicesFromQuote.find(
+                ({ _id }) => _id === document.invoiceId
+              );
+              !invoice &&
+                console.warn(
+                  `Couldn't find invoice ${document.invoiceId} linked with quote ${document.publicId} (${document._id})`
+                );
+              return {
+                ...document,
+                invoiceId: undefined,
+                toInvoice: {
+                  _id: document.invoiceId,
+                  publicId: invoice.publicId,
+                },
+              };
+            })
+          )
+          .map(
+            (document) =>
+              new Promise((resolve, reject) =>
+                sessionContext.documents.update(
+                  { _id: document._id },
+                  document,
+                  (err) => (err ? reject(err) : resolve())
+                )
+              )
+          )
+      )
+        .catch(reject)
+        .then(() => saveUser(user).catch(reject).then(resolve));
+    });
+  });
+}
+
+const currentDbVersion = "v0.0.5";
 
 module.exports = {
   currentDbVersion,
@@ -169,4 +259,5 @@ module.exports = {
   version0_0_1,
   version0_0_2,
   version0_0_3,
+  version0_0_4,
 };

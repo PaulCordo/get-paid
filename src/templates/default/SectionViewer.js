@@ -1,5 +1,6 @@
 import React from "react";
 import Table from "react-bootstrap/Table";
+import { currency } from "../../numberFormat";
 
 export function SectionViewer({ section: { title, rows } }) {
   const total = rows.reduce(
@@ -32,7 +33,7 @@ export function SectionViewer({ section: { title, rows } }) {
               <td>{name}</td>
               <td className="text-end">{price}€</td>
               <td className="text-end">{quantity}</td>
-              <td className="text-end">{price * quantity}€</td>
+              <td className="text-end">{currency.format(price * quantity)}</td>
             </tr>
           ))}
           <tr>
@@ -47,7 +48,7 @@ export function SectionViewer({ section: { title, rows } }) {
               colSpan="2"
               className="border-bottom-0 pt-3 text-end fixed-col-width"
             >
-              {total}€
+              {currency.format(total)}
             </td>
           </tr>
         </tbody>

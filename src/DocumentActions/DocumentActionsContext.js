@@ -14,6 +14,8 @@ export const DocumentActionsContext = React.createContext({
   duplicate: () => {},
   setPaid: () => {},
   archive: () => {},
+  cancelInvoice: () => {},
+  creditNote: () => {},
 });
 
 export function DocumentActionsProvider({
@@ -115,6 +117,52 @@ export function DocumentActionsProvider({
     [getHandleCloseTab, setActiveTab, setTabs]
   );
 
+  const cancelInvoice = useCallback(
+    (document) => {
+      const key = "cancel-and-replace-" + document._id;
+      setTabs((tabs) =>
+        tabs.concat([
+          {
+            title: `Annule ${document.publicId}`,
+            key,
+            state: documentStates.NEW,
+            component: (
+              <DocumentCreatorTab
+                source={{ ...document, canceled: true }}
+                onClose={getHandleCloseTab(key)}
+              />
+            ),
+          },
+        ])
+      );
+      setActiveTab(key);
+    },
+    [getHandleCloseTab, setActiveTab, setTabs]
+  );
+
+  const creditNote = useCallback(
+    (document) => {
+      const key = "credit-and-replace-" + document._id;
+      setTabs((tabs) =>
+        tabs.concat([
+          {
+            title: `Crédite ${document.publicId}`,
+            key,
+            state: documentStates.NEW,
+            component: (
+              <DocumentCreatorTab
+                source={{ ...document, credited: true }}
+                onClose={getHandleCloseTab(key)}
+              />
+            ),
+          },
+        ])
+      );
+      setActiveTab(key);
+    },
+    [getHandleCloseTab, setActiveTab, setTabs]
+  );
+
   const documentActionContextValue = useMemo(
     () => ({
       add,
@@ -125,6 +173,8 @@ export function DocumentActionsProvider({
       download: downloadDocument,
       setPaid,
       archive,
+      cancelInvoice,
+      creditNote,
     }),
     [
       add,
@@ -135,6 +185,8 @@ export function DocumentActionsProvider({
       downloadDocument,
       setPaid,
       archive,
+      cancelInvoice,
+      creditNote,
     ]
   );
   return (

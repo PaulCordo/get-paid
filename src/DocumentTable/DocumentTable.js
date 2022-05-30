@@ -14,6 +14,7 @@ import {
 
 import { getDocumentColor } from "../documentStates";
 import { SessionContext } from "../SessionContext";
+import { PublicIdCell } from "./PublicIdCell";
 import { ClientCell } from "./ClientCell";
 import { ActionsCell } from "./ActionsCell";
 import { DateCell } from "./DateCell";
@@ -40,7 +41,7 @@ export function DocumentTable() {
       {
         Header: "Identifiant",
         accessor: "publicId",
-        className: "text-center",
+        Cell: PublicIdCell,
         Filter: StateFilter,
         filter: stateFilter,
       },

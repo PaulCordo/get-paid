@@ -11,8 +11,8 @@ import { currency } from "../../numberFormat";
 import { SectionViewer } from "./SectionViewer";
 import "./default.scss";
 
-export function Invoice({
-  document: {
+export function Invoice({ document }) {
+  const {
     publicId,
     user,
     type = INVOICE,
@@ -24,8 +24,9 @@ export function Invoice({
     details, // deprecated
     sections,
     total,
-  },
-}) {
+    creditForInvoice,
+    cancelInvoice,
+  } = document;
   const documentDate = useMemo(() => new Date(date), [date]);
   const documentvalidUntil = useMemo(() => new Date(validUntil), [validUntil]);
   const documentValidUntil = useMemo(() => new Date(validUntil), [validUntil]);
@@ -40,6 +41,16 @@ export function Invoice({
             {publicId}
           </span>
         </h4>
+        {creditForInvoice && (
+          <h5 className="info fw-bold">
+            Avoir pour #{creditForInvoice.publicId}
+          </h5>
+        )}
+        {cancelInvoice && (
+          <h5 className="info fw-bold">
+            Annule et remplace #{cancelInvoice.publicId}
+          </h5>
+        )}
         <div className="w-100 d-flex align-items-start justify-content-between mt-3">
           <div>
             {user && <AccountDisplay client={user} />}
