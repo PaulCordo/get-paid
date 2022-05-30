@@ -117,6 +117,9 @@ module.exports = (mainWindow) => {
           case "v0.0.3":
             await migrations.version0_0_3(sessionContext, user, saveUser);
           // falls through
+          case "v0.0.4":
+            await migrations.version0_0_4(sessionContext, user, saveUser);
+          // falls through
           case currentDbVersion:
             break;
           default:
@@ -188,109 +191,19 @@ module.exports = (mainWindow) => {
     });
   });
 
-  function insertDocument(event, document) {
-    sessionContext.documents.insert(document, (err, { _id }) => {
-      if (err) {
-        console.error("document-save", err);
-        event.reply("document-save", err, document);
-      } else if (document.quoteId && document.type === INVOICE) {
-        sessionContext.documents.update(
-          { _id: document.quoteId },
-          { $set: { invoiceId: _id } },
-          {},
-          (updateErr) => {
-            if (updateErr) {
-              console.error(
-                "document-save update quote with invoice id",
-                updateErr
-              );
-            }
-            event.reply("document-save", updateErr, document);
-          }
-        );
-      } else {
-        event.reply("document-save", err, document);
-      }
-    });
-  }
-
   ipcMain.on("document-save", (event, document) => {
-    new Promise((resolve) => {
-      if (!document.draft) {
-        const documentYear = document.date.slice(0, 4);
-        sessionContext.documents
-          .find({
-            date: {
-              $lt: (Number(documentYear) + 1).toString().padStart(4, "0"),
-              $gte: documentYear,
-            },
-            type: document.type,
-          })
-          .sort({ number: -1 })
-          .limit(1)
-          .exec((err, [{ number } = {}]) => {
-            document.number = !number || err ? 1 : number + 1;
-            const format =
-              document.type === INVOICE
-                ? sessionContext.user.invoiceFormat
-                : sessionContext.user.quoteFormat;
-            document.publicId = getDocumentPublicId(
-              format,
-              documentYear,
-              document.number
-            );
-            resolve(document);
-          });
-      } else {
-        resolve(document);
-      }
-    })
-      .then(
-        (document) =>
-          new Promise((resolve) => {
-            if (document.quoteId) {
-              // archive billed quote
-              sessionContext.documents.update(
-                { _id: document.quoteId },
-                { $set: { archived: true } },
-                (err, numAffected) => {
-                  if (err) {
-                    console.error("document-save", err);
-                    event.reply("document-save", err);
-                  }
-                  if (numAffected) {
-                    event.reply("document-save", err, document);
-                  } else {
-                    insertDocument(event, document);
-                  }
-                }
-              );
-            } else {
-              resolve(document);
-            }
-          })
-      )
+    console.debug("document-save");
+    addDocumentPublicId(document, sessionContext)
+      .then((document) => tryUpdateDraftOrInsert(document, sessionContext))
+      .then((document) => tryUpdateBilledQuote(document, sessionContext))
+      .then((document) => tryUpdateCanceledInvoice(document, sessionContext))
+      .then((document) => tryUpdateCreditedInvoice(document, sessionContext))
       .then((document) => {
-        if (document._id) {
-          // try to update an existing draft
-          sessionContext.documents.update(
-            { _id: document._id, draft: true },
-            document,
-            (err, numAffected) => {
-              if (err) {
-                console.error("document-save", err);
-                event.reply("document-save", err);
-              }
-              if (numAffected) {
-                event.reply("document-save", err, document);
-              } else {
-                insertDocument(event, document);
-              }
-            }
-          );
-        } else {
-          insertDocument(event, document);
-        }
+        event.reply("document-save", undefined, document);
+      })
+      .catch((err) => {
+        console.error("document-save", err.message, err.error);
+        event.reply("document-save", err, document);
       });
   });
 
@@ -407,4 +320,164 @@ function getDocumentPublicId(formatString, year, number) {
       }
       return year.padStart(charCount, "0");
     });
+}
+
+function addDocumentPublicId(document, sessionContext) {
+  return new Promise((resolve) => {
+    console.debug("addDocumentPublicId");
+    if (!document.draft) {
+      const documentYear = document.date.slice(0, 4);
+      sessionContext.documents
+        .find({
+          date: {
+            $lt: (Number(documentYear) + 1).toString().padStart(4, "0"),
+            $gte: documentYear,
+          },
+          type: document.type,
+        })
+        .sort({ number: -1 })
+        .limit(1)
+        .exec((err, [{ number } = {}]) => {
+          document.number = !number || err ? 1 : number + 1;
+          const format =
+            document.type === INVOICE
+              ? sessionContext.user.invoiceFormat
+              : sessionContext.user.quoteFormat;
+          document.publicId = getDocumentPublicId(
+            format,
+            documentYear,
+            document.number
+          );
+          resolve(document);
+        });
+    } else {
+      resolve(document);
+    }
+  });
+}
+
+function tryUpdateBilledQuote(document, sessionContext) {
+  return new Promise((resolve, reject) => {
+    console.debug("tryUpdateBilledQuote");
+    if (!document.draft && document.fromQuote && document._id) {
+      sessionContext.documents.update(
+        { _id: document.fromQuote._id },
+        {
+          $set: {
+            archived: true,
+            toInvoice: { _id: document._id, publicId: document.publicId },
+          },
+        },
+        (error) => {
+          if (error) {
+            reject({
+              message: "Couldn't update billed quote",
+              error,
+            });
+          } else {
+            resolve(document);
+          }
+        }
+      );
+    } else {
+      resolve(document);
+    }
+  });
+}
+
+function tryUpdateCanceledInvoice(document, sessionContext) {
+  return new Promise((resolve, reject) => {
+    console.debug("tryUpdateCanceledInvoice");
+    if (
+      !document.draft &&
+      document.cancelInvoice &&
+      document.type === INVOICE &&
+      document._id
+    ) {
+      sessionContext.documents.update(
+        { _id: document.cancelInvoice._id },
+        { $set: { canceledBy: document._id, archived: true } },
+        {},
+        (error) => {
+          if (error) {
+            reject({
+              message: "Couldn't update canceled Invoice",
+              error,
+            });
+          } else {
+            resolve(document);
+          }
+        }
+      );
+    } else {
+      resolve(document);
+    }
+  });
+}
+
+function tryUpdateCreditedInvoice(document, sessionContext) {
+  return new Promise((resolve, reject) => {
+    console.debug("tryUpdateCreditedInvoice");
+    if (
+      !document.draft &&
+      document.creditForInvoice &&
+      document.type === INVOICE &&
+      document._id
+    ) {
+      sessionContext.documents.update(
+        { _id: document.creditForInvoice._id },
+        { $set: { creditedBy: document._id } },
+        {},
+        (error) => {
+          if (error) {
+            reject({
+              message: "Couldn't update credited Invoice",
+              error,
+            });
+          } else {
+            resolve(document);
+          }
+        }
+      );
+    } else {
+      resolve(document);
+    }
+  });
+}
+
+function tryUpdateDraftOrInsert(document, sessionContext) {
+  return new Promise((resolve, reject) => {
+    console.debug("tryUpdateDraftOrInsert");
+    if (document._id) {
+      // try to update an existing draft
+      sessionContext.documents.update(
+        { _id: document._id, draft: true },
+        document,
+        (error, numAffected) => {
+          if (error) {
+            reject({ message: "Can't update existing draft", error, document });
+          } else if (numAffected) {
+            resolve(document);
+          } else {
+            sessionContext.documents.insert(document, (error, document) =>
+              error
+                ? reject({
+                    message:
+                      "Couldn't insert new document after failing updating draft",
+                    error,
+                    document,
+                  })
+                : resolve(document)
+            );
+          }
+        }
+      );
+    } else {
+      sessionContext.documents.insert(document, (error, document) =>
+        error
+          ? reject({ message: "Couldn't insert new document", error, document })
+          : resolve(document)
+      );
+    }
+  });
 }

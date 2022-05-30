@@ -40,6 +40,7 @@ const emptyDocument = {
 function getDefaultValuesFromSourceDocument(source, user) {
   const defaultValues = { ...emptyDocument, user };
   if (source) {
+    console.debug("Document source:", source);
     defaultValues.title = source.title;
     defaultValues.description = source.description;
     defaultValues.client = source.client;
@@ -53,6 +54,21 @@ function getDefaultValuesFromSourceDocument(source, user) {
       if (source.date) {
         defaultValues.date = source.date;
       }
+      if (source.canceled) {
+        defaultValues.cancelInvoice = {
+          publicId: source.publicId,
+          _id: source._id,
+        };
+      }
+      if (source.cancelInvoice) {
+        defaultValues.cancelInvoice = source.cancelInvoice;
+      }
+      if (source.creditForInvoice) {
+        defaultValues.creditForInvoice = source.creditForInvoice;
+      }
+      if (fromDraft && source.fromQuote) {
+        defaultValues.fromQuote = source.fromQuote;
+      }
     }
     if (source.sections) {
       defaultValues.sections = source.sections.map((section) => ({
@@ -63,7 +79,7 @@ function getDefaultValuesFromSourceDocument(source, user) {
       if (fromDraft) {
         defaultValues._id = source._id;
       } else if (isInvoiceFromQuote) {
-        defaultValues.quoteId = source._id;
+        defaultValues.fromQuote = source.fromQuote;
       }
     }
   }
@@ -79,7 +95,6 @@ export function DocumentCreatorForm({
   const { user } = useContext(SessionContext);
   const {
     register,
-    unregister,
     control,
     handleSubmit,
     getValues,
@@ -110,27 +125,15 @@ export function DocumentCreatorForm({
     }
   }, [date, setValue, dirtyFields.validUntil]);
 
-  const type = watch("type");
-  useEffect(() => {
-    switch (type) {
-      case INVOICE:
-        unregister("validUntil");
-        break;
-      case QUOTE:
-        unregister("validUntil");
-        unregister("quoteId");
-        break;
-      default:
-        break;
-    }
-  }, [type, unregister]);
-
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   const total = watch("total");
   const tax = watch("user.tax");
-  const quoteId = watch("quoteId");
+  const fromQuote = watch("fromQuote");
   const _id = watch("_id");
+
+  const cancelInvoice = watch("cancelInvoice");
+  const creditForInvoice = watch("creditForInvoice");
 
   const saveDraft = () => onDraftSave({ ...getValues(), draft: true });
 
@@ -139,9 +142,6 @@ export function DocumentCreatorForm({
       <DocumentCreatorCloseButton onClose={onClose} onDraftSave={saveDraft} />
       {_id && <Form.Control type="hidden" {...register("_id")} />}
       <Form.Control type="hidden" {...register("user", { required: true })} />
-      {type === INVOICE && source.quoteId && (
-        <Form.Control type="hidden" {...register("quoteId")} />
-      )}
       <Row>
         <Col lg="4" xl="3">
           <Input
@@ -164,6 +164,54 @@ export function DocumentCreatorForm({
             className="mb-3"
           />
         </Col>
+
+        {fromQuote && (
+          <Col lg="4" xl="4">
+            <Form.Control type="hidden" {...register("fromQuote")} />
+            <Form.Group>
+              <Form.Label htmlFor="fromQuote">Facture pour le devis</Form.Label>
+              <Form.Control
+                id="fromQuote"
+                type="text"
+                readOnly
+                value={fromQuote.publicId}
+              />
+            </Form.Group>
+          </Col>
+        )}
+        {cancelInvoice && (
+          <Col lg="4" xl="4">
+            <Form.Control type="hidden" {...register("cancelInvoice")} />
+            <Form.Group>
+              <Form.Label htmlFor="cancelInvoice">
+                Annule et remplace la facture #
+              </Form.Label>
+              <Form.Control
+                id="cancelInvoice"
+                type="text"
+                readOnly
+                value={cancelInvoice.publicId}
+              />
+            </Form.Group>
+          </Col>
+        )}
+
+        {creditForInvoice && (
+          <Col lg="4" xl="4">
+            <Form.Control type="hidden" {...register("creditForInvoice")} />
+            <Form.Group>
+              <Form.Label htmlFor="creditForInvoice">
+                Avoir pour la facture #
+              </Form.Label>
+              <Form.Control
+                id="creditForInvoice"
+                type="text"
+                readOnly
+                value={creditForInvoice.publicId}
+              />
+            </Form.Group>
+          </Col>
+        )}
       </Row>
       <Row>
         <Col lg="12" xxl="8">
@@ -230,8 +278,8 @@ export function DocumentCreatorForm({
                 <FaSave />
               </Button>
               {
-                // User can't create a quote if he wanted to bill from one
-                !quoteId && (
+                // User can't create a quote if he wanted to bill from one or cancel/credit another invoice
+                !fromQuote && !cancelInvoice && !creditForInvoice && (
                   <Button
                     variant="primary"
                     size="lg"
