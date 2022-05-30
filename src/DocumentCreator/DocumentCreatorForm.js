@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
@@ -15,7 +15,6 @@ import MDEditor from "@uiw/react-md-editor";
 import { Controller, useForm } from "react-hook-form";
 
 import { Input } from "../Form";
-import { SessionContext } from "../SessionContext";
 import { SmallClientManager } from "../SmallClientManager";
 import { ConfirmModal } from "../Modals";
 import { INVOICE, QUOTE } from "../documentTypes";
@@ -23,76 +22,12 @@ import { currency } from "../numberFormat";
 import { Sections } from "./Sections";
 import { DocumentCreatorCloseButton } from "./DocumentCreatorCloseButton";
 
-const emptyDocument = {
-  title: "",
-  description: "",
-  date: format(new Date(), "yyyy-MM-dd"),
-  client: null,
-  sections: [
-    { name: "", rows: [{ name: "", price: 0, quantity: 0 }], total: 0 },
-  ],
-  total: 0,
-  type: INVOICE,
-  draft: true,
-  validUntil: format(add(new Date(), { months: 1 }), "yyyy-MM-dd"),
-};
-
-function getDefaultValuesFromSourceDocument(source, user) {
-  const defaultValues = { ...emptyDocument, user };
-  if (source) {
-    console.debug("Document source:", source);
-    defaultValues.title = source.title;
-    defaultValues.description = source.description;
-    defaultValues.client = source.client;
-
-    const fromDraft = source.draft;
-    const isInvoiceFromQuote = source.type === QUOTE && !fromDraft;
-    if (!isInvoiceFromQuote) {
-      if (source.type) {
-        defaultValues.type = source.type;
-      }
-      if (source.date) {
-        defaultValues.date = source.date;
-      }
-      if (source.canceled) {
-        defaultValues.cancelInvoice = {
-          publicId: source.publicId,
-          _id: source._id,
-        };
-      }
-      if (source.cancelInvoice) {
-        defaultValues.cancelInvoice = source.cancelInvoice;
-      }
-      if (source.creditForInvoice) {
-        defaultValues.creditForInvoice = source.creditForInvoice;
-      }
-      if (fromDraft && source.fromQuote) {
-        defaultValues.fromQuote = source.fromQuote;
-      }
-    }
-    if (source.sections) {
-      defaultValues.sections = source.sections.map((section) => ({
-        ...section,
-      }));
-    }
-    if (source._id) {
-      if (fromDraft) {
-        defaultValues._id = source._id;
-      } else if (isInvoiceFromQuote) {
-        defaultValues.fromQuote = source.fromQuote;
-      }
-    }
-  }
-  return defaultValues;
-}
-
 export function DocumentCreatorForm({
   onClose = () => {},
-  source = {},
+  document = {},
   onSubmit = () => {},
   onDraftSave = () => {},
 }) {
-  const { user } = useContext(SessionContext);
   const {
     register,
     control,
@@ -102,16 +37,17 @@ export function DocumentCreatorForm({
     setValue,
     formState: { dirtyFields, isValid },
   } = useForm({
-    defaultValues: getDefaultValuesFromSourceDocument(source, user),
+    defaultValues: document,
     mode: "onChange",
   });
 
   // we have to set validUntil with setValue and not defaultValue to dirty the field
   useEffect(() => {
-    source.draft &&
-      source.validUntil &&
-      setValue("validUntil", source.validUntil);
-  }, [source, setValue]);
+    document.draft &&
+      document.validUntil !==
+        format(add(new Date(), { months: 1 }), "yyyy-MM-dd") &&
+      setValue("validUntil", document.validUntil);
+  }, [document, setValue]);
 
   // update validUntil when date is changed and they're still untouched
   const date = watch("date");

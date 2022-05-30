@@ -1,74 +1,45 @@
 import React, { useContext, useState } from "react";
 import Container from "react-bootstrap/Container";
-import { format, add } from "date-fns";
 
 import { SessionContext } from "../SessionContext";
 
 import { DocumentCreatorForm } from "./DocumentCreatorForm";
 import { DocumentCreatorPreview } from "./DocumentCreatorPreview";
-import { INVOICE } from "../documentTypes";
+import { getDocumentFromSource } from "./getDocumentFromSource";
 
-function getCreditFromCreditedSource({
-  title,
-  description,
-  user,
-  client,
-  sections,
-  total,
-  _id,
-  publicId,
-}) {
-  return {
-    title,
-    description,
-    user,
-    client,
-    type: INVOICE,
-    draft: false,
-    date: format(new Date(), "yyyy-MM-dd"),
-    validUntil: format(add(new Date(), { months: 1 }), "yyyy-MM-dd"),
-    sections: sections.map(({ rows, total, ...section }) => ({
-      ...section,
-      total: -total,
-      rows: rows.map(({ price, ...row }) => ({ ...row, price: -price })),
-    })),
-    total: -total,
-    creditForInvoice: { _id, publicId },
-  };
-}
 export function DocumentCreatorTab({ onClose = () => {}, source = {} }) {
-  const { createDocument } = useContext(SessionContext);
+  const { createDocument, user } = useContext(SessionContext);
 
-  const [credit] = useState(
-    source.credited && getCreditFromCreditedSource(source)
-  );
+  const [document, setDocument] = useState(getDocumentFromSource(source, user));
 
-  const [preview, setPreview] = useState(credit);
+  const [preview, setPreview] = useState(source.credited);
 
   const saveDocument = () =>
     preview &&
-    createDocument({ ...preview, draft: false }).then(() => {
-      setPreview(null);
+    createDocument({ ...document, draft: false }).then(() => {
+      setPreview(false);
       onClose();
     });
   const saveDraft = (document) =>
     createDocument({ ...document, draft: true }).then(onClose);
   return (
     <Container className="document-create py-3 h-100">
-      {preview && (
+      {preview ? (
         <DocumentCreatorPreview
-          document={preview}
-          onEdit={() => setPreview(null)}
+          document={document}
+          onEdit={() => setPreview(false)}
           onValidate={saveDocument}
           onDraftSave={saveDraft}
           onClose={onClose}
         />
-      )}
-      {!preview && (
+      ) : (
         <DocumentCreatorForm
-          source={credit || source}
+          document={document}
           onClose={onClose}
-          onSubmit={setPreview}
+          onSubmit={(document) => {
+            setDocument(document);
+            setPreview(true);
+          }}
           onDraftSave={saveDraft}
         />
       )}
