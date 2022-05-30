@@ -1,5 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import {
   FaEye,
   FaFileDownload,
@@ -10,6 +11,7 @@ import {
   FaEuroSign,
   FaSlash,
   FaArchive,
+  FaTimesCircle,
 } from "react-icons/fa";
 
 import { DocumentActionsContext } from "./DocumentActionsContext";
@@ -24,8 +26,18 @@ export function DocumentActionButtons({
   canView = true,
 }) {
   const documentState = getDocumentState(document);
-  const { view, duplicate, edit, deleteDraft, download, setPaid, archive } =
-    useContext(DocumentActionsContext);
+  const {
+    view,
+    duplicate,
+    edit,
+    deleteDraft,
+    download,
+    setPaid,
+    archive,
+    cancelInvoice,
+    creditNote,
+  } = useContext(DocumentActionsContext);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   switch (documentState) {
     case DRAFT:
       return (
@@ -89,7 +101,7 @@ export function DocumentActionButtons({
               variant="success"
               title="Marquer impayée"
               size={size}
-              className="paid-button"
+              className="paid-button me-3"
             >
               <FaEuroSign />
             </Button>
@@ -97,10 +109,68 @@ export function DocumentActionButtons({
             <Button
               onClick={() => setPaid(document, true)}
               variant="outline-success"
+              className="me-3"
               title="Marquer payée"
               size={size}
             >
               <FaEuroSign />
+            </Button>
+          )}
+          {!document.canceledBy && !document.creditedBy && (
+            <>
+              <Button
+                onClick={() => setShowCancelModal(true)}
+                variant="danger"
+                title="Annuler"
+                size={size}
+              >
+                <FaTimesCircle />
+              </Button>
+              <Modal
+                show={showCancelModal}
+                onEscapeKeyDown={() => setShowCancelModal(false)}
+                onHide={() => setShowCancelModal(false)}
+                centered
+              >
+                <Modal.Header closeButton>
+                  <h4>Annuler la facture #{document.publicId}</h4>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>Comment souhaitez-vous annuler ce document ?</p>
+                  <div className="text-end">
+                    <Button
+                      variant={document.paid ? "secondary" : "success"}
+                      className="me-3"
+                      onClick={() => {
+                        cancelInvoice(document);
+                        setShowCancelModal(false);
+                      }}
+                    >
+                      Annuler et remplacer
+                    </Button>
+                    <Button
+                      variant={document.paid ? "success" : "secondary"}
+                      onClick={() => {
+                        creditNote(document);
+                        setShowCancelModal(false);
+                      }}
+                    >
+                      Créer un avoir
+                    </Button>
+                  </div>
+                </Modal.Body>
+              </Modal>
+            </>
+          )}
+          {document.canceledBy && (
+            <Button
+              onClick={() => archive(document, !document.archived)}
+              variant="warning"
+              title={document.archived ? "Désarchiver" : "Archiver"}
+              size={size}
+            >
+              <FaArchive />
+              {document.archived && <FaSlash style={{ marginLeft: "-1em" }} />}
             </Button>
           )}
         </>
