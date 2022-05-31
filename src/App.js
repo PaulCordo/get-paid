@@ -39,7 +39,7 @@ export function App() {
           <DocumentsTab />
         </Tab.Pane>
         <Tab.Pane eventKey="configuration">
-          <Configuration />
+          <Configuration close={() => setActiveTab("documents")} />
         </Tab.Pane>
       </Tab.Content>
     </Tab.Container>
