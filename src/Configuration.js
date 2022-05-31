@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import { SessionContext } from "./SessionContext";
 import { AccountEditor } from "./AccountEditor";
 
-export function Configuration() {
+export function Configuration({ close = () => {} }) {
   const { user, saveUser } = useContext(SessionContext);
   const [cancelKey, setCancelKey] = useState(Date.now());
   return (
@@ -16,7 +16,9 @@ export function Configuration() {
       <AccountEditor
         account={user}
         user
-        onSave={saveUser}
+        onSave={(user) => {
+          saveUser(user).then(close);
+        }}
         onCancel={() => setCancelKey(Date.now())}
         key={cancelKey}
       />
