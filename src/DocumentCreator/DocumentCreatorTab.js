@@ -7,12 +7,12 @@ import { DocumentCreatorForm } from "./DocumentCreatorForm";
 import { DocumentCreatorPreview } from "./DocumentCreatorPreview";
 import { getDocumentFromSource } from "./getDocumentFromSource";
 
-export function DocumentCreatorTab({ onClose = () => {}, source = {} }) {
+export function DocumentCreatorTab({ onClose = () => {}, source }) {
   const { createDocument, user } = useContext(SessionContext);
 
   const [document, setDocument] = useState(getDocumentFromSource(source, user));
 
-  const [preview, setPreview] = useState(source.credited);
+  const [preview, setPreview] = useState(source?.credited);
 
   const saveDocument = () =>
     preview &&
