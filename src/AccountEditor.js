@@ -9,9 +9,11 @@ import { useForm } from "react-hook-form";
 import { Input, Select } from "./Form";
 import { templates, defaultTemplate } from "./templates";
 
+const idTypes = ["SIREN", "SIRET", "RNA"];
+
 const defaultClient = {
   name: "",
-  idType: "",
+  idType: idTypes[0],
   idNumber: "",
   addressLine1: "",
   addressLine2: "",
@@ -28,8 +30,6 @@ const defaultUser = {
   quoteFormat: "D{YYYY}-{NNN}",
   invoiceFormat: "{YYYY}{NNN}",
 };
-
-const idTypes = ["SIREN", "SIRET", "RNA"];
 
 export function AccountEditor({
   account = {},
@@ -102,7 +102,8 @@ export function AccountEditor({
             className="mb-3"
             name="idType"
             label="Type"
-            readOnly={isEditingUser}
+            required
+            disabled={isEditingUser}
             options={idTypes.map((type) => (
               <option key={type} value={type}>
                 {type}
@@ -327,7 +328,8 @@ export function SmallAccountEditor({
           md={4}
           className="mb-1"
           name="idType"
-          readOnly={isEditingUser}
+          required
+          disabled={isEditingUser}
           options={idTypes.map((type) => (
             <option key={type} value={type}>
               {type}

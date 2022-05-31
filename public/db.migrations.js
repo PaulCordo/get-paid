@@ -251,7 +251,82 @@ function version0_0_4(sessionContext, user, saveUser) {
   });
 }
 
-const currentDbVersion = "v0.0.5";
+function version0_0_5(sessionContext, user, saveUser) {
+  return new Promise((resolve, reject) => {
+    const defaultIdType = "SIREN";
+    user.dbVersions = "v0.0.6";
+    user.idType = user.idType || defaultIdType;
+    // missing idType
+    sessionContext.clients.find({}, (err, clients) => {
+      if (err) {
+        console.error("open-session update db version open clients: ", err);
+        reject(err);
+      } else {
+        Promise.all(
+          clients
+            .filter(({ idType }) => !idType)
+            .map((client) => ({
+              ...client,
+              idType: defaultIdType,
+            }))
+            .filter((client) => client)
+            .map(
+              (client) =>
+                new Promise((resolve, reject) =>
+                  sessionContext.clients.update(
+                    { _id: client._id },
+                    client,
+                    (err) => (err ? reject(err) : resolve())
+                  )
+                )
+            )
+        )
+          .catch(reject)
+          .then(() =>
+            sessionContext.documents.find({}, (err, documents) => {
+              if (err) {
+                console.error(
+                  "open-session update db version open documents: ",
+                  err
+                );
+                reject(err);
+              } else {
+                Promise.all(
+                  documents
+                    .filter(
+                      ({ user, client }) => !user.idType || !client.idType
+                    )
+                    .map(({ user, client, ...document }) => ({
+                      user: { ...user, idType: user.idType || defaultIdType },
+                      client: {
+                        ...client,
+                        idType: client.idType || defaultIdType,
+                      },
+                      ...document,
+                    }))
+                    .filter((document) => document)
+                    .map(
+                      (document) =>
+                        new Promise((resolve, reject) =>
+                          sessionContext.documents.update(
+                            { _id: document._id },
+                            document,
+                            (err) => (err ? reject(err) : resolve())
+                          )
+                        )
+                    )
+                )
+                  .catch(reject)
+                  .then(() => saveUser(user).catch(reject).then(resolve));
+              }
+            })
+          );
+      }
+    });
+  });
+}
+
+const currentDbVersion = "v0.0.6";
 
 module.exports = {
   currentDbVersion,
@@ -260,4 +335,5 @@ module.exports = {
   version0_0_2,
   version0_0_3,
   version0_0_4,
+  version0_0_5,
 };
