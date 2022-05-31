@@ -32,7 +32,7 @@ export function getDocumentFromSource(source, user) {
     title: source.title,
     description: source.description,
     client: source.client,
-    sections: source.sections.map((section) => ({
+    sections: source.sections?.map((section) => ({
       ...section,
     })),
     user,
@@ -62,10 +62,10 @@ export function getDocumentFromSource(source, user) {
     // source invoice will be transformed in a credit note, negative copy
     return {
       ...document,
-      sections: source.sections.map(({ rows, total, ...section }) => ({
+      sections: source.sections?.map(({ rows, total, ...section }) => ({
         ...section,
         total: -total,
-        rows: rows.map(({ price, ...row }) => ({ ...row, price: -price })),
+        rows: rows?.map(({ price, ...row }) => ({ ...row, price: -price })),
       })),
       total: -source.total,
       creditForInvoice: { _id: source._id, publicId: source.publicId },
