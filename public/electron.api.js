@@ -120,6 +120,9 @@ module.exports = (mainWindow) => {
           case "v0.0.4":
             await migrations.version0_0_4(sessionContext, user, saveUser);
           // falls through
+          case "v0.0.5":
+            await migrations.version0_0_5(sessionContext, user, saveUser);
+          // falls through
           case currentDbVersion:
             break;
           default:
