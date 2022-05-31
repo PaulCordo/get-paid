@@ -19,16 +19,23 @@ export function DocumentsTab() {
     },
     []
   );
+  const switchTab = (tabKey) => {
+    setActiveTab(tabKey);
+    document.body.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
   return (
     <DocumentActionsProvider
-      setActiveTab={setActiveTab}
+      setActiveTab={switchTab}
       setTabs={setTabs}
       getHandleCloseTab={getHandleCloseTab}
     >
       <Tab.Container
         activeKey={activeTab}
         id="document-tabs"
-        onSelect={setActiveTab}
+        onSelect={switchTab}
       >
         <Nav
           className="position-fixed start-0 py-3 px-2 border-end-1 d-print-none"
@@ -37,7 +44,7 @@ export function DocumentsTab() {
           <Nav.Item
             as={Button}
             key="all"
-            onClick={() => setActiveTab("all")}
+            onClick={() => switchTab("all")}
             variant={(activeTab !== "all" ? "outline-" : "") + "dark"}
             className="w-100 mb-2"
           >
@@ -48,7 +55,7 @@ export function DocumentsTab() {
               <Nav.Item
                 as={Button}
                 key={key}
-                onClick={() => setActiveTab(key)}
+                onClick={() => switchTab(key)}
                 variant={
                   (activeTab !== key ? "outline-" : "") + variantByState[state]
                 }
