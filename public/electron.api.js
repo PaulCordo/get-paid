@@ -268,7 +268,7 @@ module.exports = (mainWindow) => {
   });
 
   ipcMain.on("document-download", (event, document) => {
-    mainWindow.webContents
+    mainWindow?.webContents
       .printToPDF({ pageSize: "A4" })
       .then((data) => {
         const name = dialog.showSaveDialogSync(mainWindow, {
