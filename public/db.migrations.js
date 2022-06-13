@@ -294,14 +294,16 @@ function version0_0_5(sessionContext, user, saveUser) {
                 Promise.all(
                   documents
                     .filter(
-                      ({ user, client }) => !user.idType || !client.idType
+                      ({ user, client }) => !user?.idType || !client?.idType
                     )
                     .map(({ user, client, ...document }) => ({
                       user: { ...user, idType: user.idType || defaultIdType },
-                      client: {
-                        ...client,
-                        idType: client.idType || defaultIdType,
-                      },
+                      client: client
+                        ? {
+                            ...client,
+                            idType: client.idType || defaultIdType,
+                          }
+                        : undefined,
                       ...document,
                     }))
                     .filter((document) => document)
