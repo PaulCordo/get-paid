@@ -13,6 +13,8 @@ function createWindow() {
     height: screen.getPrimaryDisplay().size.height * 0.9,
     webPreferences: {
       nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false,
     },
     show: false,
   });

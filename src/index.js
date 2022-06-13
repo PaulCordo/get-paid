@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 
 import { App } from "./App";
 import { PrintProvider } from "./PrintContext";
@@ -8,7 +8,8 @@ import { NotificationProvider } from "./NotificationContext";
 import { ErrorBoundary } from "./ErrorBoundary";
 import "./index.scss";
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
   <NotificationProvider>
     <ErrorBoundary>
       <SessionProvider>
@@ -17,6 +18,5 @@ ReactDOM.render(
         </PrintProvider>
       </SessionProvider>
     </ErrorBoundary>
-  </NotificationProvider>,
-  document.getElementById("root")
+  </NotificationProvider>
 );

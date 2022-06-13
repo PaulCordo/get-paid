@@ -24,14 +24,13 @@ export function PrintProvider({ children }) {
       () => () =>
         request("document-download", document).then(() => {
           setRenderedDocument(null);
-          setAction(() => {});
+          setAction(() => () => {});
         })
     );
   }, []);
-  useEffect(
-    () => renderedDocument && action && action(),
-    [action, renderedDocument]
-  );
+  useEffect(() => {
+    renderedDocument && action && action();
+  }, [action, renderedDocument]);
 
   const { documents } = useContext(SessionContext);
   useEffect(() => {
