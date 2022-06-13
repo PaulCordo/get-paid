@@ -6,7 +6,6 @@ import {
 } from "react-icons/fa";
 import { isDocumentOverdue } from "./documentPaid";
 import { INVOICE, QUOTE } from "./documentTypes";
-import { success, secondary, primary, warning } from "./variables.module.scss";
 
 const DRAFT = "Brouillon";
 const NEW = "Nouveau";
@@ -22,19 +21,14 @@ export const variantByState = {
   [OVERDUE]: "warning",
 };
 
-export const colorByState = {
-  [INVOICE]: success,
-  [QUOTE]: primary,
-  [DRAFT]: secondary,
-  [NEW]: FaFile,
-  [OVERDUE]: warning,
-};
+let init = false;
+const colorByState = {};
 
 export const iconByState = {
   [INVOICE]: FaFileInvoiceDollar,
   [QUOTE]: FaFileSignature,
   [DRAFT]: FaSave,
-  [NEW]: secondary,
+  [NEW]: FaFile,
   [OVERDUE]: FaFileInvoiceDollar,
 };
 
@@ -47,8 +41,28 @@ export function getDocumentState(document) {
   return document?.type;
 }
 
-export function getDocumentColor(document) {
-  return colorByState[getDocumentState(document)];
+export function getDocumentColor(doc) {
+  if (!init) {
+    const success = getComputedStyle(document.documentElement).getPropertyValue(
+      "--bs-success"
+    );
+    const secondary = getComputedStyle(
+      document.documentElement
+    ).getPropertyValue("--bs-secondary");
+    const primary = getComputedStyle(document.documentElement).getPropertyValue(
+      "--bs-primary"
+    );
+    const warning = getComputedStyle(document.documentElement).getPropertyValue(
+      "--bs-warning"
+    );
+    colorByState[INVOICE] = success;
+    colorByState[QUOTE] = primary;
+    colorByState[DRAFT] = secondary;
+    colorByState[NEW] = secondary;
+    colorByState[OVERDUE] = warning;
+    init = true;
+  }
+  return colorByState[getDocumentState(doc)];
 }
 
 export function getDocumentVariant(document) {
