@@ -33,7 +33,7 @@ export function SmallClientManager({ client, onChange = () => {} }) {
     );
   return client ? (
     <>
-      <AccountDisplay client={client} />
+      <AccountDisplay account={client} />
       <div className="mt-3">
         <Button
           className="me-3"

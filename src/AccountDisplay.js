@@ -1,7 +1,7 @@
 import React from "react";
 
 export function AccountDisplay({
-  client: {
+  account: {
     name,
     idType,
     idNumber,
@@ -12,9 +12,10 @@ export function AccountDisplay({
     tel,
     email,
   } = {},
+  className,
 }) {
   return (
-    <div>
+    <div className={className}>
       <h4>{name}</h4>
       <h5 className="text-uppercase mb-1">
         {idType} {idNumber}
