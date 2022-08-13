@@ -6,15 +6,12 @@ import Button from "react-bootstrap/Button";
 import { FaCheck, FaSave, FaTimes } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 
-import { Input, Select } from "./Form";
-import { templates, defaultTemplate } from "./templates";
-
-const idTypes = ["SIREN", "SIRET", "RNA"];
+import { Input, Select } from "../Form";
+import { templates, defaultTemplate } from "../templates";
+import { IdTypeSelect } from "./IdTypeSelect";
 
 const defaultClient = {
   name: "",
-  idType: idTypes[0],
-  idNumber: "",
   addressLine1: "",
   addressLine2: "",
   zipCode: "",
@@ -37,19 +34,197 @@ export function AccountEditor({
   onCancel,
   hideCancel,
   user,
+  small,
 }) {
   const {
     register,
     control,
     handleSubmit,
+    watch,
     formState: { isValid },
   } = useForm({
     defaultValues: { ...(user ? defaultUser : defaultClient), ...account },
+    mode: small ? "onChange" : "onSubmit",
   });
   const isEditing = Boolean(account?.idNumber);
-  const isEditingUser = isEditing && user;
+  const isUser = Boolean(user);
+  const isEditingUser = isEditing && isUser;
+  const hasIdNumber = Boolean(watch("idNumber"));
+  return small ? (
+    <>
+      {isEditing && (
+        <Form.Control type="hidden" {...register("_id", { required: true })} />
+      )}
+      <Row>
+        <Input
+          as={Col}
+          className="mb-1"
+          name="name"
+          required
+          placeholder="Nom"
+          readOnly={isEditingUser}
+          register={register}
+        />
+      </Row>
+      <Row>
+        <IdTypeSelect
+          required={hasIdNumber || isUser}
+          md={4}
+          className="mb-1"
+          disabled={isEditingUser}
+          control={control}
+        />
+        <Input
+          as={Col}
+          md={8}
+          className="mb-1"
+          name="idNumber"
+          type="text"
+          required={isUser}
+          readOnly={isEditingUser}
+          register={register}
+        />
+      </Row>
+      <Row>
+        <Input
+          as={Col}
+          className="mb-1"
+          name="addressLine1"
+          required
+          placeholder="Adresse ligne 1"
+          register={register}
+        />
+      </Row>
+      <Row>
+        <Input
+          as={Col}
+          className="mb-1"
+          name="addressLine2"
+          placeholder="Adresse ligne 2"
+          register={register}
+        />
+      </Row>
+      <Row>
+        <Input
+          as={Col}
+          md={5}
+          className="mb-1"
+          name="zipCode"
+          required
+          placeholder="Code postal"
+          register={register}
+        />
+        <Input
+          as={Col}
+          md={{ offset: 1, span: 6 }}
+          className="mb-1"
+          name="city"
+          required
+          placeholder="Ville"
+          register={register}
+        />
+      </Row>
+      <Row>
+        <Input
+          as={Col}
+          className="mb-1"
+          name="tel"
+          type="tel"
+          placeholder="Numéro de téléphone"
+          register={register}
+        />
+      </Row>
+      <Row>
+        <Input
+          as={Col}
+          className="mb-1"
+          name="email"
+          type="email"
+          placeholder="Adresse email"
+          register={register}
+        />
+      </Row>
+      {isUser && (
+        <>
+          <Row className="mt-2">
+            <Input
+              as={Col}
+              className="mb-1"
+              name="tax"
+              type="number"
+              label="% TVA applicable"
+              placeholder="ex : 20"
+              register={register}
+            />
+            <Select
+              as={Col}
+              md={6}
+              className="mb-1"
+              name="template"
+              label="Thème des documents"
+              options={templates.map(({ name }) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+              control={control}
+            />
+          </Row>
 
-  return (
+          <Row>
+            <Input
+              as={Col}
+              md={6}
+              className="mb-3"
+              tooltip={<UserFormatTooltipText documentName="devis" />}
+              name="quoteFormat"
+              type="text"
+              label="Numérotation devis"
+              placeholder="D{YYYY}-{NNN}"
+              register={register}
+            />
+            <Input
+              as={Col}
+              md={6}
+              className="mb-3"
+              tooltip={<UserFormatTooltipText documentName="facture" />}
+              name="invoiceFormat"
+              type="text"
+              label="Numérotation factures"
+              placeholder="{YYYY}{NNN}"
+              register={register}
+            />
+          </Row>
+        </>
+      )}
+      <Row>
+        <Col sm="auto" className="ms-auto text-end">
+          <Button
+            onClick={handleSubmit(onSave)}
+            variant="primary"
+            size="sm"
+            disabled={!isValid}
+            title={
+              isEditing ? "Sauvegarder le client" : "Créer le nouveau client"
+            }
+          >
+            {isEditing ? <FaSave /> : <FaCheck />}
+          </Button>
+          {!hideCancel && (
+            <Button
+              variant="warning"
+              onClick={onCancel}
+              size="sm"
+              className="ms-3"
+              title="Annuler"
+            >
+              <FaTimes />
+            </Button>
+          )}
+        </Col>
+      </Row>
+    </>
+  ) : (
     <Form onSubmit={handleSubmit(onSave)}>
       {isEditing && (
         <Form.Control type="hidden" {...register("_id", { required: true })} />
@@ -95,20 +270,12 @@ export function AccountEditor({
             readOnly={isEditingUser}
             register={register}
           />
-          <Select
-            as={Col}
+          <IdTypeSelect
             sm={4}
             md={{ span: 2, offset: 1 }}
-            className="mb-3"
-            name="idType"
             label="Type"
-            required
+            required={hasIdNumber || isUser}
             disabled={isEditingUser}
-            options={idTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
             control={control}
           />
           <Input
@@ -117,9 +284,9 @@ export function AccountEditor({
             md={4}
             className="mb-3"
             name="idNumber"
+            requirent={isUser}
             type="text"
             label="Immatriculation"
-            required
             placeholder="Numéro structure"
             readOnly={isEditingUser}
             register={register}
@@ -287,206 +454,3 @@ const UserFormatTooltipText = ({ documentName }) => (
     </dl>
   </div>
 );
-
-export function SmallAccountEditor({
-  account = {},
-  onSave,
-  onCancel,
-  hideCancel,
-  user,
-}) {
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { isValid },
-  } = useForm({
-    defaultValues: { ...(user ? defaultUser : defaultClient), ...account },
-    mode: "onChange",
-  });
-  const isEditing = Boolean(account?.idNumber);
-  const isEditingUser = isEditing && user;
-  return (
-    <>
-      {isEditing && (
-        <Form.Control type="hidden" {...register("_id", { required: true })} />
-      )}
-      <Row>
-        <Input
-          as={Col}
-          className="mb-1"
-          name="name"
-          required
-          placeholder="Nom"
-          readOnly={isEditingUser}
-          register={register}
-        />
-      </Row>
-      <Row>
-        <Select
-          as={Col}
-          md={4}
-          className="mb-1"
-          name="idType"
-          required
-          disabled={isEditingUser}
-          options={idTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
-          ))}
-          control={control}
-        />
-        <Input
-          as={Col}
-          md={8}
-          className="mb-1"
-          name="idNumber"
-          type="text"
-          required
-          placeholder="Numéro structure"
-          readOnly={isEditingUser}
-          register={register}
-        />
-      </Row>
-      <Row>
-        <Input
-          as={Col}
-          className="mb-1"
-          name="addressLine1"
-          required
-          placeholder="Adresse ligne 1"
-          register={register}
-        />
-      </Row>
-      <Row>
-        <Input
-          as={Col}
-          className="mb-1"
-          name="addressLine2"
-          placeholder="Adresse ligne 2"
-          register={register}
-        />
-      </Row>
-      <Row>
-        <Input
-          as={Col}
-          md={5}
-          className="mb-1"
-          name="zipCode"
-          required
-          placeholder="Code postal"
-          register={register}
-        />
-        <Input
-          as={Col}
-          md={{ offset: 1, span: 6 }}
-          className="mb-1"
-          name="city"
-          required
-          placeholder="Ville"
-          register={register}
-        />
-      </Row>
-      <Row>
-        <Input
-          as={Col}
-          className="mb-1"
-          name="tel"
-          type="tel"
-          placeholder="Numéro de téléphone"
-          register={register}
-        />
-      </Row>
-      <Row>
-        <Input
-          as={Col}
-          className="mb-1"
-          name="email"
-          type="email"
-          placeholder="Adresse email"
-          register={register}
-        />
-      </Row>
-      {user && (
-        <>
-          <Row className="mt-2">
-            <Input
-              as={Col}
-              className="mb-1"
-              name="tax"
-              type="number"
-              label="% TVA applicable"
-              placeholder="ex : 20"
-              register={register}
-            />
-            <Select
-              as={Col}
-              md={6}
-              className="mb-1"
-              name="template"
-              label="Thème des documents"
-              options={templates.map(({ name }) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-              control={control}
-            />
-          </Row>
-
-          <Row>
-            <Input
-              as={Col}
-              md={6}
-              className="mb-3"
-              tooltip={<UserFormatTooltipText documentName="devis" />}
-              name="quoteFormat"
-              type="text"
-              label="Numérotation devis"
-              placeholder="D{YYYY}-{NNN}"
-              register={register}
-            />
-            <Input
-              as={Col}
-              md={6}
-              className="mb-3"
-              tooltip={<UserFormatTooltipText documentName="facture" />}
-              name="invoiceFormat"
-              type="text"
-              label="Numérotation factures"
-              placeholder="{YYYY}{NNN}"
-              register={register}
-            />
-          </Row>
-        </>
-      )}
-      <Row>
-        <Col sm="auto" className="ms-auto text-end">
-          <Button
-            onClick={handleSubmit(onSave)}
-            variant="primary"
-            size="sm"
-            disabled={!isValid}
-            title={
-              isEditing ? "Sauvegarder le client" : "Créer le nouveau client"
-            }
-          >
-            {isEditing ? <FaSave /> : <FaCheck />}
-          </Button>
-          {!hideCancel && (
-            <Button
-              variant="warning"
-              onClick={onCancel}
-              size="sm"
-              className="ms-3"
-              title="Annuler"
-            >
-              <FaTimes />
-            </Button>
-          )}
-        </Col>
-      </Row>
-    </>
-  );
-}
