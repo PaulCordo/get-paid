@@ -53,7 +53,7 @@ export function Invoice({ document }) {
         )}
         <div className="w-100 d-flex align-items-start justify-content-between mt-3">
           <div>
-            {user && <AccountDisplay client={user} />}
+            {user && <AccountDisplay account={user} />}
             <div className="info mt-4">
               <div>
                 <label>Le </label>
@@ -83,7 +83,7 @@ export function Invoice({ document }) {
           </div>
           <div>
             <h4>À</h4>
-            <AccountDisplay client={client} />
+            <AccountDisplay account={client} />
           </div>
         </div>
       </header>
