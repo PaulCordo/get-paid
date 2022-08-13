@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import Container from "react-bootstrap/Container";
 
 import { SessionContext } from "./SessionContext";
-import { AccountEditor } from "./AccountEditor";
+import { AccountEditor } from "./AccountEditor/AccountEditor";
 
 export function Configuration({ close = () => {} }) {
   const { user, saveUser } = useContext(SessionContext);

@@ -9,6 +9,7 @@ export const Select = ({
   label,
   required,
   disabled,
+  defaultValue,
   ...props
 }) => (
   <Form.Group {...props}>
@@ -17,6 +18,7 @@ export const Select = ({
       name={name}
       control={control}
       rules={{ required }}
+      defaultValue={defaultValue}
       render={({ field }) => (
         <Form.Select
           {...field}
