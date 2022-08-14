@@ -47,6 +47,13 @@ export function Section({
   }, [sectionTotal, prevSectionTotal, setValue, index, allSections]);
 
   const [showRemoveSectionModal, setShowRemoveSectionModal] = useState(false);
+
+  // expense section
+  const isExpenseSection = useWatch({
+    name: `sections.${index}.expense`,
+    control,
+  });
+
   return (
     <Card className="mt-5">
       <Card.Header>
@@ -58,6 +65,15 @@ export function Section({
               placeholder="Titre de la section (optionnel)"
               {...register(`sections.${index}.name`)}
             />
+          </Col>
+          <Col md="auto" className="text-center">
+            <Form.Group controlId={`sections.${index}.expense`}>
+              <Form.Label className="fw-bold mb-0">Frais</Form.Label>
+              <Form.Switch
+                className="mb-0"
+                {...register(`sections.${index}.expense`)}
+              />
+            </Form.Group>
           </Col>
           <Col md="auto">
             {canRemove && (
@@ -91,19 +107,17 @@ export function Section({
               <th scope="col" className="border-top-0">
                 Total
               </th>
-              <th
-                scope="col"
-                className="border-top-0"
-                style={{ width: "7.5rem" }}
-              >
-                Actions
+              <th scope="col" className="border-top-0">
+                Frais
               </th>
+              <th scope="col" className="border-top-0"></th>
             </tr>
           </thead>
           <tbody>
             <SectionRows
               {...{ control, register, setValue, getValues }}
               sectionIndex={index}
+              isExpenseSection={isExpenseSection}
             />
             <tr>
               <th

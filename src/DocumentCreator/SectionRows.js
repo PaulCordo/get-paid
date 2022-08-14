@@ -7,7 +7,13 @@ import { useFieldArray } from "react-hook-form";
 
 import { currency } from "../numberFormat";
 
-export function SectionRows({ sectionIndex, control, register, getValues }) {
+export function SectionRows({
+  sectionIndex,
+  isExpenseSection,
+  control,
+  register,
+  getValues,
+}) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: `sections.${sectionIndex}.rows`,
@@ -55,13 +61,16 @@ export function SectionRows({ sectionIndex, control, register, getValues }) {
               ])?.reduce((price, quantity) => price * quantity)
             )}
           </td>
-          <td className="px-0">
+          <td className="px-0 align-middle">
+            <Form.Switch
+              className="ms-2"
+              disabled={isExpenseSection}
+              {...register(`sections.${sectionIndex}.rows.${index}.expense`)}
+            />
+          </td>
+          <td>
             {fields.length > 1 && (
-              <Button
-                variant="danger"
-                className="ms-2"
-                onClick={() => remove(index)}
-              >
+              <Button variant="danger" onClick={() => remove(index)}>
                 <FaTrashAlt />
               </Button>
             )}
@@ -69,10 +78,9 @@ export function SectionRows({ sectionIndex, control, register, getValues }) {
         </tr>
       ))}
       <tr>
-        <td colSpan="5" className="text-end">
+        <td colSpan="6" className="text-end">
           <Button
             variant="primary"
-            className="ms-2"
             onClick={() => append({ name: "", price: 0, quantity: 0 })}
           >
             <FaPlus />

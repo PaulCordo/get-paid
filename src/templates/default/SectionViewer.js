@@ -2,7 +2,9 @@ import React from "react";
 import Table from "react-bootstrap/Table";
 import { currency } from "../../numberFormat";
 
-export function SectionViewer({ section: { title, rows } }) {
+export function SectionViewer({
+  section: { title, rows, expense: isExpenseSection },
+}) {
   const total = rows.reduce(
     (total, { quantity, price }) => total + price * quantity,
     0
@@ -13,6 +15,7 @@ export function SectionViewer({ section: { title, rows } }) {
       <Table striped>
         <thead>
           <tr>
+            <th scope="col" className="border-top-0"></th>
             <th scope="col" className="border-top-0">
               Dénomination
             </th>
@@ -28,8 +31,11 @@ export function SectionViewer({ section: { title, rows } }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ name, price, quantity }) => (
+          {rows.map(({ name, price, quantity, expense }) => (
             <tr key={name + price + quantity}>
+              <td className="text-end fw-bold">
+                {(expense || isExpenseSection) && "Frais"}
+              </td>
               <td>{name}</td>
               <td className="text-end">{price}€</td>
               <td className="text-end">{quantity}</td>
