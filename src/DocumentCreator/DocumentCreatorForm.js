@@ -22,6 +22,25 @@ import { currency } from "../numberFormat";
 import { Sections } from "./Sections";
 import { DocumentCreatorCloseButton } from "./DocumentCreatorCloseButton";
 
+function postProcessDocumentOnSubmit(document) {
+  // expenses
+  document.expense = document.sections.reduce(
+    (total, section) =>
+      section.expense
+        ? total + section.total
+        : total +
+          section.rows
+            .filter((row) => row.expense)
+            .reduce(
+              (total, { price, quantity }) => total + price * quantity,
+              0
+            ),
+    0
+  );
+  console.log(document);
+  return document;
+}
+
 export function DocumentCreatorForm({
   onClose = () => {},
   document = {},
@@ -31,7 +50,6 @@ export function DocumentCreatorForm({
   const {
     register,
     control,
-    handleSubmit,
     getValues,
     watch,
     setValue,
@@ -74,7 +92,7 @@ export function DocumentCreatorForm({
   const saveDraft = () => onDraftSave({ ...getValues(), draft: true });
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form>
       <DocumentCreatorCloseButton onClose={onClose} onDraftSave={saveDraft} />
       {_id && <Form.Control type="hidden" {...register("_id")} />}
       <Form.Control type="hidden" {...register("user", { required: true })} />
@@ -223,7 +241,13 @@ export function DocumentCreatorForm({
                     className="me-3"
                     disabled={!isValid}
                     onClick={() =>
-                      onSubmit({ ...getValues(), draft: false, type: QUOTE })
+                      onSubmit(
+                        postProcessDocumentOnSubmit({
+                          ...getValues(),
+                          draft: false,
+                          type: QUOTE,
+                        })
+                      )
                     }
                   >
                     <FaFileSignature />
@@ -237,7 +261,13 @@ export function DocumentCreatorForm({
                 className="me-3"
                 disabled={!isValid}
                 onClick={() =>
-                  onSubmit({ ...getValues(), draft: false, type: INVOICE })
+                  onSubmit(
+                    postProcessDocumentOnSubmit({
+                      ...getValues(),
+                      draft: false,
+                      type: INVOICE,
+                    })
+                  )
                 }
               >
                 <FaFileInvoiceDollar />

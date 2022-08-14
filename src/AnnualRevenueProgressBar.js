@@ -10,6 +10,7 @@ import { isDocumentINVOICE } from "./documentTypes";
 import { currency } from "./numberFormat";
 import { useEffectOnMount } from "./useEffectOnMount";
 import { isDocumentOverdue, isDocumentPaid } from "./documentPaid";
+import { getDocumentTotalWithoutExpense } from "./getDocumentTotalWithoutExpense";
 
 export function AnnualRevenueProgressBar({ year }) {
   const { documents } = useContext(SessionContext);
@@ -27,15 +28,16 @@ export function AnnualRevenueProgressBar({ year }) {
       )
       .reduce(
         (sums, document) => {
+          console.log(document);
           if (isDocumentINVOICE(document) && !document.canceledBy) {
             if (isDocumentPaid(document)) {
-              sums.paidInvoices += document.total;
+              sums.paidInvoices += getDocumentTotalWithoutExpense(document);
               sums.paidInvoicesCount++;
             } else if (isDocumentOverdue(document)) {
-              sums.overdueInvoices += document.total;
+              sums.overdueInvoices += getDocumentTotalWithoutExpense(document);
               sums.overdueInvoicesCount++;
             } else {
-              sums.unpaidInvoices += document.total;
+              sums.unpaidInvoices += getDocumentTotalWithoutExpense(document);
               sums.unpaidInvoicesCount++;
             }
           }

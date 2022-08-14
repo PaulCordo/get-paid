@@ -33,6 +33,7 @@ import {
   DocumentTableArchiveFilter,
 } from "./ArchiveFilter";
 import "./DocumentTable.scss";
+import { getDocumentTotalWithoutExpense } from "../getDocumentTotalWithoutExpense";
 
 export function DocumentTable() {
   const { documents } = useContext(SessionContext);
@@ -63,6 +64,18 @@ export function DocumentTable() {
         Cell: TotalCell,
         Filter: PaidFilter,
         filter: paidFilter,
+      },
+      {
+        Header: "Frais",
+        id: "expense",
+        accessor: ({ expense }) => expense ?? 0,
+        Cell: TotalCell,
+      },
+      {
+        Header: "CA",
+        id: "gain",
+        accessor: getDocumentTotalWithoutExpense,
+        Cell: TotalCell,
       },
       {
         Header: "Date",
