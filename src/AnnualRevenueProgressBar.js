@@ -28,7 +28,6 @@ export function AnnualRevenueProgressBar({ year }) {
       )
       .reduce(
         (sums, document) => {
-          console.log(document);
           if (isDocumentINVOICE(document) && !document.canceledBy) {
             if (isDocumentPaid(document)) {
               sums.paidInvoices += getDocumentTotalWithoutExpense(document);
