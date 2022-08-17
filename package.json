@@ -53,13 +53,14 @@
       "buildResources": "assets"
     },
     "mac": {
-      "category": "public.app-category.business"
+      "category": "public.app-category.business",
+      "icon": "./public/icon.png"
     },
     "win": {
-      "icon": "./public/bill.png"
+      "icon": "./public/icon.png"
     },
     "linux": {
-      "icon": "./public/bill.png",
+      "icon": "./public/icon.png",
       "category": "Office"
     }
   },
