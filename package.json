@@ -5,7 +5,7 @@
     "name": "Paul Cordonnier",
     "email": "paul@paulcordonnier.com"
   },
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "dependencies": {
     "@uiw/react-md-editor": "^3.14.3",
