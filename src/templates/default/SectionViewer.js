@@ -3,7 +3,7 @@ import Table from "react-bootstrap/Table";
 import { currency } from "../../numberFormat";
 
 export function SectionViewer({
-  section: { title, rows, expense: isExpenseSection },
+  section: { name, rows, expense: isExpenseSection },
 }) {
   const total = rows.reduce(
     (total, { quantity, price }) => total + price * quantity,
@@ -11,8 +11,8 @@ export function SectionViewer({
   );
   return (
     <section className="my-3">
-      {title && <h3>{title}</h3>}
-      <Table striped>
+      {name && <h5>{name}</h5>}
+      <Table striped size="sm">
         <thead>
           <tr>
             <th scope="col" className="border-top-0"></th>
@@ -46,13 +46,13 @@ export function SectionViewer({
             <th
               colSpan="3"
               scope="row"
-              className="text-end border-bottom-0 pt-3"
+              className="text-end border-bottom-0 pt-2"
             >
               Total section H.T
             </th>
             <td
               colSpan="2"
-              className="border-bottom-0 pt-3 text-end fixed-col-width"
+              className="border-bottom-0 pt-2 text-end fixed-col-width"
             >
               {currency.format(total)}
             </td>
