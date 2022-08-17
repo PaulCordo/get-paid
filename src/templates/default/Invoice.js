@@ -33,7 +33,7 @@ export function Invoice({ document }) {
   const tax = isNaN(Number(user.tax)) ? 0 : Number(user.tax);
   return (
     <div className="default-template page py-5 px-5">
-      <header>
+      <header className="mb-4">
         <h4 className="info">
           <label>{type} </label>
           <span className="fw-bold ms-2">
@@ -54,7 +54,7 @@ export function Invoice({ document }) {
         <div className="w-100 d-flex align-items-start justify-content-between mt-3">
           <div>
             {user && <AccountDisplay account={user} />}
-            <div className="info mt-4">
+            <div className="info mt-3">
               <div>
                 <label>Le </label>
                 <span className="fw-bold ms-1">
@@ -97,7 +97,7 @@ export function Invoice({ document }) {
         details && <SectionViewer section={{ rows: details }} />
       }
 
-      <Table borderless className="float-end totals">
+      <Table borderless className="float-end totals" size="sm">
         <tbody>
           <tr>
             <th scope="row" className="text-end fixed-col-width">
