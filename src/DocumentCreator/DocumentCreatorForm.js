@@ -37,7 +37,6 @@ function postProcessDocumentOnSubmit(document) {
             ),
     0
   );
-  console.log(document);
   return document;
 }
 
