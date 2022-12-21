@@ -5,6 +5,7 @@ export function AccountDisplay({
     name,
     idType,
     idNumber,
+    taxId,
     addressLine1,
     addressLine2,
     zipCode,
@@ -20,6 +21,7 @@ export function AccountDisplay({
       <h5 className="text-uppercase mb-1">
         {idType} {idNumber}
       </h5>
+      {taxId && <h6>N° TVA {taxId}</h6>}
       <address>
         {addressLine1}
         <br />

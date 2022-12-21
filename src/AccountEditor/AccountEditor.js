@@ -50,6 +50,8 @@ export function AccountEditor({
   const isUser = Boolean(user);
   const isEditingUser = isEditing && isUser;
   const hasIdNumber = Boolean(watch("idNumber"));
+  const tax = watch("tax");
+  const hasTax = Boolean(tax > 0);
   return small ? (
     <>
       {isEditing && (
@@ -170,6 +172,19 @@ export function AccountEditor({
               control={control}
             />
           </Row>
+          {hasTax && (
+            <Row className="mt-2">
+              <Input
+                as={Col}
+                className="mb-1"
+                name="taxId"
+                type="string"
+                label="Numéro de TVA intracommunautaire"
+                placeholder="ex : FRXX123456789"
+                register={register}
+              />
+            </Row>
+          )}
 
           <Row>
             <Input
@@ -284,7 +299,7 @@ export function AccountEditor({
             md={4}
             className="mb-3"
             name="idNumber"
-            requirent={isUser}
+            required={isUser}
             type="text"
             label="Immatriculation"
             placeholder="Numéro structure"
@@ -379,6 +394,17 @@ export function AccountEditor({
               placeholder="ex : 20"
               register={register}
             />
+            {hasTax && (
+              <Input
+                as={Col}
+                className="mb-1"
+                name="taxId"
+                type="string"
+                label="Numéro de TVA intracommunautaire"
+                placeholder="ex : FRXX123456789"
+                register={register}
+              />
+            )}
           </Row>
           <Row>
             <Select
