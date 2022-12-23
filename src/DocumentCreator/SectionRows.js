@@ -37,7 +37,6 @@ export function SectionRows({
                 type="number"
                 {...register(`sections.${sectionIndex}.rows.${index}.price`, {
                   required: true,
-                  min: 0,
                 })}
               />
               <InputGroup.Text>€</InputGroup.Text>
