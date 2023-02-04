@@ -6,9 +6,8 @@ import React, {
   useContext,
 } from "react";
 
-import { request } from "./apiServices";
 import { useDocumentView } from "./templates";
-import { SessionContext } from "./SessionContext";
+import { StoreContext } from "./StoreContext";
 
 export const PrintContext = React.createContext({
   downloadDocument: () => {},
@@ -20,19 +19,16 @@ export function PrintProvider({ children }) {
   const [action, setAction] = useState(() => {});
   const downloadDocument = useCallback((document) => {
     setRenderedDocument(document);
-    setAction(
-      () => () =>
-        request("document-download", document).then(() => {
-          setRenderedDocument(null);
-          setAction(() => () => {});
-        })
-    );
+    setAction(() => () => {
+      window.print();
+      setRenderedDocument(null);
+    });
   }, []);
   useEffect(() => {
     renderedDocument && action && action();
   }, [action, renderedDocument]);
 
-  const { documents } = useContext(SessionContext);
+  const { documents } = useContext(StoreContext);
   useEffect(() => {
     documents && documents.length && setRenderedDocument(documents[0]);
   }, [documents]);

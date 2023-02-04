@@ -5,10 +5,10 @@ import Container from "react-bootstrap/Container";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { FaUserAlt, FaMoneyBillWave, FaPowerOff, FaCog } from "react-icons/fa";
 
-import { SessionContext } from "./SessionContext";
+import { StoreContext } from "./StoreContext";
 
 export function Header({ setActiveTab = () => {}, activeTab }) {
-  const { user, close } = useContext(SessionContext);
+  const { user, close } = useContext(StoreContext);
   return (
     <Navbar
       collapseOnSelect

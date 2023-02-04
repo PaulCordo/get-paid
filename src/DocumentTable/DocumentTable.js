@@ -13,7 +13,7 @@ import {
 } from "react-table";
 
 import { getDocumentColor } from "../documentStates";
-import { SessionContext } from "../SessionContext";
+import { StoreContext } from "../StoreContext";
 import { PublicIdCell } from "./PublicIdCell";
 import { ClientCell } from "./ClientCell";
 import { ActionsCell } from "./ActionsCell";
@@ -36,7 +36,7 @@ import "./DocumentTable.scss";
 import { getDocumentTotalWithoutExpense } from "../getDocumentTotalWithoutExpense";
 
 export function DocumentTable() {
-  const { documents } = useContext(SessionContext);
+  const { documents } = useContext(StoreContext);
   const columns = useMemo(
     () => [
       {

@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import { FaTrashAlt, FaPlus, FaEdit, FaList } from "react-icons/fa";
 
-import { SessionContext } from "./SessionContext";
+import { StoreContext } from "./StoreContext";
 import { AccountSelector } from "./AccountSelector";
 import { AccountEditor } from "./AccountEditor/AccountEditor";
 import { AccountDisplay } from "./AccountDisplay";
@@ -11,7 +11,7 @@ import { ConfirmModal } from "./Modals";
 export function SmallClientManager({ client, onChange = () => {} }) {
   const [clientEdit, setClientEdit] = useState(!client);
   const [showDeleteClientModal, setShowClientDeleteModal] = useState(false);
-  const { clients, saveClient, deleteClient } = useContext(SessionContext);
+  const { clients, saveClient, deleteClient } = useContext(StoreContext);
   useEffect(() => {
     setClientEdit(clients && clients.length === 0);
   }, [clients]);

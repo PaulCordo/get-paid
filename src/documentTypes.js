@@ -1,8 +1,9 @@
-const INVOICE = "Facture",
+export const INVOICE = "Facture",
   QUOTE = "Devis";
 
-function isDocumentINVOICE(document) {
+export function isDocumentINVOICE(document) {
   return document?.type === INVOICE;
 }
 
-module.exports = { INVOICE, QUOTE, isDocumentINVOICE };
+const documentTypes = [INVOICE, QUOTE];
+export default documentTypes;

@@ -4,7 +4,7 @@ import Container from "react-bootstrap/Container";
 import { DocumentCreatorTab } from "../DocumentCreator";
 import { DocumentViewerTab } from "../DocumentViewer";
 import { documentStates, getDocumentState } from "../documentStates";
-import { SessionContext } from "../SessionContext";
+import { StoreContext } from "../StoreContext";
 import { PrintContext } from "../PrintContext";
 
 export const DocumentActionsContext = React.createContext({
@@ -24,7 +24,7 @@ export function DocumentActionsProvider({
   setTabs,
   getHandleCloseTab,
 }) {
-  const { deleteDraft, setPaid, archive } = useContext(SessionContext);
+  const { deleteDraft, setPaid, archive } = useContext(StoreContext);
   const { downloadDocument } = useContext(PrintContext);
 
   const [newDocumentIndex, setNewDocumentIndex] = useState(1);

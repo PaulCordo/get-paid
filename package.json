@@ -1,6 +1,6 @@
 {
   "name": "get-paid",
-  "description": "Simple Electron application to manage invoices ",
+  "description": "Simple web application to manage invoices ",
   "author": {
     "name": "Paul Cordonnier",
     "email": "paul@paulcordonnier.com"
@@ -8,62 +8,34 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@uiw/react-md-editor": "^3.14.3",
-    "bootstrap": "^5.1.3",
-    "classnames": "^2.3.1",
-    "date-fns": "^2.28.0",
-    "electron-is-dev": "^2.0.0",
-    "nedb": "^1.8.0",
+    "@uiw/react-md-editor": "^3.20.2",
+    "bootstrap": "^5.2.3",
+    "classnames": "^2.3.2",
+    "date-fns": "^2.29.3",
     "node-sass": "^7.0.1",
-    "react": "^18.1.0",
-    "react-bootstrap": "^2.4.0",
-    "react-dom": "^18.1.0",
-    "react-hook-form": "^7.32.0",
-    "react-icons": "^4.4.0",
-    "react-markdown": "^8.0.3",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.7.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.43.0",
+    "react-icons": "^4.7.1",
+    "react-markdown": "^8.0.5",
     "react-scripts": "^5.0.1",
-    "react-table": "^7.8.0"
+    "react-table": "^7.8.0",
+    "rxdb": "^13.17.1",
+    "rxjs": "^7.8.0"
   },
   "devDependencies": {
-    "@babel/helper-builder-react-jsx": "^7.16.7",
-    "concurrently": "^7.2.1",
-    "electron": "^19.0.4",
-    "electron-builder": "^23.0.3",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.0",
-    "prettier": "^2.6.2",
-    "wait-on": "^6.0.1",
-    "web-vitals": "^2.1.4"
+    "prettier": "^2.6.2"
   },
   "scripts": {
-    "start": "concurrently \"react-scripts start\" \"wait-on http://localhost:3000 && electron .\"",
-    "build": "react-scripts build && electron-builder -c.extraMetadata.main=build/electron.js"
+    "start": "react-scripts start",
+    "build": "react-scripts build"
   },
   "homepage": "./",
-  "main": "public/electron.js",
-  "build": {
-    "appId": "com.paulcordonnier.get-paid",
-    "files": [
-      "build/**/*",
-      "node_modules/**/*"
-    ],
-    "directories": {
-      "buildResources": "assets"
-    },
-    "mac": {
-      "category": "public.app-category.business",
-      "icon": "./public/icon.png"
-    },
-    "win": {
-      "icon": "./public/icon.png"
-    },
-    "linux": {
-      "icon": "./public/icon.png",
-      "category": "Office"
-    }
-  },
   "eslintConfig": {
     "root": true,
     "env": {
@@ -84,7 +56,8 @@
     "rules": {
       "react/display-name": "off",
       "prettier/prettier": "error",
-      "react/prop-types": 0
+      "react/prop-types": 0,
+      "no-unused-vars": "warn"
     },
     "parserOptions": {
       "sourceType": "module",
@@ -95,12 +68,8 @@
     },
     "settings": {
       "react": {
-        "version": "17.0"
+        "version": "18.1"
       }
-    },
-    "globals": {
-      "fetch": false,
-      "console": false
     }
   },
   "browserslist": {

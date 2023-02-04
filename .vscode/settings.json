@@ -4,5 +4,8 @@
   "files.associations": {
     "*.js": "javascriptreact"
   },
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "eslint.packageManager": "yarn",
+  "eslint.alwaysShowStatus": true,
+  "files.eol": "\n"
 }

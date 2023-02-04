@@ -1,14 +1,14 @@
 import React, { useContext, useState } from "react";
 import Container from "react-bootstrap/Container";
 
-import { SessionContext } from "../SessionContext";
+import { StoreContext } from "../StoreContext";
 
 import { DocumentCreatorForm } from "./DocumentCreatorForm";
 import { DocumentCreatorPreview } from "./DocumentCreatorPreview";
 import { getDocumentFromSource } from "./getDocumentFromSource";
 
 export function DocumentCreatorTab({ onClose = () => {}, source }) {
-  const { createDocument, user } = useContext(SessionContext);
+  const { createDocument, user } = useContext(StoreContext);
 
   const [document, setDocument] = useState(getDocumentFromSource(source, user));
 

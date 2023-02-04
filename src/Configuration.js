@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
 import Container from "react-bootstrap/Container";
 
-import { SessionContext } from "./SessionContext";
+import { StoreContext } from "./StoreContext";
 import { AccountEditor } from "./AccountEditor/AccountEditor";
 
 export function Configuration({ close = () => {} }) {
-  const { user, saveUser } = useContext(SessionContext);
+  const { user, saveUser } = useContext(StoreContext);
   const [cancelKey, setCancelKey] = useState(Date.now());
   return (
     <Container className="pt-4">

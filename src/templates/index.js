@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import { SessionContext } from "../SessionContext";
+import { StoreContext } from "../StoreContext";
 import { INVOICE, QUOTE } from "../documentTypes";
 
 import template from "./default";
@@ -20,7 +20,7 @@ const getTemplate = (templateName) =>
   templates.find(({ name }) => templateName === name) ?? defaultTemplate;
 
 export function useDocumentView(document) {
-  const { user } = useContext(SessionContext);
+  const { user } = useContext(StoreContext);
   if (!document || !user) {
     return () => null;
   }

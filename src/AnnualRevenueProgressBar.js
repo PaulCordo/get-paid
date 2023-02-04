@@ -5,7 +5,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import Badge from "react-bootstrap/Badge";
 import getYear from "date-fns/getYear";
 
-import { SessionContext } from "./SessionContext";
+import { StoreContext } from "./StoreContext";
 import { isDocumentINVOICE } from "./documentTypes";
 import { currency } from "./numberFormat";
 import { useEffectOnMount } from "./useEffectOnMount";
@@ -13,7 +13,7 @@ import { isDocumentOverdue, isDocumentPaid } from "./documentPaid";
 import { getDocumentTotalWithoutExpense } from "./getDocumentTotalWithoutExpense";
 
 export function AnnualRevenueProgressBar({ year }) {
-  const { documents } = useContext(SessionContext);
+  const { documents } = useContext(StoreContext);
   const {
     paidInvoices,
     unpaidInvoices,

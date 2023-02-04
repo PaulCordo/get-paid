@@ -1,26 +1,21 @@
-import React, { useState, useContext, useCallback, useEffect } from "react";
+import React, { useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
-import { FaUserPlus, FaUserAlt } from "react-icons/fa";
+import { FaUserAlt } from "react-icons/fa";
+import { useForm } from "react-hook-form";
 
-import { SessionContext } from "./SessionContext";
-import { AccountSelector } from "./AccountSelector";
-import { AccountEditor } from "./AccountEditor/AccountEditor";
-import { request } from "./apiServices";
+import { StoreContext } from "./StoreContext";
+import { Form } from "react-bootstrap";
+import { Input } from "./Form";
 
-export function LogIn({ users = [] }) {
-  const { open } = useContext(SessionContext);
-  const [selecting, setSelecting] = useState(true);
-  useEffect(() => {
-    setSelecting(Boolean(users.length));
-  }, [users]);
-  const handleUserCreation = useCallback(
-    (user) => {
-      request("user-create", user).then((user) => open(user._id));
-    },
-    [open]
-  );
+export function LogIn() {
+  const { open } = useContext(StoreContext);
+
+  const { register, handleSubmit } = useForm({
+    mode: "onSubmit",
+  });
+
   return (
     <Container
       fluid
@@ -28,43 +23,34 @@ export function LogIn({ users = [] }) {
       className="bg-dark d-flex justify-content-center align-items-center vh-100"
     >
       <Card style={{ minWidth: 500 }}>
-        {selecting ? (
-          <Card.Body>
-            <Card.Title className="text-center">
-              <FaUserAlt className="mb-2 d-block mx-auto" />
-              Sélectionner un utilisateur
-            </Card.Title>
-            <AccountSelector
-              onSelect={({ _id }) => open(_id)}
-              accounts={users}
+        <Card.Body>
+          <Card.Title className="text-center">
+            <FaUserAlt className="mb-2 d-block mx-auto" />
+            Connexion
+          </Card.Title>
+          <Form onSubmit={handleSubmit(open)}>
+            <Input
+              name="name"
+              label="Nom d'utilisateur"
+              placeholder="john-doe"
+              className="mb-3"
+              required
+              register={register}
             />
-            <Button
-              variant="primary"
-              className="float-end mt-3"
-              onClick={() => {
-                setSelecting(false);
-              }}
-            >
-              <FaUserPlus />
+            <Input
+              name="password"
+              label="Mot de passe"
+              placeholder="john-doe"
+              className="mb-3"
+              type="password"
+              required
+              register={register}
+            />
+            <Button variant="primary" type="submit">
+              Se connecter
             </Button>
-          </Card.Body>
-        ) : (
-          <Card.Body>
-            <Card.Title className="text-center mb-2">
-              <FaUserAlt />
-              <div>Créer un utilisateur</div>
-            </Card.Title>
-            <AccountEditor
-              onSave={handleUserCreation}
-              onCancel={() => {
-                setSelecting(true);
-              }}
-              hideCancel={!users.length}
-              user
-              small
-            />
-          </Card.Body>
-        )}
+          </Form>
+        </Card.Body>
       </Card>
     </Container>
   );

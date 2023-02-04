@@ -1,0 +1,23 @@
+services:
+  db:
+    image: couchdb:latest
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+    ports:
+      - "${COUCHDB_URL}:5984"
+    volumes:
+      - ./couchdb:/opt/couchdb/etc/local.d
+
+  front:
+    image: node:18
+    environment:
+      REACT_APP_COUCHDB_URL: ${COUCHDB_URL}
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+    command: yarn start
+    working_dir: /usr/src/app
