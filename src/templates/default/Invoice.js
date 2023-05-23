@@ -107,6 +107,16 @@ export function Invoice({ document }) {
               {currency.format(total)}
             </td>
           </tr>
+          {tax && (
+            <tr>
+              <th scope="row" className="text-end fixed-col-width">
+                TVA {tax}%
+              </th>
+              <td className="text-end fixed-col-width">
+                {currency.format((total * tax) / 100)}
+              </td>
+            </tr>
+          )}
           <tr>
             <th scope="row" className="text-end fixed-col-width">
               Total T.T.C
