@@ -58,7 +58,7 @@ export function DocumentTable() {
         filter: archiveFilter,
       },
       {
-        Header: "Total TTC",
+        Header: "Total H.T",
         id: "total",
         accessor: "total",
         Cell: TotalCell,

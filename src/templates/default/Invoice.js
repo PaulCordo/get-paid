@@ -26,11 +26,11 @@ export function Invoice({ document }) {
     total,
     creditForInvoice,
     cancelInvoice,
+    noTax,
   } = document;
   const documentDate = useMemo(() => new Date(date), [date]);
-  const documentvalidUntil = useMemo(() => new Date(validUntil), [validUntil]);
   const documentValidUntil = useMemo(() => new Date(validUntil), [validUntil]);
-  const tax = isNaN(Number(user.tax)) ? 0 : Number(user.tax);
+  const tax = noTax || isNaN(Number(user.tax)) ? 0 : Number(user.tax);
   return (
     <div className="default-template page py-5 px-5">
       <header className="mb-4">
@@ -107,7 +107,7 @@ export function Invoice({ document }) {
               {currency.format(total)}
             </td>
           </tr>
-          {tax && (
+          {tax > 0 && (
             <tr>
               <th scope="row" className="text-end fixed-col-width">
                 TVA {tax}%
@@ -132,7 +132,8 @@ export function Invoice({ document }) {
           Dispensé d&lsquo;immatriculation au registre du commerce et des
           sociétés (RCS) et au répertoire des métiers (RM)
           <br />
-          {!tax && "TVA non applicable, art. 293B du CGI"}
+          {!user.tax && "TVA non applicable, art. 293B du CGI"}
+          {noTax && "TVA non applicable"}
           {isDocumentINVOICE(document) && (
             <>
               <br />
@@ -142,7 +143,7 @@ export function Invoice({ document }) {
               Pas d&#39;escompte pour règlement anticipé
               <span className="float-end">
                 Date limite de paiement :{" "}
-                {format(documentvalidUntil, "PPP", {
+                {format(documentValidUntil, "PPP", {
                   locale: fr,
                 })}
               </span>

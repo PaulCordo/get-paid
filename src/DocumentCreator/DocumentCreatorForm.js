@@ -4,20 +4,16 @@ import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import {
-  FaFileSignature,
-  FaSave,
-  FaTimes,
-  FaFileInvoiceDollar,
-} from "react-icons/fa";
+import { FaFileSignature, FaSave, FaTimes } from "react-icons/fa";
 import { format, add } from "date-fns";
 import MDEditor from "@uiw/react-md-editor";
 import { Controller, useForm } from "react-hook-form";
+import classnames from "classnames";
 
 import { Input } from "../Form";
 import { SmallClientManager } from "../SmallClientManager";
 import { ConfirmModal } from "../Modals";
-import { INVOICE, QUOTE } from "../documentTypes";
+import { QUOTE } from "../documentTypes";
 import { currency } from "../numberFormat";
 import { Sections } from "./Sections";
 import { DocumentCreatorCloseButton } from "./DocumentCreatorCloseButton";
@@ -33,9 +29,9 @@ function postProcessDocumentOnSubmit(document) {
             .filter((row) => row.expense)
             .reduce(
               (total, { price, quantity }) => total + price * quantity,
-              0
+              0,
             ),
-    0
+    0,
   );
   return document;
 }
@@ -73,7 +69,7 @@ export function DocumentCreatorForm({
       !dirtyFields.validUntil &&
         setValue(
           "validUntil",
-          format(add(new Date(date), { months: 1 }), "yyyy-MM-dd")
+          format(add(new Date(date), { months: 1 }), "yyyy-MM-dd"),
         );
     }
   }, [date, setValue, dirtyFields.validUntil]);
@@ -81,7 +77,9 @@ export function DocumentCreatorForm({
   const [showCancelModal, setShowCancelModal] = useState(false);
 
   const total = watch("total");
-  const tax = watch("user.tax");
+  const userTax = watch("user.tax");
+  const noTax = watch("noTax");
+  const tax = noTax ? 0 : userTax;
   const fromQuote = watch("fromQuote");
   const _id = watch("_id");
 
@@ -209,7 +207,24 @@ export function DocumentCreatorForm({
             <b>Total HT </b>
             {currency.format(total)}
           </div>
-          <div>
+          <div className={classnames(noTax && "text-muted")}>
+            {userTax && (
+              <Controller
+                name="noTax"
+                control={control}
+                render={({ field: { onChange, onBlur, value, ref } }) => (
+                  <Form.Switch
+                    id="noTax"
+                    label="TVA non applicable"
+                    checked={value}
+                    onChange={onChange}
+                    ref={ref}
+                    onBlur={onBlur}
+                    className="me-3 d-inline-block"
+                  />
+                )}
+              />
+            )}
             <b>TVA {tax}% </b>
             {currency.format((total * tax) / 100)}
           </div>
@@ -245,7 +260,7 @@ export function DocumentCreatorForm({
                           ...getValues(),
                           draft: false,
                           type: QUOTE,
-                        })
+                        }),
                       )
                     }
                   >
@@ -253,24 +268,6 @@ export function DocumentCreatorForm({
                   </Button>
                 )
               }
-              <Button
-                variant="success"
-                size="lg"
-                title="Créer une facture"
-                className="me-3"
-                disabled={!isValid}
-                onClick={() =>
-                  onSubmit(
-                    postProcessDocumentOnSubmit({
-                      ...getValues(),
-                      draft: false,
-                      type: INVOICE,
-                    })
-                  )
-                }
-              >
-                <FaFileInvoiceDollar />
-              </Button>
               <Button
                 variant="warning"
                 size="lg"
