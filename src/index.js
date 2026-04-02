@@ -18,5 +18,5 @@ root.render(
         </PrintProvider>
       </SessionProvider>
     </ErrorBoundary>
-  </NotificationProvider>
+  </NotificationProvider>,
 );

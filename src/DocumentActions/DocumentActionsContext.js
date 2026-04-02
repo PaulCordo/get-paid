@@ -39,7 +39,7 @@ export function DocumentActionsProvider({
           state: documentStates.NEW,
           component: <DocumentCreatorTab onClose={getHandleCloseTab(key)} />,
         },
-      ])
+      ]),
     );
     setActiveTab(key);
     setNewDocumentIndex((index) => index + 1);
@@ -65,11 +65,11 @@ export function DocumentActionsProvider({
                 ),
               },
             ])
-          : tabs
+          : tabs,
       );
       setActiveTab(key);
     },
-    [getHandleCloseTab, setActiveTab, setTabs]
+    [getHandleCloseTab, setActiveTab, setTabs],
   );
   const duplicate = useCallback(
     (document) => {
@@ -87,12 +87,12 @@ export function DocumentActionsProvider({
               />
             ),
           },
-        ])
+        ]),
       );
       setActiveTab(key);
       setNewDocumentIndex((index) => index + 1);
     },
-    [getHandleCloseTab, newDocumentIndex, setActiveTab, setTabs]
+    [getHandleCloseTab, newDocumentIndex, setActiveTab, setTabs],
   );
   const edit = useCallback(
     (document) => {
@@ -110,11 +110,11 @@ export function DocumentActionsProvider({
               />
             ),
           },
-        ])
+        ]),
       );
       setActiveTab(key);
     },
-    [getHandleCloseTab, setActiveTab, setTabs]
+    [getHandleCloseTab, setActiveTab, setTabs],
   );
 
   const cancelInvoice = useCallback(
@@ -133,11 +133,11 @@ export function DocumentActionsProvider({
               />
             ),
           },
-        ])
+        ]),
       );
       setActiveTab(key);
     },
-    [getHandleCloseTab, setActiveTab, setTabs]
+    [getHandleCloseTab, setActiveTab, setTabs],
   );
 
   const creditNote = useCallback(
@@ -156,11 +156,11 @@ export function DocumentActionsProvider({
               />
             ),
           },
-        ])
+        ]),
       );
       setActiveTab(key);
     },
-    [getHandleCloseTab, setActiveTab, setTabs]
+    [getHandleCloseTab, setActiveTab, setTabs],
   );
 
   const documentActionContextValue = useMemo(
@@ -187,7 +187,7 @@ export function DocumentActionsProvider({
       archive,
       cancelInvoice,
       creditNote,
-    ]
+    ],
   );
   return (
     <DocumentActionsContext.Provider value={documentActionContextValue}>

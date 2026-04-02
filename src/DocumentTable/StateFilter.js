@@ -12,7 +12,7 @@ const { INVOICE, QUOTE, DRAFT } = documentStates;
 
 export function stateFilter(rows, id, value) {
   return rows.filter(
-    ({ original: document }) => getDocumentState(document) === value
+    ({ original: document }) => getDocumentState(document) === value,
   );
 }
 

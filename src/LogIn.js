@@ -19,7 +19,7 @@ export function LogIn({ users = [] }) {
     (user) => {
       request("user-create", user).then((user) => open(user._id));
     },
-    [open]
+    [open],
   );
   return (
     <Container

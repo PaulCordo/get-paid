@@ -15,6 +15,6 @@ export function useEffectOnMount(effect) {
   }, [effect, mounted]);
   useEffect(
     () => () => effectCleanUpRef.current && effectCleanUpRef.current(),
-    []
+    [],
   );
 }

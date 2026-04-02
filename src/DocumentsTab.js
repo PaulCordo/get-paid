@@ -17,7 +17,7 @@ export function DocumentsTab() {
       setTabs((tabs) => tabs.filter((tab) => tab.key !== key));
       setActiveTab("all");
     },
-    []
+    [],
   );
   const switchTab = (tabKey) => {
     setActiveTab(tabKey);

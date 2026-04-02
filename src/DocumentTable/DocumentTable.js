@@ -92,7 +92,7 @@ export function DocumentTable() {
         disableSortBy: true,
       },
     ],
-    []
+    [],
   );
   const documentTable = useTable(
     {
@@ -112,7 +112,7 @@ export function DocumentTable() {
     useGlobalFilter,
     useSortBy,
     usePagination,
-    useRowSelect
+    useRowSelect,
   );
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     documentTable;
@@ -158,7 +158,7 @@ export function DocumentTable() {
                       "sorted-down": column.isSortedDesc,
                     },
                     "align-bottom",
-                    column.className
+                    column.className,
                   )}
                   key={index}
                 >
@@ -179,7 +179,7 @@ export function DocumentTable() {
                     key={index}
                     className={classnames(
                       "align-middle",
-                      cell.column.className
+                      cell.column.className,
                     )}
                     style={{
                       borderLeftColor:

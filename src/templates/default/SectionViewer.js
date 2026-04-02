@@ -7,7 +7,7 @@ export function SectionViewer({
 }) {
   const total = rows.reduce(
     (total, { quantity, price }) => total + price * quantity,
-    0
+    0,
   );
   return (
     <section className="my-3">

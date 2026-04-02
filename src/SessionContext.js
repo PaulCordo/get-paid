@@ -27,7 +27,7 @@ export function SessionProvider({ children }) {
   const request = useCallback(
     (action, content) =>
       requestService(action, content).catch(pushError).catch(console.error),
-    [pushError]
+    [pushError],
   );
 
   const open = useCallback(
@@ -37,7 +37,7 @@ export function SessionProvider({ children }) {
         setDocuments(documents);
         setClients(clients);
       }),
-    [request]
+    [request],
   );
   const close = useCallback(() => {
     setUser(null);
@@ -47,54 +47,54 @@ export function SessionProvider({ children }) {
 
   const saveUser = useCallback(
     (user) => request("user-upsert", user).then((user) => setUser(user)),
-    [request]
+    [request],
   );
   const saveClient = useCallback(
     (client) =>
       request("client-upsert", client).then(() =>
-        request("client-list").then((clients) => setClients(clients))
+        request("client-list").then((clients) => setClients(clients)),
       ),
-    [request]
+    [request],
   );
 
   const deleteClient = useCallback(
     (client) =>
       request("client-remove", client).then(() =>
-        request("client-list").then((clients) => setClients(clients))
+        request("client-list").then((clients) => setClients(clients)),
       ),
-    [request]
+    [request],
   );
 
   const createDocument = useCallback(
     (document) =>
       request("document-save", document).then(() =>
-        request("document-list").then((documents) => setDocuments(documents))
+        request("document-list").then((documents) => setDocuments(documents)),
       ),
-    [request]
+    [request],
   );
 
   const deleteDraft = useCallback(
     (document) =>
       request("document-delete", document).then(() =>
-        request("document-list").then((documents) => setDocuments(documents))
+        request("document-list").then((documents) => setDocuments(documents)),
       ),
-    [request]
+    [request],
   );
 
   const setPaid = useCallback(
     (document, paid) =>
       request("document-set-paid", { ...document, paid }).then(() =>
-        request("document-list").then((documents) => setDocuments(documents))
+        request("document-list").then((documents) => setDocuments(documents)),
       ),
-    [request]
+    [request],
   );
 
   const archive = useCallback(
     (document, archived) =>
       request("document-archive", { ...document, archived }).then(() =>
-        request("document-list").then((documents) => setDocuments(documents))
+        request("document-list").then((documents) => setDocuments(documents)),
       ),
-    [request]
+    [request],
   );
 
   return (

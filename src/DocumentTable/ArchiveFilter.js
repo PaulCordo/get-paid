@@ -6,7 +6,7 @@ import { FaArchive, FaSlash } from "react-icons/fa";
 
 export function archiveFilter(rows, id, value) {
   return rows.filter(({ original: document }) =>
-    value ? document.archived : !document.archived
+    value ? document.archived : !document.archived,
   );
 }
 

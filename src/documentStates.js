@@ -44,16 +44,16 @@ export function getDocumentState(document) {
 export function getDocumentColor(doc) {
   if (!init) {
     const success = getComputedStyle(document.documentElement).getPropertyValue(
-      "--bs-success"
+      "--bs-success",
     );
     const secondary = getComputedStyle(
-      document.documentElement
+      document.documentElement,
     ).getPropertyValue("--bs-secondary");
     const primary = getComputedStyle(document.documentElement).getPropertyValue(
-      "--bs-primary"
+      "--bs-primary",
     );
     const warning = getComputedStyle(document.documentElement).getPropertyValue(
-      "--bs-warning"
+      "--bs-warning",
     );
     colorByState[INVOICE] = success;
     colorByState[QUOTE] = primary;
