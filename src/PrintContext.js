@@ -25,7 +25,7 @@ export function PrintProvider({ children }) {
         request("document-download", document).then(() => {
           setRenderedDocument(null);
           setAction(() => () => {});
-        })
+        }),
     );
   }, []);
   useEffect(() => {
@@ -39,7 +39,7 @@ export function PrintProvider({ children }) {
 
   const PrintContextValue = useMemo(
     () => ({ downloadDocument }),
-    [downloadDocument]
+    [downloadDocument],
   );
   return (
     <PrintContext.Provider value={PrintContextValue}>

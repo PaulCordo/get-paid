@@ -25,7 +25,7 @@ paidFilter.autoRemove = (value) => !value;
 
 export function PaidFilter({ column: { setFilter, filterValue }, columns }) {
   const stateFilterValue = columns.find(
-    ({ filter }) => filter === stateFilter
+    ({ filter }) => filter === stateFilter,
   )?.filterValue;
   const hasInvoices = [INVOICE, undefined].includes(stateFilterValue);
   const prevHasInvoices = usePrevious(hasInvoices);

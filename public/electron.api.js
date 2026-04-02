@@ -38,7 +38,7 @@ module.exports = (mainWindow) => {
           console.error("user-upsert", err);
         }
         event.reply("user-upsert", err, user);
-      }
+      },
     );
   });
 
@@ -73,13 +73,13 @@ module.exports = (mainWindow) => {
           { fieldName: "date" },
           (err) =>
             err &&
-            console.error("open-session ensure documents year index: ", err)
+            console.error("open-session ensure documents year index: ", err),
         );
         sessionContext.documents.ensureIndex(
           { fieldName: "type" },
           (err) =>
             err &&
-            console.error("open-session ensure documents type index: ", err)
+            console.error("open-session ensure documents type index: ", err),
         );
 
         // migration from previous versions
@@ -89,17 +89,17 @@ module.exports = (mainWindow) => {
               if (err) {
                 console.error(
                   `update db version to ${updatedUser.dbVersions} `,
-                  err
+                  err,
                 );
                 reject(err);
               } else {
                 resolve();
               }
-            })
+            }),
           );
         if (user.dbVersions > currentDbVersion) {
           console.error(
-            `FATAL: User ${user.name} id ${user._id} has a dbVersions of ${user.dbVersions}, max allowed by this program is ${currentDbVersion}`
+            `FATAL: User ${user.name} id ${user._id} has a dbVersions of ${user.dbVersions}, max allowed by this program is ${currentDbVersion}`,
           );
           app.quit();
         }
@@ -127,7 +127,7 @@ module.exports = (mainWindow) => {
             break;
           default:
             console.error(
-              `user dbVersions has an invalid value of ${user.dbVersions}`
+              `user dbVersions has an invalid value of ${user.dbVersions}`,
             );
             app.quit();
         }
@@ -172,7 +172,7 @@ module.exports = (mainWindow) => {
           console.error("client-upsert", err);
         }
         event.reply("client-upsert", err);
-      }
+      },
     );
   });
 
@@ -220,12 +220,12 @@ module.exports = (mainWindow) => {
               console.error("document-delete", err);
             }
             event.reply("document-delete", err, numRemoved);
-          }
+          },
         )
       : event.reply(
           "document-delete",
           new Error("You can only remove a draft with an _id"),
-          0
+          0,
         );
   });
 
@@ -239,12 +239,12 @@ module.exports = (mainWindow) => {
               console.error("document-set-paid", err);
             }
             event.reply("document-set-paid", err, numReplaced);
-          }
+          },
         )
       : event.reply(
           "document-set-paid",
           new Error("You can only update a document with an _id"),
-          0
+          0,
         );
   });
 
@@ -258,12 +258,12 @@ module.exports = (mainWindow) => {
               console.error("document-archive", err);
             }
             event.reply("document-archive", err, numReplaced);
-          }
+          },
         )
       : event.reply(
           "document-archive",
           new Error("You can only update a document with an _id"),
-          0
+          0,
         );
   });
 
@@ -301,7 +301,7 @@ function openYearConfigsDb(userId) {
   yearConfigsDb.ensureIndex(
     { fieldName: "year", unique: true },
     (err) =>
-      err && console.error("openYearConfig ensure yearConfig index: ", err)
+      err && console.error("openYearConfig ensure yearConfig index: ", err),
   );
   return yearConfigsDb;
 }
@@ -313,7 +313,7 @@ function getDocumentPublicId(formatString, year, number) {
   const yearFormatIdentifier = /\{Y+\}/g;
   return formatString
     .replaceAll(numberFormatIdentifier, (match) =>
-      number.padStart(match.length - 2, "0")
+      number.padStart(match.length - 2, "0"),
     )
     .replaceAll(yearFormatIdentifier, (match) => {
       const charCount = match.length - 2;
@@ -349,7 +349,7 @@ function addDocumentPublicId(document, sessionContext) {
           document.publicId = getDocumentPublicId(
             format,
             documentYear,
-            document.number
+            document.number,
           );
           resolve(document);
         });
@@ -380,7 +380,7 @@ function tryUpdateBilledQuote(document, sessionContext) {
           } else {
             resolve(document);
           }
-        }
+        },
       );
     } else {
       resolve(document);
@@ -410,7 +410,7 @@ function tryUpdateCanceledInvoice(document, sessionContext) {
           } else {
             resolve(document);
           }
-        }
+        },
       );
     } else {
       resolve(document);
@@ -440,7 +440,7 @@ function tryUpdateCreditedInvoice(document, sessionContext) {
           } else {
             resolve(document);
           }
-        }
+        },
       );
     } else {
       resolve(document);
@@ -470,16 +470,16 @@ function tryUpdateDraftOrInsert(document, sessionContext) {
                     error,
                     document,
                   })
-                : resolve(document)
+                : resolve(document),
             );
           }
-        }
+        },
       );
     } else {
       sessionContext.documents.insert(document, (error, document) =>
         error
           ? reject({ message: "Couldn't insert new document", error, document })
-          : resolve(document)
+          : resolve(document),
       );
     }
   });

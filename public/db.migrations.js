@@ -21,16 +21,16 @@ function noVersion(sessionContext, user, saveUser) {
                     number: parseInt(String(document.number).slice(-3), 10),
                     publicId: String(document.number),
                   },
-                  (err) => (err ? reject(err) : resolve())
-                )
-              )
-          )
+                  (err) => (err ? reject(err) : resolve()),
+                ),
+              ),
+          ),
       ).then(() =>
         saveUser({ ...user, dbVersions: "v0.0.1" })
           .catch(reject)
-          .then(resolve)
+          .then(resolve),
       );
-    })
+    }),
   );
 }
 
@@ -53,7 +53,7 @@ function version0_0_1(sessionContext, user, saveUser) {
           if (err) {
             console.error(
               "open-session update db version open documents: ",
-              err
+              err,
             );
             reject(err);
           } else {
@@ -69,14 +69,14 @@ function version0_0_1(sessionContext, user, saveUser) {
                           ...document,
                           number: parseInt(
                             String(document.number).slice(-3),
-                            10
+                            10,
                           ),
                           publicId: String(document.number),
                         },
-                        (err) => (err ? reject(err) : resolve())
-                      )
-                    )
-                )
+                        (err) => (err ? reject(err) : resolve()),
+                      ),
+                    ),
+                ),
             )
               .catch(reject)
               .then(() => saveUser(user).catch(reject).then(resolve));
@@ -110,10 +110,10 @@ function version0_0_2(sessionContext, user, saveUser) {
                 sessionContext.documents.update(
                   { _id: document._id },
                   document,
-                  (err) => (err ? reject(err) : resolve())
-                )
-              )
-          )
+                  (err) => (err ? reject(err) : resolve()),
+                ),
+              ),
+          ),
         )
           .catch(reject)
           .then(() => saveUser(user).catch(reject).then(resolve));
@@ -145,10 +145,10 @@ function version0_0_3(sessionContext, user, saveUser) {
                 sessionContext.documents.update(
                   { _id: document._id },
                   document,
-                  (err) => (err ? reject(err) : resolve())
-                )
-              )
-          )
+                  (err) => (err ? reject(err) : resolve()),
+                ),
+              ),
+          ),
         )
           .catch(reject)
           .then(() => saveUser(user).catch(reject).then(resolve));
@@ -170,13 +170,13 @@ function version0_0_4(sessionContext, user, saveUser) {
             if (err) {
               console.error(
                 "open-session update db version open documents: ",
-                err
+                err,
               );
               reject(err);
             } else {
               resolve(invoicesFromQuote);
             }
-          }
+          },
         );
       }),
       new Promise((resolve, reject) => {
@@ -186,13 +186,13 @@ function version0_0_4(sessionContext, user, saveUser) {
             if (err) {
               console.error(
                 "open-session update db version open documents: ",
-                err
+                err,
               );
               reject(err);
             } else {
               resolve(quotesFromInvoices);
             }
-          }
+          },
         );
       }),
     ]).then(([invoicesFromQuote, quotesFromInvoices]) => {
@@ -200,11 +200,11 @@ function version0_0_4(sessionContext, user, saveUser) {
         invoicesFromQuote
           .map((document) => {
             const quote = quotesFromInvoices.find(
-              ({ _id }) => _id === document.quoteId
+              ({ _id }) => _id === document.quoteId,
             );
             !quote &&
               console.warn(
-                `Couldn't find quote ${document.quoteId} linked with invoice ${document.publicId} (${document._id})`
+                `Couldn't find quote ${document.quoteId} linked with invoice ${document.publicId} (${document._id})`,
               );
             return {
               ...document,
@@ -218,11 +218,11 @@ function version0_0_4(sessionContext, user, saveUser) {
           .concat(
             quotesFromInvoices.map((document) => {
               const invoice = invoicesFromQuote.find(
-                ({ _id }) => _id === document.invoiceId
+                ({ _id }) => _id === document.invoiceId,
               );
               !invoice &&
                 console.warn(
-                  `Couldn't find invoice ${document.invoiceId} linked with quote ${document.publicId} (${document._id})`
+                  `Couldn't find invoice ${document.invoiceId} linked with quote ${document.publicId} (${document._id})`,
                 );
               return {
                 ...document,
@@ -232,7 +232,7 @@ function version0_0_4(sessionContext, user, saveUser) {
                   publicId: invoice?.publicId,
                 },
               };
-            })
+            }),
           )
           .map(
             (document) =>
@@ -240,10 +240,10 @@ function version0_0_4(sessionContext, user, saveUser) {
                 sessionContext.documents.update(
                   { _id: document._id },
                   document,
-                  (err) => (err ? reject(err) : resolve())
-                )
-              )
-          )
+                  (err) => (err ? reject(err) : resolve()),
+                ),
+              ),
+          ),
       )
         .catch(reject)
         .then(() => saveUser(user).catch(reject).then(resolve));
@@ -276,10 +276,10 @@ function version0_0_5(sessionContext, user, saveUser) {
                   sessionContext.clients.update(
                     { _id: client._id },
                     client,
-                    (err) => (err ? reject(err) : resolve())
-                  )
-                )
-            )
+                    (err) => (err ? reject(err) : resolve()),
+                  ),
+                ),
+            ),
         )
           .catch(reject)
           .then(() =>
@@ -287,14 +287,14 @@ function version0_0_5(sessionContext, user, saveUser) {
               if (err) {
                 console.error(
                   "open-session update db version open documents: ",
-                  err
+                  err,
                 );
                 reject(err);
               } else {
                 Promise.all(
                   documents
                     .filter(
-                      ({ user, client }) => !user?.idType || !client?.idType
+                      ({ user, client }) => !user?.idType || !client?.idType,
                     )
                     .map(({ user, client, ...document }) => ({
                       user: { ...user, idType: user.idType || defaultIdType },
@@ -313,15 +313,15 @@ function version0_0_5(sessionContext, user, saveUser) {
                           sessionContext.documents.update(
                             { _id: document._id },
                             document,
-                            (err) => (err ? reject(err) : resolve())
-                          )
-                        )
-                    )
+                            (err) => (err ? reject(err) : resolve()),
+                          ),
+                        ),
+                    ),
                 )
                   .catch(reject)
                   .then(() => saveUser(user).catch(reject).then(resolve));
               }
-            })
+            }),
           );
       }
     });

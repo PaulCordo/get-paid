@@ -26,7 +26,7 @@ export function useDocumentView(document) {
   }
   const DocumentView = getDocumentView(
     getTemplate(user.template),
-    document.type
+    document.type,
   );
   return DocumentView;
 }

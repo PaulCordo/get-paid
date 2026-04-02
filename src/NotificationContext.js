@@ -29,9 +29,9 @@ export function NotificationProvider({ children }) {
                 ? error
                 : [error.name, error.message].join(": "),
           },
-        ])
+        ]),
       ),
-    []
+    [],
   );
 
   const NotificationContextValue = useMemo(() => ({ pushError }), [pushError]);

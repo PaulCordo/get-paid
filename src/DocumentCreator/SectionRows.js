@@ -57,7 +57,7 @@ export function SectionRows({
               getValues([
                 `sections.${sectionIndex}.rows.${index}.price`,
                 `sections.${sectionIndex}.rows.${index}.quantity`,
-              ])?.reduce((price, quantity) => price * quantity)
+              ])?.reduce((price, quantity) => price * quantity),
             )}
           </td>
           <td className="px-0 align-middle">

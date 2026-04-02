@@ -28,9 +28,9 @@ export function Section({
     () =>
       sectionRows.reduce(
         (total, { price, quantity }) => total + price * quantity,
-        0
+        0,
       ),
-    [sectionRows]
+    [sectionRows],
   );
   const prevSectionTotal = usePrevious(sectionTotal);
   const allSections = useWatch({ name: "sections", control });
@@ -41,7 +41,7 @@ export function Section({
         "total",
         allSections
           .map(({ total }, i) => (i === index ? sectionTotal : total))
-          .reduce((total, t) => total + t, 0)
+          .reduce((total, t) => total + t, 0),
       );
     }
   }, [sectionTotal, prevSectionTotal, setValue, index, allSections]);

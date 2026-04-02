@@ -24,7 +24,7 @@ export function AnnualRevenueProgressBar({ year }) {
   } = useMemo(() => {
     return documents
       .filter(
-        ({ draft, date }) => !draft && getYear(new Date(date)) === Number(year)
+        ({ draft, date }) => !draft && getYear(new Date(date)) === Number(year),
       )
       .reduce(
         (sums, document) => {
@@ -49,7 +49,7 @@ export function AnnualRevenueProgressBar({ year }) {
           paidInvoicesCount: 0,
           unpaidInvoicesCount: 0,
           overdueInvoicesCount: 0,
-        }
+        },
       );
   }, [documents, year]);
   const grandTotal = paidInvoices + unpaidInvoices + overdueInvoices;
