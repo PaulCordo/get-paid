@@ -1,17 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
 import {
   FaEye,
   FaFileDownload,
   FaCopy,
   FaEdit,
   FaTrash,
-  FaFileInvoiceDollar,
   FaEuroSign,
   FaSlash,
   FaArchive,
-  FaTimesCircle,
 } from "react-icons/fa";
 
 import { DocumentActionsContext } from "./DocumentActionsContext";
@@ -26,18 +23,8 @@ export function DocumentActionButtons({
   canView = true,
 }) {
   const documentState = getDocumentState(document);
-  const {
-    view,
-    duplicate,
-    edit,
-    deleteDraft,
-    download,
-    setPaid,
-    archive,
-    cancelInvoice,
-    creditNote,
-  } = useContext(DocumentActionsContext);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const { view, edit, deleteDraft, download, duplicate, setPaid, archive } =
+    useContext(DocumentActionsContext);
   switch (documentState) {
     case DRAFT:
       return (
@@ -116,52 +103,6 @@ export function DocumentActionButtons({
               <FaEuroSign />
             </Button>
           )}
-          {!document.canceledBy && !document.creditedBy && (
-            <>
-              <Button
-                onClick={() => setShowCancelModal(true)}
-                variant="danger"
-                title="Annuler"
-                size={size}
-              >
-                <FaTimesCircle />
-              </Button>
-              <Modal
-                show={showCancelModal}
-                onEscapeKeyDown={() => setShowCancelModal(false)}
-                onHide={() => setShowCancelModal(false)}
-                centered
-              >
-                <Modal.Header closeButton>
-                  <h4>Annuler la facture #{document.publicId}</h4>
-                </Modal.Header>
-                <Modal.Body>
-                  <p>Comment souhaitez-vous annuler ce document ?</p>
-                  <div className="text-end">
-                    <Button
-                      variant={document.paid ? "secondary" : "success"}
-                      className="me-3"
-                      onClick={() => {
-                        cancelInvoice(document);
-                        setShowCancelModal(false);
-                      }}
-                    >
-                      Annuler et remplacer
-                    </Button>
-                    <Button
-                      variant={document.paid ? "success" : "secondary"}
-                      onClick={() => {
-                        creditNote(document);
-                        setShowCancelModal(false);
-                      }}
-                    >
-                      Créer un avoir
-                    </Button>
-                  </div>
-                </Modal.Body>
-              </Modal>
-            </>
-          )}
           {document.canceledBy && (
             <Button
               onClick={() => archive(document, !document.archived)}
@@ -198,18 +139,10 @@ export function DocumentActionButtons({
           >
             <FaFileDownload />
           </Button>
-          <Button
-            onClick={() => duplicate(document)}
-            variant="success"
-            title="Facturer"
-            className="me-3"
-            size={size}
-          >
-            <FaFileInvoiceDollar />
-          </Button>
 
           <Button
             onClick={() => archive(document, !document.archived)}
+            className="me-3"
             variant="warning"
             title={document.archived ? "Désarchiver" : "Archiver"}
             size={size}

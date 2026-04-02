@@ -14,6 +14,7 @@ export function getDocumentFromSource(source, user) {
     type: INVOICE,
     draft: true,
     validUntil: format(add(new Date(), { months: 1 }), "yyyy-MM-dd"),
+    noTax: false,
   };
 
   if (!source) {
